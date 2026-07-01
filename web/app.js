@@ -6,6 +6,7 @@ const statusEl = document.getElementById('status');
 const resultEl = document.getElementById('result');
 const errorEl = document.getElementById('error');
 const reportFrame = document.getElementById('reportFrame');
+const reportPreview = document.getElementById('reportPreview');
 const loadingOverlay = document.getElementById('loadingOverlay');
 const loadingTip = document.getElementById('loadingTip');
 const loadingElapsed = document.getElementById('loadingElapsed');
@@ -185,10 +186,12 @@ function resetReportPreview() {
   }
   reportFrame.removeAttribute('src');
   reportFrame.removeAttribute('srcdoc');
+  reportPreview.innerHTML = '';
 }
 
 function renderReportPreview(html) {
   resetReportPreview();
+  reportPreview.innerHTML = buildInlinePreviewHtml(html);
 
   if (window.Blob && window.URL && URL.createObjectURL) {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -207,6 +210,17 @@ function renderReportPreview(html) {
     doc.open();
     doc.write(html);
     doc.close();
+  }
+}
+
+function buildInlinePreviewHtml(html) {
+  try {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const styles = Array.from(doc.head.querySelectorAll('style')).map(node => node.outerHTML).join('');
+    const body = doc.body ? doc.body.innerHTML : html;
+    return styles + body;
+  } catch (e) {
+    return html;
   }
 }
 

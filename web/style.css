@@ -330,6 +330,15 @@ input:focus, select:focus, textarea:focus {
   background: #fff;
 }
 
+.report-preview {
+  display: none;
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
 .error-card {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -376,6 +385,11 @@ input:focus, select:focus, textarea:focus {
   }
 
   .report-frame {
+    display: none;
     min-height: 70vh;
+  }
+
+  .report-preview {
+    display: block;
   }
 }
