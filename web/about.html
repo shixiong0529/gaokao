@@ -137,15 +137,15 @@
       <form id="msgForm">
         <div class="mj-form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px;">
           <div>
-            <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">称呼 <span style="color:var(--gold);">*</span></label>
+            <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">称呼 <span class="required-star" style="color:#C9362C;">*</span></label>
             <input name="name" placeholder="如 李先生 / 张同学" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
           </div>
           <div>
-            <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">联系邮箱 <span style="color:var(--gold);">*</span></label>
+            <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">联系邮箱 <span class="required-star" style="color:#C9362C;">*</span></label>
             <input name="email" type="email" placeholder="便于我们回复你" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
           </div>
         </div>
-        <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">留言内容 <span style="color:var(--gold);">*</span></label>
+        <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">留言内容 <span class="required-star" style="color:#C9362C;">*</span></label>
         <textarea name="msg" rows="4" placeholder="欢迎写下你的问题或想咨询的省份、分数与意向……" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; line-height:1.7; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; resize:vertical;"></textarea>
         <div id="formError" hidden style="font-size:13px; color:#A8442E; margin-top:12px; letter-spacing:0.5px;">请填写称呼、联系邮箱与留言内容后再提交。</div>
         <button type="submit" class="mj-submit" style="width:100%; margin-top:24px; padding:18px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; letter-spacing:8px; text-indent:8px; cursor:pointer;">提交留言</button>

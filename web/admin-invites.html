@@ -69,7 +69,7 @@
           <input name="maxUses" type="number" min="1" value="1">
         </div>
         <div>
-          <label>过期时间（可选）</label>
+          <label>过期时间（默认 7 天后）</label>
           <input name="expiresAt" type="datetime-local">
         </div>
         <div>
@@ -86,12 +86,24 @@
 
   <section>
     <h2>最近邀请码</h2>
+    <h3 style="font-size:14px;margin:8px 0 10px;color:#5f6472;">未使用</h3>
     <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr><th>邀请码</th><th>使用</th><th>过期</th><th>备注</th><th>创建时间</th></tr>
         </thead>
-        <tbody id="codesBody">
+        <tbody id="unusedCodesBody">
+          <tr><td colspan="5">尚未加载</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 style="font-size:14px;margin:22px 0 10px;color:#5f6472;">已使用</h3>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>邀请码</th><th>使用</th><th>过期</th><th>备注</th><th>创建时间</th></tr>
+        </thead>
+        <tbody id="usedCodesBody">
           <tr><td colspan="5">尚未加载</td></tr>
         </tbody>
       </table>
@@ -103,17 +115,37 @@
   var tokenInput = document.getElementById('adminToken');
   var tokenMsg = document.getElementById('tokenMsg');
   var formMsg = document.getElementById('formMsg');
-  var codesBody = document.getElementById('codesBody');
+  var unusedCodesBody = document.getElementById('unusedCodesBody');
+  var usedCodesBody = document.getElementById('usedCodesBody');
+  var expiresAtInput = document.querySelector('input[name="expiresAt"]');
   tokenInput.value = localStorage.getItem('gaokaoAdminToken') || '';
 
   function token() { return tokenInput.value.trim(); }
   function headers() { return { 'Content-Type': 'application/json', 'X-Admin-Token': token() }; }
   function fmt(s) { return s ? new Date(s).toLocaleString('zh-CN') : '-'; }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function formatDatetimeLocal(date) {
+    return date.getFullYear() + '-' +
+      pad(date.getMonth() + 1) + '-' +
+      pad(date.getDate()) + 'T' +
+      pad(date.getHours()) + ':' +
+      pad(date.getMinutes());
+  }
+  function setDefaultExpiry() {
+    var expires = new Date();
+    expires.setDate(expires.getDate() + 7);
+    expires.setHours(23, 59, 0, 0);
+    var value = formatDatetimeLocal(expires);
+    expiresAtInput.defaultValue = value;
+    expiresAtInput.value = value;
+  }
   function escapeHtml(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
     });
   }
+
+  setDefaultExpiry();
 
   document.getElementById('saveToken').addEventListener('click', function () {
     localStorage.setItem('gaokaoAdminToken', token());
@@ -142,6 +174,7 @@
         if (!resp.ok) throw new Error(body.error || '生成失败');
         formMsg.innerHTML = '已生成：<code>' + escapeHtml(body.inviteCode.code) + '</code>';
         form.reset();
+        setDefaultExpiry();
         loadCodes();
       });
     }).catch(function (err) {
@@ -150,29 +183,38 @@
   });
 
   function loadCodes() {
-    codesBody.innerHTML = '<tr><td colspan="5">加载中...</td></tr>';
+    unusedCodesBody.innerHTML = '<tr><td colspan="5">加载中...</td></tr>';
+    usedCodesBody.innerHTML = '<tr><td colspan="5">加载中...</td></tr>';
     fetch('/api/admin/invite-codes', { headers: { 'X-Admin-Token': token() } })
       .then(function (resp) {
         return resp.json().then(function (body) {
           if (!resp.ok) throw new Error(body.error || '读取失败');
           var rows = body.inviteCodes || [];
-          if (!rows.length) {
-            codesBody.innerHTML = '<tr><td colspan="5">暂无邀请码</td></tr>';
-            return;
-          }
-          codesBody.innerHTML = rows.map(function (r) {
-            return '<tr>' +
-              '<td><code>' + escapeHtml(r.code) + '</code></td>' +
-              '<td>' + r.usedCount + ' / ' + r.maxUses + '</td>' +
-              '<td>' + escapeHtml(fmt(r.expiresAt)) + '</td>' +
-              '<td>' + escapeHtml(r.note || '-') + '</td>' +
-              '<td>' + escapeHtml(fmt(r.createdAt)) + '</td>' +
-            '</tr>';
-          }).join('');
+          var unusedRows = rows.filter(function (r) { return r.usedCount < r.maxUses; });
+          var usedRows = rows.filter(function (r) { return r.usedCount >= r.maxUses; });
+          unusedCodesBody.innerHTML = renderInviteRows(unusedRows, '暂无未使用邀请码');
+          usedCodesBody.innerHTML = renderInviteRows(usedRows, '暂无已使用邀请码');
         });
       }).catch(function (err) {
-        codesBody.innerHTML = '<tr><td colspan="5">' + escapeHtml(err.message || '读取失败') + '</td></tr>';
+        var message = '<tr><td colspan="5">' + escapeHtml(err.message || '读取失败') + '</td></tr>';
+        unusedCodesBody.innerHTML = message;
+        usedCodesBody.innerHTML = message;
       });
+  }
+
+  function renderInviteRows(rows, emptyText) {
+    if (!rows.length) {
+      return '<tr><td colspan="5">' + escapeHtml(emptyText) + '</td></tr>';
+    }
+    return rows.map(function (r) {
+      return '<tr>' +
+        '<td><code>' + escapeHtml(r.code) + '</code></td>' +
+        '<td>' + r.usedCount + ' / ' + r.maxUses + '</td>' +
+        '<td>' + escapeHtml(fmt(r.expiresAt)) + '</td>' +
+        '<td>' + escapeHtml(r.note || '-') + '</td>' +
+        '<td>' + escapeHtml(fmt(r.createdAt)) + '</td>' +
+      '</tr>';
+    }).join('');
   }
 })();
 </script>
