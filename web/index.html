@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>高考志愿填报方案生成器</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>高考志愿填报参考方案生成器</h1>
+    <p class="subtitle">输入分数位次 · AI 联网搜索实时数据 · 生成冲稳保分层方案</p>
+  </header>
+
+  <form id="planForm" class="card">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>省份 <span class="required">*</span></label>
+        <select name="province" required>
+          <option value="">请选择</option>
+          <option value="湖北">湖北</option>
+          <option value="湖南">湖南</option>
+          <option value="河南">河南</option>
+          <option value="广东">广东</option>
+          <option value="江苏">江苏</option>
+          <option value="浙江">浙江</option>
+          <option value="山东">山东</option>
+          <option value="四川">四川</option>
+          <option value="河北">河北</option>
+          <option value="安徽">安徽</option>
+          <option value="福建">福建</option>
+          <option value="江西">江西</option>
+          <option value="重庆">重庆</option>
+          <option value="北京">北京</option>
+          <option value="上海">上海</option>
+          <option value="天津">天津</option>
+          <option value="辽宁">辽宁</option>
+          <option value="吉林">吉林</option>
+          <option value="黑龙江">黑龙江</option>
+          <option value="广西">广西</option>
+          <option value="海南">海南</option>
+          <option value="贵州">贵州</option>
+          <option value="甘肃">甘肃</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>高考分数 <span class="required">*</span></label>
+        <input type="number" name="score" min="0" max="750" placeholder="如 580" required>
+      </div>
+
+      <div class="form-group">
+        <label>全省位次</label>
+        <input type="number" name="rank" min="1" placeholder="如 28000">
+        <small class="hint">可选，但提供后方案更精准</small>
+      </div>
+
+      <div class="form-group">
+        <label>首选科目 <span class="required">*</span></label>
+        <select name="firstChoice" required>
+          <option value="">请选择</option>
+          <option value="物理">物理</option>
+          <option value="历史">历史</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>再选科目（四选二）<span class="required">*</span></label>
+        <div class="checkbox-group">
+          <label class="checkbox"><input type="checkbox" name="reselect" value="化学"> 化学</label>
+          <label class="checkbox"><input type="checkbox" name="reselect" value="生物"> 生物</label>
+          <label class="checkbox"><input type="checkbox" name="reselect" value="政治"> 政治</label>
+          <label class="checkbox"><input type="checkbox" name="reselect" value="地理"> 地理</label>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label>院校/专业偏好（可选）</label>
+        <textarea name="preferences" rows="2" placeholder="如：想学计算机，倾向于武汉的高校，希望离家近"></textarea>
+      </div>
+    </div>
+
+    <button type="submit" id="submitBtn" class="btn-primary">
+      <span class="btn-text">生成志愿方案</span>
+      <span class="btn-loading" hidden>生成中，约 30-60 秒...</span>
+    </button>
+  </form>
+
+  <div id="status" class="status" hidden></div>
+
+  <div id="loadingOverlay" class="loading-overlay" hidden>
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <div class="loading-title">正在生成志愿方案</div>
+      <div class="loading-tip" id="loadingTip">AI 正在联网搜索院校数据，请耐心等待...</div>
+      <div class="loading-progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="loading-elapsed" id="loadingElapsed">已用时 0 秒</div>
+    </div>
+  </div>
+
+  <div id="result" class="result" hidden>
+    <div class="result-header">
+      <h2>志愿方案已生成</h2>
+      <div class="result-actions">
+        <button onclick="downloadDocx()" class="btn-download btn-docx">📄 下载 Word</button>
+        <button onclick="downloadPdf()" class="btn-download btn-pdf">📕 保存为 PDF</button>
+        <button onclick="downloadHtml()" class="btn-secondary">下载 HTML</button>
+        <button onclick="openReport()" class="btn-secondary">新窗口打开</button>
+      </div>
+    </div>
+    <iframe id="reportFrame" class="report-frame"></iframe>
+  </div>
+
+  <div id="error" class="error-card" hidden></div>
+
+  <footer class="footer">
+    <p>⚠️ 本工具基于 AI + 联网搜索生成参考方案，数据可能存在延迟或偏差。志愿填报是重大决策，请以各省教育考试院官方发布为准。</p>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

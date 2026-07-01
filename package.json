@@ -1,0 +1,19 @@
+{
+  "name": "gaokao-volunteer-advisor",
+  "version": "0.1.0",
+  "description": "高考志愿填报方案生成器 - 基于 DeepSeek function calling + 联网搜索的 Agent",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "html-to-docx": "^1.8.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
