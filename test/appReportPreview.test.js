@@ -17,3 +17,11 @@ test('report preview provides direct mobile fallback instead of relying on ifram
   assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.report-frame \{[\s\S]*display: none/);
   assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.report-preview \{[\s\S]*display: block/);
 });
+
+test('open report opens the generated html page url in a new window', () => {
+  const js = readFileSync(new URL('../web/app.js', import.meta.url), 'utf8');
+
+  assert.match(js, /window\.openReport = function\(\)/);
+  assert.match(js, /if \(currentReportUrl\) \{[\s\S]*window\.open\(currentReportUrl, '_blank'\)/);
+  assert.match(js, /w\.document\.write\(currentHtml\)/);
+});

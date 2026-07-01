@@ -296,6 +296,16 @@ window.downloadHtml = function() {
 // 新窗口打开
 window.openReport = function() {
   if (!currentHtml) return;
+  if (currentReportUrl) {
+    window.open(currentReportUrl, '_blank');
+    return;
+  }
+  if (window.Blob && window.URL && URL.createObjectURL) {
+    const blob = new Blob([currentHtml], { type: 'text/html;charset=utf-8' });
+    currentReportUrl = URL.createObjectURL(blob);
+    window.open(currentReportUrl, '_blank');
+    return;
+  }
   const w = window.open('', '_blank');
   w.document.write(currentHtml);
   w.document.close();
