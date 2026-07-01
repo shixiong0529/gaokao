@@ -8,258 +8,311 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  * { -webkit-font-smoothing: antialiased; }
   body { margin: 0; background: #F3EEE2; }
+  @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
   ::selection { background: rgba(168,130,60,0.22); }
-  .page {
-    --paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C;
-    --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26);
-    min-height:100vh; color:var(--ink); font-family:'Noto Sans SC',system-ui,sans-serif;
-    background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px);
-    background-size:46px 46px;
+  ::placeholder { color: #A79E88; }
+  select option { color: #16233F; }
+
+  .mj-nav a:hover { color: var(--gold); }
+  .mj-field:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(168,130,60,0.14); }
+  .mj-chip, .mj-page { transition: all .2s; }
+
+  @media (max-width: 768px) {
+    .mj-nav { display: none !important; }
+    .mj-header { padding: 20px !important; }
+    .mj-wrap { padding: 0 16px 60px !important; }
+    .mj-hero h1 { font-size: 32px !important; }
+    .mj-toolbar { padding: 20px !important; }
+    .mj-filters { grid-template-columns: 1fr 1fr !important; }
+    .mj-table-scroll { overflow-x: auto; }
+    .mj-table-scroll > div { min-width: 700px; }
   }
-  a { color: inherit; text-decoration: none; }
-  .nav a:hover { color: var(--gold); }
-  .wrap { max-width:1180px; margin:0 auto; padding:0 40px 80px; }
-  .header { max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
-  .brand { display:flex; align-items:center; gap:14px; }
-  .mark { position:relative; width:46px; height:46px; flex:0 0 auto; }
-  .mark:before { content:""; position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%; }
-  .mark:after { content:""; position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%; }
-  .mark span { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:20px; color:var(--gold); }
-  .nav { display:flex; align-items:center; gap:34px; }
-  .nav a { font-size:14px; letter-spacing:1px; color:var(--ink-soft); }
-  .nav .active { color:var(--gold); border-bottom:1px solid var(--gold); padding-bottom:2px; }
-  .hero { text-align:center; padding:56px 0 36px; }
-  .eyebrow { font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px; }
-  h1 { font-family:'Noto Serif SC',serif; font-weight:600; font-size:44px; line-height:1.35; letter-spacing:3px; margin:0 0 18px; }
-  .hero p { max-width:620px; margin:0 auto; font-size:15.5px; line-height:2; color:var(--muted); font-weight:300; }
-  .panel { background:var(--paper2); border:1px solid var(--line-strong); padding:28px 32px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25); }
-  .panel-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; border-bottom:1.5px solid var(--ink); padding-bottom:14px; margin-bottom:22px; }
-  h2 { font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; margin:0; }
-  .count { color:var(--muted); font-size:13px; }
-  .filters { display:grid; grid-template-columns:1.2fr 1fr 1fr 1fr; gap:14px; margin-bottom:18px; }
-  label { display:block; font-size:13px; color:var(--muted); margin-bottom:7px; letter-spacing:.5px; }
-  select, input {
-    width:100%; border:1px solid var(--line-strong); background:#fff; color:var(--ink);
-    padding:12px 13px; border-radius:2px; font:inherit; outline:none;
-  }
-  select:focus, input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(168,130,60,0.12); }
-  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
-  .stat { background:#fff; border:1px solid var(--line); padding:18px 20px; }
-  .stat b { display:block; font-family:'Cormorant Garamond',serif; color:var(--gold); font-size:32px; line-height:1; margin-bottom:8px; }
-  .stat span { color:var(--muted); font-size:13px; }
-  .table-wrap { overflow-x:auto; border-top:1.5px solid var(--ink); }
-  table { width:100%; border-collapse:collapse; min-width:900px; font-size:13.5px; }
-  th { background:rgba(22,35,63,0.045); color:var(--ink); font-family:'Noto Serif SC',serif; font-weight:600; text-align:left; padding:11px 12px; border-bottom:1.5px solid var(--ink); white-space:nowrap; }
-  td { padding:12px; border-bottom:1px solid var(--line); color:var(--ink-soft); vertical-align:top; }
-  td strong { color:var(--ink); }
-  .tag { display:inline-block; padding:2px 9px; border:1px solid rgba(168,130,60,.36); color:var(--gold); border-radius:999px; font-size:12px; white-space:nowrap; }
-  .score { color:var(--gold); font-weight:600; }
-  .note { font-size:12.5px; line-height:1.8; color:var(--muted); margin-top:16px; }
-  .empty { text-align:center; padding:28px; color:var(--muted); }
-  @media (max-width: 860px) {
-    .header { padding:20px; }
-    .nav { display:none; }
-    .wrap { padding:0 16px 60px; }
-    .hero { padding:40px 0 24px; }
-    h1 { font-size:32px; }
-    .panel { padding:22px 18px; }
-    .filters, .stats { grid-template-columns:1fr 1fr; }
-  }
-  @media (max-width: 560px) {
-    .filters, .stats { grid-template-columns:1fr; }
-    .panel-head { align-items:flex-start; flex-direction:column; }
+  @media (max-width: 480px) {
+    .mj-filters { grid-template-columns: 1fr !important; }
   }
 </style>
 </head>
 <body>
-<div class="page">
-  <header class="header">
-    <a class="brand" href="index.html">
-      <div class="mark"><span>澄</span></div>
-      <div>
-        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; letter-spacing:2px;">澄明志愿</div>
+<div style="--paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C; --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--ink); position:relative;">
+
+  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
+    <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
+      <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
+        <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
+      </div>
+      <div style="line-height:1.15;">
+        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
         <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
       </div>
     </a>
-    <nav class="nav">
-      <a href="reference.html">志愿参考</a>
-      <a href="college-data.html" class="active">院校数据</a>
-      <a href="methodology.html">方案说明</a>
-      <a href="about.html">关于我们</a>
+    <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
+      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">志愿参考</a>
+      <a href="college-data.html" style="font-size:14px; letter-spacing:1px; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">院校数据</a>
+      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案说明</a>
+      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">关于我们</a>
       <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
     </nav>
   </header>
 
-  <main class="wrap">
-    <section class="hero">
-      <div class="eyebrow">College Data · 院校数据</div>
-      <h1>把院校放在同一张表里比较</h1>
-      <p>按地区、类型、办学性质和分数段快速筛选院校。当前数据为演示样本，生成正式志愿方案时仍会以结构化接口和联网检索结果为准。</p>
+  <div class="mj-wrap" style="max-width:1000px; margin:0 auto; padding:0 40px 80px;">
+
+    <!-- HERO -->
+    <section class="mj-hero" style="position:relative; margin-top:52px; text-align:center; animation:mj-rise .8s ease both;">
+      <div style="font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px;">Database · 院校数据</div>
+      <h1 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:42px; line-height:1.4; letter-spacing:3px; color:var(--ink); margin:0 0 18px;">院校数据库</h1>
+      <p style="max-width:600px; margin:0 auto; font-size:15.5px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px;">收录教育部《全国普通高等学校名单》全部院校，按地区、类型与层次检索。<br>各校录取分数可在「志愿参考」中按你的省份与选科实时生成。</p>
     </section>
 
-    <section class="panel">
-      <div class="panel-head">
+    <!-- TOOLBAR -->
+    <section class="mj-toolbar" style="background:var(--paper2); border:1px solid var(--line-strong); padding:26px 30px; margin-top:40px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div class="mj-filters" style="display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:18px;">
         <div>
-          <div class="eyebrow" style="margin-bottom:8px;font-size:13px;">Data Browser</div>
-          <h2>院校数据浏览</h2>
-        </div>
-        <div class="count" id="resultCount">正在加载...</div>
-      </div>
-
-      <div class="stats">
-        <div class="stat"><b id="statTotal">0</b><span>收录样本院校</span></div>
-        <div class="stat"><b id="statPublic">0</b><span>公办本科</span></div>
-        <div class="stat"><b id="statProvince">0</b><span>覆盖省份</span></div>
-        <div class="stat"><b id="statAvg">-</b><span>样本最低分中位数</span></div>
-      </div>
-
-      <div class="filters">
-        <div>
-          <label for="keywordFilter">关键词</label>
-          <input id="keywordFilter" type="search" placeholder="搜索院校 / 城市 / 优势方向">
+          <label style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">关键词</label>
+          <div style="position:relative;">
+            <span style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--gold); font-size:15px; pointer-events:none;">⌕</span>
+            <input id="searchInput" placeholder="搜索院校 / 城市 / 类型" class="mj-field" style="width:100%; box-sizing:border-box; padding:13px 16px 13px 40px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
+          </div>
         </div>
         <div>
-          <label for="provinceFilter">地区</label>
-          <select id="provinceFilter">
-            <option value="">全部地区</option>
-          </select>
+          <label style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">地区</label>
+          <div style="position:relative;">
+            <select id="regionSelect" class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;"></select>
+            <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
+          </div>
         </div>
         <div>
-          <label for="typeFilter">院校类型</label>
-          <select id="typeFilter">
-            <option value="">全部类型</option>
-          </select>
+          <label style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">院校类型</label>
+          <div style="position:relative;">
+            <select id="typeSelect" class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;"></select>
+            <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
+          </div>
         </div>
         <div>
-          <label for="scoreFilter">参考分数段</label>
-          <select id="scoreFilter">
-            <option value="">全部分数</option>
-            <option value="lt420">420 以下</option>
-            <option value="420-450">420-450</option>
-            <option value="450-480">450-480</option>
-            <option value="gt480">480 以上</option>
-          </select>
+          <label style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">办学层次</label>
+          <div style="position:relative;">
+            <select id="levelSelect" class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;">
+              <option value="全部">全部层次</option>
+              <option value="本科">本科</option>
+              <option value="专科">专科（高职）</option>
+            </select>
+            <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
+          </div>
         </div>
       </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>院校</th>
-              <th>地区</th>
-              <th>类型</th>
-              <th>性质</th>
-              <th>参考最低分</th>
-              <th>参考位次</th>
-              <th>优势方向</th>
-              <th>适配提示</th>
-            </tr>
-          </thead>
-          <tbody id="collegeRows"></tbody>
-        </table>
+      <div id="levelChips" style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+        <button type="button" class="mj-chip" data-tier="全部" style="padding:8px 18px; font-family:'Noto Sans SC',sans-serif; font-size:13.5px; letter-spacing:0.5px; border-radius:2px; cursor:pointer;">全部</button>
+        <button type="button" class="mj-chip" data-tier="985" style="padding:8px 18px; font-family:'Noto Sans SC',sans-serif; font-size:13.5px; letter-spacing:0.5px; border-radius:2px; cursor:pointer;">985</button>
+        <button type="button" class="mj-chip" data-tier="211" style="padding:8px 18px; font-family:'Noto Sans SC',sans-serif; font-size:13.5px; letter-spacing:0.5px; border-radius:2px; cursor:pointer;">211</button>
+        <button type="button" class="mj-chip" data-tier="双一流" style="padding:8px 18px; font-family:'Noto Sans SC',sans-serif; font-size:13.5px; letter-spacing:0.5px; border-radius:2px; cursor:pointer;">双一流</button>
       </div>
-      <div class="note">说明：本页用于浏览和对比院校，不替代正式投档数据。各省招生计划、专业组代码、选科要求和最终录取线，请以省级教育考试院及高校当年官方发布为准。</div>
     </section>
-  </main>
+
+    <!-- COUNT -->
+    <div style="display:flex; align-items:baseline; justify-content:space-between; margin:28px 4px 14px;">
+      <div style="font-family:'Noto Serif SC',serif; font-size:15px; color:var(--ink); letter-spacing:1px;">共 <span id="countNum" style="color:var(--gold); font-weight:600;">—</span> 所院校</div>
+      <div id="pageInfo" style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;"></div>
+    </div>
+
+    <!-- TABLE -->
+    <section id="tableSection" style="background:var(--paper2); border:1px solid var(--line-strong); box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div class="mj-table-scroll">
+        <div>
+          <div style="display:grid; grid-template-columns:2fr 1fr 1.7fr 0.9fr 0.9fr; background:rgba(22,35,63,0.05); border-bottom:1.5px solid var(--ink);">
+            <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
+            <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">所在地</div>
+            <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">层次</div>
+            <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">类型</div>
+            <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">办学</div>
+          </div>
+          <div id="rows"></div>
+          <div id="loadingState" style="padding:56px 20px; text-align:center; color:var(--muted); font-weight:300;">正在加载院校数据……</div>
+          <div id="emptyState" hidden style="padding:56px 20px; text-align:center;">
+            <div style="font-family:'Noto Serif SC',serif; font-size:17px; color:var(--ink); margin-bottom:8px;">未找到匹配的院校</div>
+            <div style="font-size:13.5px; color:var(--muted); font-weight:300;">试试更换关键词，或调整地区、类型与层次筛选。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGER -->
+    <div id="pager" style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:26px; flex-wrap:wrap;"></div>
+
+    <div style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:22px; font-weight:300; text-align:center; max-width:780px; margin-left:auto; margin-right:auto;">数据来源：教育部《全国普通高等学校名单》（2025 年 6 月）。院校类型由校名归类推断，985 / 211 / 双一流依据公开名单标注，可能存在个别偏差。军事类等未纳入该名单的院校不在其中。录取分数请在「志愿参考」中按你的省份与选科实时生成。</div>
+
+  </div>
+
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,35,63,0.02);">
+    <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="position:relative; width:30px; height:30px;">
+          <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:14px; color:var(--gold);">澄</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 澄明志愿 · CHENGMING ADVISORY</span>
+      </div>
+      <div style="display:flex; gap:26px;">
+        <a href="methodology.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">方案说明</a>
+        <a href="about.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">联系我们</a>
+      </div>
+    </div>
+  </footer>
+
 </div>
 
 <script>
-const COLLEGES = [
-  { name:'湖南理工学院', province:'湖南', city:'岳阳', type:'理工类', nature:'公办本科', score:438, rank:'约175,000', strengths:'化学、机械、电子信息', fit:'适合作为湖南物理类本科线以上考生的冲刺选择' },
-  { name:'湖南城市学院', province:'湖南', city:'益阳', type:'综合类', nature:'公办本科', score:445, rank:'约168,000', strengths:'土木工程、城乡规划、测绘', fit:'工科和城建方向可重点关注专业组差异' },
-  { name:'湖南工学院', province:'湖南', city:'衡阳', type:'理工类', nature:'公办本科', score:425, rank:'约190,000', strengths:'安全工程、机械、电气', fit:'适合偏工程应用、愿意服从调剂的考生' },
-  { name:'邵阳学院', province:'湖南', city:'邵阳', type:'综合类', nature:'公办本科', score:420, rank:'约198,000', strengths:'医学、师范、食品工程', fit:'湖南省内稳妥层院校，可关注医学相关专业限制' },
-  { name:'湖南人文科技学院', province:'湖南', city:'娄底', type:'综合类', nature:'公办本科', score:415, rank:'约204,000', strengths:'农学、材料、师范教育', fit:'分数优势较明显时可兼顾专业选择' },
-  { name:'怀化学院', province:'湖南', city:'怀化', type:'综合类', nature:'公办本科', score:410, rank:'约208,000', strengths:'民族学、师范、电子信息', fit:'适合作为省内公办本科保底候选' },
-  { name:'湘南学院', province:'湖南', city:'郴州', type:'综合类', nature:'公办本科', score:390, rank:'约227,000', strengths:'临床医学、护理、应用化学', fit:'医学类需单独核验专业组和选科要求' },
-  { name:'长沙师范学院', province:'湖南', city:'长沙', type:'师范类', nature:'公办本科', score:467, rank:'约140,000', strengths:'学前教育、小学教育、艺术教育', fit:'师范方向热度较高，适合较高位次考生冲稳' },
-  { name:'湖南财政经济学院', province:'湖南', city:'长沙', type:'财经类', nature:'公办本科', score:468, rank:'约138,000', strengths:'财政学、会计、金融', fit:'财经专业热度高，需关注专业组最低位次' },
-  { name:'湖北理工学院', province:'湖北', city:'黄石', type:'理工类', nature:'公办本科', score:460, rank:'约150,000', strengths:'机械、环境工程、临床医学', fit:'可作为跨省理工类候选，需要核验本省招生计划' },
-  { name:'广东石油化工学院', province:'广东', city:'茂名', type:'理工类', nature:'公办本科', score:470, rank:'约132,000', strengths:'化学工程、能源动力、控制工程', fit:'适合化工能源方向，跨省招生名额需重点核实' },
-  { name:'南阳理工学院', province:'河南', city:'南阳', type:'理工类', nature:'公办本科', score:452, rank:'约160,000', strengths:'软件工程、中医学、机械', fit:'专业跨度大，适合用作外省稳妥备选' }
-];
+(function () {
+  var PAGE_SIZE = 20;
+  var state = { query: '', region: '全部', type: '全部', level: '全部', tier: '全部', page: 1 };
+  var schools = [];
 
-const els = {
-  keyword: document.getElementById('keywordFilter'),
-  province: document.getElementById('provinceFilter'),
-  type: document.getElementById('typeFilter'),
-  score: document.getElementById('scoreFilter'),
-  rows: document.getElementById('collegeRows'),
-  count: document.getElementById('resultCount')
-};
+  var searchInput = document.getElementById('searchInput');
+  var regionSelect = document.getElementById('regionSelect');
+  var typeSelect = document.getElementById('typeSelect');
+  var levelSelect = document.getElementById('levelSelect');
+  var chipsBox = document.getElementById('levelChips');
+  var rowsBox = document.getElementById('rows');
+  var loadingState = document.getElementById('loadingState');
+  var emptyState = document.getElementById('emptyState');
+  var countNum = document.getElementById('countNum');
+  var pageInfo = document.getElementById('pageInfo');
+  var pager = document.getElementById('pager');
+  var tableSection = document.getElementById('tableSection');
+  var chips = Array.prototype.slice.call(chipsBox.querySelectorAll('.mj-chip'));
 
-function escapeHtml(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-    return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c];
-  });
-}
-
-function unique(key) {
-  return Array.from(new Set(COLLEGES.map(c => c[key]))).sort();
-}
-
-function initFilters() {
-  for (const p of unique('province')) els.province.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`);
-  for (const t of unique('type')) els.type.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`);
-}
-
-function scoreMatched(score, bucket) {
-  if (!bucket) return true;
-  if (bucket === 'lt420') return score < 420;
-  if (bucket === '420-450') return score >= 420 && score <= 450;
-  if (bucket === '450-480') return score > 450 && score <= 480;
-  if (bucket === 'gt480') return score > 480;
-  return true;
-}
-
-function filteredColleges() {
-  const keyword = els.keyword.value.trim().toLowerCase();
-  return COLLEGES.filter(c => {
-    const haystack = `${c.name} ${c.province} ${c.city} ${c.type} ${c.nature} ${c.strengths} ${c.fit}`.toLowerCase();
-    return (!keyword || haystack.includes(keyword))
-      && (!els.province.value || c.province === els.province.value)
-      && (!els.type.value || c.type === els.type.value)
-      && scoreMatched(c.score, els.score.value);
-  });
-}
-
-function render() {
-  const rows = filteredColleges();
-  els.count.textContent = `筛选结果：${rows.length} 所`;
-  if (!rows.length) {
-    els.rows.innerHTML = '<tr><td class="empty" colspan="8">没有匹配的院校，试试放宽筛选条件。</td></tr>';
-    return;
+  function tierStyle(label) {
+    var fg, bg, bd;
+    if (label === '985') { fg = '#8A5A12'; bg = 'rgba(168,130,60,0.16)'; bd = 'rgba(168,130,60,0.5)'; }
+    else if (label === '211') { fg = '#33405C'; bg = 'rgba(22,35,63,0.06)'; bd = 'rgba(22,35,63,0.2)'; }
+    else if (label === '双一流') { fg = '#2E6B4F'; bg = 'rgba(46,107,79,0.10)'; bd = 'rgba(46,107,79,0.35)'; }
+    else if (label === '专科') { fg = '#8A6D3B'; bg = 'transparent'; bd = 'rgba(138,109,59,0.35)'; }
+    else { fg = '#6E6754'; bg = 'transparent'; bd = 'rgba(22,35,63,0.18)'; }
+    return 'display:inline-block; padding:2px 9px; border-radius:2px; font-size:11.5px; font-weight:500; letter-spacing:0.5px; color:' + fg + '; background:' + bg + '; border:1px solid ' + bd + ';';
   }
-  els.rows.innerHTML = rows.map(c => `
-    <tr>
-      <td><strong>${escapeHtml(c.name)}</strong></td>
-      <td>${escapeHtml(c.province)} · ${escapeHtml(c.city)}</td>
-      <td><span class="tag">${escapeHtml(c.type)}</span></td>
-      <td>${escapeHtml(c.nature)}</td>
-      <td class="score">${escapeHtml(c.score)} 分</td>
-      <td>${escapeHtml(c.rank)}</td>
-      <td>${escapeHtml(c.strengths)}</td>
-      <td>${escapeHtml(c.fit)}</td>
-    </tr>
-  `).join('');
-}
+  function natureColor(n) {
+    if (n === '民办') return '#A8442E';
+    if (n === '中外合作') return '#2E6B4F';
+    return 'var(--ink-soft)';
+  }
 
-function renderStats() {
-  const sortedScores = COLLEGES.map(c => c.score).sort((a, b) => a - b);
-  const median = sortedScores[Math.floor(sortedScores.length / 2)];
-  document.getElementById('statTotal').textContent = COLLEGES.length;
-  document.getElementById('statPublic').textContent = COLLEGES.filter(c => c.nature.includes('公办')).length;
-  document.getElementById('statProvince').textContent = unique('province').length;
-  document.getElementById('statAvg').textContent = median;
-}
+  function fillSelect(sel, values, allLabel) {
+    var html = '<option value="全部">' + allLabel + '</option>';
+    values.forEach(function (v) { html += '<option value="' + v + '">' + v + '</option>'; });
+    sel.innerHTML = html;
+  }
+  var uniq = function (arr) { var seen = {}, out = []; arr.forEach(function (x) { if (x && !seen[x]) { seen[x] = 1; out.push(x); } }); return out; };
 
-for (const el of [els.keyword, els.province, els.type, els.score]) el.addEventListener('input', render);
-initFilters();
-renderStats();
-render();
+  var rowStyle = 'display:grid; grid-template-columns:2fr 1fr 1.7fr 0.9fr 0.9fr; border-bottom:1px solid var(--line);';
+  function levelTags(s) {
+    if (s.tags && s.tags.length) return s.tags.map(function (t) { return '<span style="' + tierStyle(t) + '">' + t + '</span>'; }).join('');
+    return '<span style="' + tierStyle(s.level === '专科' ? '专科' : '') + '">' + (s.level === '专科' ? '专科' : '普通本科') + '</span>';
+  }
+  function rowHtml(s) {
+    return '<div style="' + rowStyle + '">' +
+      '<div style="padding:14px 16px; font-family:\'Noto Serif SC\',serif; font-size:15px; font-weight:500; color:var(--ink); display:flex; align-items:center;">' + s.name + '</div>' +
+      '<div style="padding:14px 16px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">' + (s.city || s.province) + '</div>' +
+      '<div style="padding:14px 16px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' + levelTags(s) + '</div>' +
+      '<div style="padding:14px 16px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">' + s.category + '</div>' +
+      '<div style="padding:14px 16px; font-size:13.5px; color:' + natureColor(s.nature) + '; display:flex; align-items:center;">' + s.nature + '</div>' +
+      '</div>';
+  }
+
+  function syncChips() {
+    chips.forEach(function (btn) {
+      var active = btn.getAttribute('data-tier') === state.tier;
+      btn.style.background = active ? 'var(--ink)' : '#fff';
+      btn.style.color = active ? '#F3EEE2' : 'var(--ink-soft)';
+      btn.style.border = '1px solid ' + (active ? 'var(--ink)' : 'var(--line-strong)');
+    });
+  }
+
+  function pageBtn(label, page, opts) {
+    opts = opts || {};
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'mj-page'; b.textContent = label;
+    b.style.cssText = 'min-width:38px; padding:8px 12px; font-family:\'Noto Sans SC\',sans-serif; font-size:13.5px; border-radius:2px; cursor:' + (opts.disabled ? 'default' : 'pointer') + ';' +
+      (opts.active ? ' background:var(--ink); color:#F3EEE2; border:1px solid var(--ink);' : ' background:#fff; color:var(--ink-soft); border:1px solid var(--line-strong);') +
+      (opts.disabled ? ' opacity:0.4;' : '');
+    if (!opts.disabled && !opts.active) b.addEventListener('click', function () {
+      state.page = page; render();
+      tableSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return b;
+  }
+
+  // 页码窗口：首页、尾页、当前页附近，其余省略号
+  function renderPager(pages) {
+    pager.innerHTML = '';
+    if (pages <= 1) return;
+    pager.appendChild(pageBtn('‹ 上一页', state.page - 1, { disabled: state.page === 1 }));
+    var cur = state.page, list = [];
+    for (var p = 1; p <= pages; p++) {
+      if (p === 1 || p === pages || (p >= cur - 2 && p <= cur + 2)) list.push(p);
+      else if (list[list.length - 1] !== '…') list.push('…');
+    }
+    list.forEach(function (p) {
+      if (p === '…') {
+        var dot = document.createElement('span');
+        dot.textContent = '…'; dot.style.cssText = 'color:var(--muted); padding:0 2px;';
+        pager.appendChild(dot);
+      } else pager.appendChild(pageBtn(String(p), p, { active: p === cur }));
+    });
+    pager.appendChild(pageBtn('下一页 ›', state.page + 1, { disabled: state.page === pages }));
+  }
+
+  function render() {
+    var q = state.query.trim();
+    var filtered = schools.filter(function (s) {
+      return (q === '' || s.name.indexOf(q) !== -1 || (s.city && s.city.indexOf(q) !== -1) || s.category.indexOf(q) !== -1) &&
+        (state.region === '全部' || s.province === state.region) &&
+        (state.type === '全部' || s.category === state.type) &&
+        (state.level === '全部' || s.level === state.level) &&
+        (state.tier === '全部' || (s.tags && s.tags.indexOf(state.tier) !== -1));
+    });
+
+    var total = filtered.length;
+    var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (state.page > pages) state.page = pages;
+    var start = (state.page - 1) * PAGE_SIZE;
+    var pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+    countNum.textContent = total.toLocaleString();
+    rowsBox.innerHTML = pageItems.map(rowHtml).join('');
+    emptyState.hidden = total !== 0;
+    pageInfo.textContent = total === 0 ? '' : ('Page ' + state.page + ' / ' + pages);
+    renderPager(pages);
+    syncChips();
+  }
+
+  function resetPageAndRender() { state.page = 1; render(); }
+
+  searchInput.addEventListener('input', function (e) { state.query = e.target.value; resetPageAndRender(); });
+  regionSelect.addEventListener('change', function (e) { state.region = e.target.value; resetPageAndRender(); });
+  typeSelect.addEventListener('change', function (e) { state.type = e.target.value; resetPageAndRender(); });
+  levelSelect.addEventListener('change', function (e) { state.level = e.target.value; resetPageAndRender(); });
+  chips.forEach(function (btn) {
+    btn.addEventListener('click', function () { state.tier = btn.getAttribute('data-tier'); resetPageAndRender(); });
+  });
+
+  fetch('colleges.json').then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function (data) {
+    schools = data;
+    loadingState.hidden = true;
+    // 类型下拉按固定顺序，只保留数据中出现的
+    var typeOrder = ['综合', '理工', '师范', '财经', '医药', '农林', '政法', '语言', '艺术', '体育', '民族'];
+    var present = {}; schools.forEach(function (s) { present[s.category] = 1; });
+    fillSelect(regionSelect, uniq(schools.map(function (s) { return s.province; })), '全部地区');
+    fillSelect(typeSelect, typeOrder.filter(function (t) { return present[t]; }), '全部类型');
+    render();
+  }).catch(function (err) {
+    loadingState.textContent = '院校数据加载失败：' + err.message;
+  });
+})();
 </script>
 </body>
 </html>
