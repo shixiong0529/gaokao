@@ -1,5 +1,7 @@
 node_modules/
 logs/
+data/*.db
+data/*.db-*
 .env
 *.log
 .DS_Store

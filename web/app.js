@@ -35,6 +35,7 @@ form.addEventListener('submit', async (e) => {
   const reselect = formData.getAll('reselect');
   const scoreVal = formData.get('score');
   const rankVal = formData.get('rank');
+  const inviteCode = String(formData.get('inviteCode') || '').trim();
 
   if (reselect.length !== 2) {
     showError('请选择恰好 2 门再选科目');
@@ -46,13 +47,19 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  if (!inviteCode) {
+    showError('请输入邀请码');
+    return;
+  }
+
   const payload = {
     province: formData.get('province'),
     score: Number(scoreVal),
     rank: rankVal ? Number(rankVal) : null,
     firstChoice: formData.get('firstChoice'),
     reselect,
-    preferences: formData.get('preferences') || ''
+    preferences: formData.get('preferences') || '',
+    inviteCode
   };
 
   // UI 切换为加载态

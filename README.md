@@ -9,6 +9,8 @@
 - **冲稳保分层**：按 k = R_school / R_user 位次比算法判定，冲∶稳∶保 ≈ 3∶4∶3 配比
 - **来源三件套**：每条硬数据标注数据项 + 来源 + 采集年份 + 采集时间，可追溯
 - **多格式导出**：网页展示 / HTML 下载 / Word 文档下载 / PDF 打印
+- **本地轻量数据库**：SQLite 保存用户留言、邀请码和邀请码使用记录
+- **邀请码门禁**：生成报告前必须输入有效邀请码，生成失败不消耗邀请码
 - **超时保护**：前端 230 秒 + 服务端 250 秒 + Agent 195 秒内部预算 + 单次搜索/接口 8-10 秒超时，多层协同防卡死
 - **并发提速**：同一轮内多个搜索并行执行、预取结构化数据并行，大幅缩短总耗时
 
@@ -74,6 +76,9 @@ gaokao/
 ├── web/                      # 前端
 │   ├── index.html            # 表单页
 │   ├── app.js                # 前端逻辑（fetch + 超时控制 + 报告渲染）
+│   ├── about.html            # 关于我们 + 留言表单
+│   ├── college-data.html     # 院校数据浏览页
+│   ├── admin-invites.html    # 管理员邀请码生成页
 │   └── style.css             # 浅色主题样式
 ├── api/
 │   ├── generate.js           # Agent 编排核心
@@ -85,6 +90,7 @@ gaokao/
 │   └── tools/
 │       ├── search.js         # 搜索封装（DDG / Bing / Tavily 三后端）
 │       ├── gaokaoData.js     # 结构化数据接口（一分一段 + 批次线）
+│       ├── localDb.js        # SQLite 本地数据库（留言 + 邀请码）
 │       ├── probability.js    # 录取概率算法（k = R_school / R_user）
 │       └── report.js         # 七板块 HTML 报告生成器
 ├── server.js                 # Express 入口（静态文件 + API 路由 + 超时控制）
@@ -177,6 +183,8 @@ sudo certbot --nginx -d 你的域名
 | `SEARCH_TIMEOUT_MS` | 单次搜索超时（毫秒） | `10000` |
 | `GAOKAO_TIMEOUT_MS` | 结构化接口单次请求超时（毫秒） | `8000` |
 | `TAVILY_API_KEY` | Tavily Key（provider=tavily 时必填） | - |
+| `DATABASE_PATH` | SQLite 数据库文件路径 | `./data/app.db` |
+| `ADMIN_TOKEN` | 管理员 API/邀请码页面口令 | - |
 | `AGENT_MAX_ROUNDS` | Agent 最大循环轮数 | `6` |
 | `AGENT_DEADLINE_MS` | Agent 总时间预算，超过不再开新一轮（毫秒） | `195000` |
 | `DEEPSEEK_TIMEOUT_MS` | 单次 DeepSeek 调用超时上限（毫秒） | `120000` |
@@ -196,8 +204,16 @@ sudo certbot --nginx -d 你的域名
 - **后端**：Node.js 22 + Express
 - **AI**：DeepSeek Chat（function calling）
 - **数据**：腾讯高考结构化接口 + 联网搜索（DuckDuckGo/Tavily）
+- **本地存储**：SQLite（留言、邀请码、使用记录）
 - **前端**：原生 HTML + CSS + JS（无框架）
 - **部署**：PM2 + Nginx
+
+## 邀请码与留言
+
+- 留言表单提交到 `POST /api/messages`，保存到 SQLite。
+- 管理员访问 `/admin-invites.html`，输入 `.env` 中的 `ADMIN_TOKEN` 后可生成邀请码。
+- 用户生成报告时必须填写邀请码。后端会先预占邀请码；报告生成成功后确认消耗，生成失败或超时会释放本次预占。
+- SQLite 文件默认在 `./data/app.db`，不要提交到 Git；生产环境请定期备份该文件。
 
 ## 免责声明
 

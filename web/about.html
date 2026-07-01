@@ -50,7 +50,7 @@
     </a>
     <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
       <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">志愿参考</a>
-      <a href="#" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">院校数据</a>
+      <a href="college-data.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">院校数据</a>
       <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案说明</a>
       <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">关于我们</a>
       <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
@@ -187,12 +187,24 @@
     var msg = (data.get('msg') || '').trim();
     if (!name || !email || !msg) {
       errorBox.hidden = false;
+      errorBox.textContent = '请填写称呼、联系邮箱与留言内容后再提交。';
       return;
     }
-    // 纯前端演示：与设计稿一致，提交后展示“已收到”，不做真实发送
     errorBox.hidden = true;
-    form.hidden = true;
-    sentBox.hidden = false;
+    fetch('/api/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, message: msg })
+    }).then(function (resp) {
+      return resp.json().then(function (body) {
+        if (!resp.ok) throw new Error(body.error || '提交失败');
+        form.hidden = true;
+        sentBox.hidden = false;
+      });
+    }).catch(function (err) {
+      errorBox.textContent = err.message || '提交失败，请稍后重试。';
+      errorBox.hidden = false;
+    });
   });
 
   resetBtn.addEventListener('click', function () {
