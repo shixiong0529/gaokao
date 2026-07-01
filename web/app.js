@@ -13,6 +13,7 @@ const progressBar = document.getElementById('progressBar');
 
 let currentHtml = '';
 let currentDocxBase64 = null;
+let currentReportUrl = null;
 let loadingTimer = null;
 let elapsedTimer = null;
 let startTime = 0;
@@ -65,6 +66,7 @@ form.addEventListener('submit', async (e) => {
   // UI 切换为加载态
   setLoading(true);
   hideError();
+  resetReportPreview();
   resultEl.hidden = true;
   showLoading();
 
@@ -89,8 +91,8 @@ form.addEventListener('submit', async (e) => {
 
     currentHtml = data.html;
     currentDocxBase64 = data.docxBase64;
-    reportFrame.srcdoc = data.html;
     resultEl.hidden = false;
+    renderReportPreview(data.html);
     hideLoading();
   } catch (err) {
     if (err.name === 'AbortError') {
@@ -173,6 +175,39 @@ function showError(msg) {
 
 function hideError() {
   errorEl.hidden = true;
+}
+
+// ===== 报告预览 =====
+function resetReportPreview() {
+  if (currentReportUrl) {
+    URL.revokeObjectURL(currentReportUrl);
+    currentReportUrl = null;
+  }
+  reportFrame.removeAttribute('src');
+  reportFrame.removeAttribute('srcdoc');
+}
+
+function renderReportPreview(html) {
+  resetReportPreview();
+
+  if (window.Blob && window.URL && URL.createObjectURL) {
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    currentReportUrl = URL.createObjectURL(blob);
+    reportFrame.src = currentReportUrl;
+    return;
+  }
+
+  if ('srcdoc' in reportFrame) {
+    reportFrame.srcdoc = html;
+    return;
+  }
+
+  const doc = reportFrame.contentDocument || (reportFrame.contentWindow && reportFrame.contentWindow.document);
+  if (doc) {
+    doc.open();
+    doc.write(html);
+    doc.close();
+  }
 }
 
 // ===== 下载功能 =====
