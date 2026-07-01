@@ -25,3 +25,11 @@ test('open report opens the generated html page url in a new window', () => {
   assert.match(js, /if \(currentReportUrl\) \{[\s\S]*window\.open\(currentReportUrl, '_blank'\)/);
   assert.match(js, /w\.document\.write\(currentHtml\)/);
 });
+
+test('successful report generation scrolls to the result section', () => {
+  const js = readFileSync(new URL('../web/app.js', import.meta.url), 'utf8');
+
+  assert.match(js, /function scrollToReportResult\(\)/);
+  assert.match(js, /resultEl\.scrollIntoView\(\{ behavior: 'smooth', block: 'start' \}\)/);
+  assert.match(js, /renderReportPreview\(data\.html\);\s*hideLoading\(\);\s*scrollToReportResult\(\);/);
+});

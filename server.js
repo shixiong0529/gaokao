@@ -14,6 +14,14 @@ app.set('trust proxy', true);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/vendor/html2canvas.min.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules/html2canvas/dist/html2canvas.min.js'));
+});
+
+app.get('/vendor/pdf-lib.min.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules/pdf-lib/dist/pdf-lib.min.js'));
+});
+
 // 静态前端
 app.use(express.static(path.join(__dirname, 'web')));
 

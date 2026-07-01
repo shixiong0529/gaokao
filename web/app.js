@@ -95,6 +95,7 @@ form.addEventListener('submit', async (e) => {
     resultEl.hidden = false;
     renderReportPreview(data.html);
     hideLoading();
+    scrollToReportResult();
   } catch (err) {
     if (err.name === 'AbortError') {
       showError('⏱ 请求超时（230秒）。AI 正在联网搜索院校数据，请稍后重试。建议不填"院校偏好"让 AI 自主筛选，可加快速度。');
@@ -178,6 +179,12 @@ function hideError() {
   errorEl.hidden = true;
 }
 
+function scrollToReportResult() {
+  requestAnimationFrame(() => {
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
 // ===== 报告预览 =====
 function resetReportPreview() {
   if (currentReportUrl) {
@@ -259,23 +266,73 @@ window.downloadDocx = async function() {
   }
 };
 
-// 保存为 PDF（通过浏览器原生打印对话框，用户选"另存为 PDF"）
-window.downloadPdf = function() {
+// 保存为 PDF（前端直接生成文件下载，不打开浏览器打印页）
+window.downloadPdf = async function() {
   if (!currentHtml) {
     showError('请先生成方案');
     return;
   }
-  // 在隐藏 iframe 中打印，触发浏览器"另存为 PDF"
-  const frame = document.getElementById('reportFrame');
+  if (!window.html2canvas || !window.PDFLib) {
+    showError('PDF 生成组件加载失败，请刷新页面后重试');
+    return;
+  }
+
+  const exportRoot = document.createElement('div');
+  exportRoot.style.position = 'fixed';
+  exportRoot.style.left = '-10000px';
+  exportRoot.style.top = '0';
+  exportRoot.style.width = '900px';
+  exportRoot.style.background = '#fff';
+  exportRoot.innerHTML = buildInlinePreviewHtml(currentHtml);
+  document.body.appendChild(exportRoot);
+
   try {
-    frame.contentWindow.focus();
-    frame.contentWindow.print();
+    const canvas = await window.html2canvas(exportRoot, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      windowWidth: 960,
+      scrollY: 0
+    });
+    const pdfDoc = await window.PDFLib.PDFDocument.create();
+    const pageWidth = 595.28;
+    const pageHeight = 841.89;
+    const pagePixelHeight = Math.floor(canvas.width * pageHeight / pageWidth);
+    const sliceCanvas = document.createElement('canvas');
+    const sliceCtx = sliceCanvas.getContext('2d');
+
+    for (let y = 0; y < canvas.height; y += pagePixelHeight) {
+      const sliceHeight = Math.min(pagePixelHeight, canvas.height - y);
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = sliceHeight;
+      sliceCtx.clearRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+      sliceCtx.drawImage(canvas, 0, y, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
+      const png = await pdfDoc.embedPng(sliceCanvas.toDataURL('image/png'));
+      const renderedHeight = sliceHeight * pageWidth / canvas.width;
+      page.drawImage(png, {
+        x: 0,
+        y: pageHeight - renderedHeight,
+        width: pageWidth,
+        height: renderedHeight
+      });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = buildFilename('pdf');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   } catch (e) {
-    // 兜底：新窗口打开让用户手动 Ctrl+P
-    const w = window.open('', '_blank');
-    w.document.write(currentHtml);
-    w.document.close();
-    setTimeout(() => w.print(), 800);
+    showError('PDF 保存失败：' + (e.message || '请稍后重试'));
+  } finally {
+    document.body.removeChild(exportRoot);
   }
 };
 
