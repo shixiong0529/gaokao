@@ -17,12 +17,12 @@ app.use(express.static(path.join(__dirname, 'web')));
 
 // API 路由（带超时保护）
 app.post('/api/generate', async (req, res) => {
-  // 200 秒服务端超时（前端 180 秒 + 20 秒余量）
+  // 250 秒服务端超时（前端 230 秒 + 20 秒余量，均大于 Agent 195 秒内部预算）
   const reqTimeout = setTimeout(() => {
     if (!res.headersSent) {
-      res.status(504).json({ error: '服务端超时（200秒），请稍后重试。' });
+      res.status(504).json({ error: '服务端超时（250秒），请稍后重试。' });
     }
-  }, 200000);
+  }, 250000);
 
   const { generatePlan } = await import('./api/generate.js');
   try {

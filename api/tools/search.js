@@ -4,11 +4,24 @@
 
 const PROVIDER = process.env.SEARCH_PROVIDER || 'ddg';
 const MAX_CALLS = parseInt(process.env.SEARCH_MAX_CALLS || '15', 10);
+// 单次搜索超时（秒级），防止某个慢/被限流的搜索拖垮整个请求
+const SEARCH_TIMEOUT_MS = parseInt(process.env.SEARCH_TIMEOUT_MS || '10000', 10);
 
 // 调用计数器（单次请求内）
 let callCount = 0;
 export function resetCallCount() { callCount = 0; }
 export function getCallCount() { return callCount; }
+
+// 带超时的 fetch：到点即 abort，避免无限等待
+async function fetchWithTimeout(url, opts = {}, timeoutMs = SEARCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 // ===== DuckDuckGo HTML 抓取（开发期，免费无 Key） =====
 async function searchDDG(query, options = {}) {
@@ -25,7 +38,7 @@ async function searchDDG(query, options = {}) {
     'Accept': 'text/html,application/xhtml+xml'
   };
 
-  const resp = await fetch(url, { headers });
+  const resp = await fetchWithTimeout(url, { headers });
   if (!resp.ok) {
     throw new Error(`DuckDuckGo search HTTP ${resp.status}`);
   }
@@ -86,7 +99,7 @@ async function searchBing(query, options = {}) {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept-Language': 'zh-CN,zh;q=0.9'
   };
-  const resp = await fetch(url, { headers });
+  const resp = await fetchWithTimeout(url, { headers });
   if (!resp.ok) throw new Error(`Bing HTTP ${resp.status}`);
   const html = await resp.text();
   const results = [];
@@ -111,7 +124,7 @@ async function searchTavily(query, options = {}) {
   const { includeDomains = [], maxResults = 8 } = options;
   const apiKey = process.env.TAVILY_API_KEY;
   if (!apiKey) throw new Error('TAVILY_API_KEY 未配置');
-  const resp = await fetch('https://api.tavily.com/search', {
+  const resp = await fetchWithTimeout('https://api.tavily.com/search', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -131,10 +144,19 @@ async function searchTavily(query, options = {}) {
 }
 
 // ===== 统一入口 =====
+// 任何失败（超时/网络/限流）都不抛出，返回空结果并附 error，避免单个搜索拖垮整个请求
 export async function webSearch(query, options = {}) {
-  if (PROVIDER === 'tavily') return searchTavily(query, options);
-  if (PROVIDER === 'bing') return searchBing(query, options);
-  return searchDDG(query, options);
+  try {
+    if (PROVIDER === 'tavily') return await searchTavily(query, options);
+    if (PROVIDER === 'bing') return await searchBing(query, options);
+    return await searchDDG(query, options);
+  } catch (err) {
+    const reason = err.name === 'AbortError'
+      ? `搜索超时（${Math.round(SEARCH_TIMEOUT_MS / 1000)}秒）`
+      : (err.message || '搜索失败');
+    console.error(`[search] "${String(query).slice(0, 40)}" 失败: ${reason}`);
+    return { results: [], error: reason };
+  }
 }
 
 // 权威站点白名单（高考数据可信源）

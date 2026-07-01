@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>志愿参考 · 澄明志愿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: #F3EEE2; }
+  @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes mj-fade { from { opacity: 0; } to { opacity: 1; } }
+  ::selection { background: rgba(168,130,60,0.22); }
+  .mj-nav a:hover { color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .mj-nav { display: none !important; }
+    .mj-header { padding: 20px !important; }
+    .mj-wrap { padding: 0 16px 60px !important; }
+    .mj-sec { padding: 24px 20px !important; }
+    .mj-report-head { padding: 30px 22px !important; }
+    .mj-report-head h1 { font-size: 26px !important; }
+    .mj-table { overflow-x: auto; }
+    .mj-table > div { min-width: 620px; }
+  }
+</style>
+</head>
+<body>
+<div style="--paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C; --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--ink); position:relative;">
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
+    <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
+      <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
+        <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
+      </div>
+      <div style="line-height:1.15;">
+        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
+      </div>
+    </a>
+    <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
+      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">志愿参考</a>
+      <a href="#" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">院校数据</a>
+      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案说明</a>
+      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">关于我们</a>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
+    </nav>
+  </header>
+
+  <div class="mj-wrap" style="max-width:920px; margin:0 auto; padding:0 40px 80px;">
+
+    <!-- ============ REPORT HEADER ============ -->
+    <section class="mj-report-head" style="position:relative; margin-top:40px; background:var(--paper2); border:1px solid var(--line-strong); border-top:3px solid var(--gold); padding:40px 46px; box-shadow:0 30px 70px -45px rgba(22,35,63,0.3); animation:mj-rise .8s ease both;">
+      <div style="font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:14px;">Case Study · 案例样本</div>
+      <h1 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:34px; line-height:1.4; letter-spacing:2px; color:var(--ink); margin:0 0 12px;">李俊庭 · 湖南物理类志愿填报参考方案</h1>
+      <div style="font-size:13.5px; color:var(--muted); font-weight:300; letter-spacing:0.5px;">生成时间：2026 年 6 月 27 日 · 数据年份：2026 年批次线 + 2025 年院校录取参考</div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;">
+        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">湖南省</span>
+        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">物理类</span>
+        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">物化生</span>
+        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--gold); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--gold); background:rgba(168,130,60,0.08);">总分 432 分</span>
+        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">位次约 187,140</span>
+      </div>
+    </section>
+
+    <!-- ============ I 执行摘要 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">I.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">执行摘要</h2>
+      </div>
+
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">考生姓名</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">李俊庭</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">选科组合</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">物理 + 化学 + 生物</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">高考总分</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">432 分</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">省排名位次</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">约 187,140 名（接口返回 188,022 名，同分 1144 人）</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">2026 本科批分数线</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">400 分（对应位次 221,240）</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">超本科线</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">+32 分</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">位次优势</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">高于本科线位次约 34,000 名</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">报考方向</div>
+          <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">湖南省内公办二本院校（冲一冲）</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:16px 20px; margin-top:20px; font-size:14px; line-height:1.95; color:var(--ink-soft);">
+        <span style="font-family:'Noto Serif SC',serif; font-weight:600; color:var(--ink);">核心结论 ——</span> 432 分在 2026 年湖南物理类中处于本科线以上、特控线以下的区间，具备冲击部分湖南省内公办二本院校的条件。但多数公办二本院校 2025 年物理类录取最低分在 430–470 分区间，432 分处于<span style="color:var(--ink); font-weight:500;">公办二本门槛附近</span>，可冲范围有限，建议以「冲 + 稳 + 保」三层策略组合填报。
+      </div>
+    </section>
+
+    <!-- ============ II 数据基础 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">II.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">数据基础</h2>
+      </div>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:6px 0 12px; letter-spacing:0.5px;">2.1　2026 年湖南物理类批次线</h3>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">年份</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">地区</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">选科</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">批次</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">分数线</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">对应位次</div>
+        </div>
+        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; border-bottom:1px solid var(--line);">
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:600;">2026</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">湖南</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">物理</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">本科批</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--gold); font-weight:600;">400 分</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">221,240</div>
+        </div>
+      </div>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:24px 0 12px; letter-spacing:0.5px;">2.2　2025 年湖南物理类批次线（参考）</h3>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">年份</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">地区</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">选科</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">批次</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">分数线</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">对应位次</div>
+        </div>
+        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr;">
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:600;">2025</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">湖南</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">物理</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">本科批</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">405 分</div>
+          <div style="padding:11px 14px; font-size:14px; color:var(--ink-soft);">211,431</div>
+        </div>
+      </div>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:24px 0 12px; letter-spacing:0.5px;">2.3　2025 年湖南公办二本院校物理类录取参考</h3>
+      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:12px 18px; margin-bottom:14px; font-size:13.5px; line-height:1.85; color:var(--ink-soft);">新高考省份不区分一本二本，以下为本科批特控线以下的非双一流大学。2025 年湖南物理类特控线为 476 分。</div>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">对应位次</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">性质</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">类型</div>
+        </div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湘南学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">390 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">227,983</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">399 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 215,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南文理学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">401 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 212,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">怀化学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 410 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 200,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南人文科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 415 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 195,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">邵阳学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 420 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 190,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 425 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 185,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">理工类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南理工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">438 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 175,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">理工类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南城市学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 445 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 168,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南女子学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 455 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 155,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">综合类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">长沙工业学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">463 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 145,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">理工类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">长沙师范学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">467 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 140,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">师范类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南财政经济学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">468 分</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 138,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">财经类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南第一师范学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">475 分+</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 125,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">师范类</div></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">衡阳师范学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">475 分+</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 125,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">师范类</div></div>
+      </div>
+      <div style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:14px; font-weight:300;">以上 2025 年数据来源于湖南省教育考试院公开数据及高考信息平台（<a href="https://www.gk100.com/read_28025192.htm" target="_blank" style="color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(168,130,60,0.4);">gk100.com</a>）整理，部分院校分数为专业组最低分区间估算值。实际填报务必以湖南省教育考试院官方发布的 2026 年招生计划手册和近年投档数据为准。</div>
+    </section>
+
+    <!-- ============ III 志愿填报策略 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">III.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">志愿填报策略</h2>
+      </div>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:6px 0 12px; letter-spacing:0.5px;">3.1　分数定位分析</h3>
+      <p style="font-size:14px; line-height:1.95; color:var(--ink-soft); margin:0 0 8px;">考生 432 分，位次约 187,140，在 2026 年湖南物理类中：</p>
+      <ul style="margin:8px 0 8px 4px; padding-left:20px; color:var(--ink-soft); font-size:14px; line-height:2;">
+        <li><span style="color:var(--ink); font-weight:500;">高于本科线 32 分</span>，位次高出本科线约 34,000 名</li>
+        <li><span style="color:var(--ink); font-weight:500;">低于特控线</span>（2025 年特控线 476 分，2026 年预计 470–480 区间）</li>
+        <li>换算到 2025 年等效分数约 <span style="color:var(--ink); font-weight:500;">437 分</span>左右</li>
+      </ul>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:24px 0 14px; letter-spacing:0.5px;">3.2　冲稳保三层策略</h3>
+
+      <div style="display:flex; align-items:center; gap:10px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:#A8442E; margin:18px 0 10px;">
+        <span style="width:9px; height:9px; background:#A8442E; transform:rotate(45deg);"></span>冲一冲 · 录取概率较低，但有希望
+      </div>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">冲的理由</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南理工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">438 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 年公办二本门槛校，分数贴近，存在波动可能</div></div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南城市学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">445 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">略高于考生分数，每年有 3–8 分波动</div></div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">425 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 年分数略低于考生分数，可冲刺较好专业组</div></div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:#946111; margin:22px 0 10px;">
+        <span style="width:9px; height:9px; background:#946111; transform:rotate(45deg);"></span>稳一稳 · 录取概率中等偏上
+      </div>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">稳的理由</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">邵阳学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">420 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">考生分数高出 10 分以上</div></div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南人文科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">415 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">分数优势明显，专业选择空间较大</div></div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">怀化学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">410 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">老牌公办本科，分数有保障</div></div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">399 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">分数远超录取线，可冲击热门专业</div></div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:#2E6B4F; margin:22px 0 10px;">
+        <span style="width:9px; height:9px; background:#2E6B4F; transform:rotate(45deg);"></span>保一保 · 录取概率高，兜底院校
+      </div>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">保的理由</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南文理学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">401 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">分数高出 30 分以上，保底稳妥</div></div>
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湘南学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">390 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">公办二本最低门槛校，保底安全</div></div>
+      </div>
+    </section>
+
+    <!-- ============ IV 推荐院校详细分析 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">IV.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">推荐院校详细分析</h2>
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #A8442E;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <h4 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">湖南理工学院</h4>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南岳阳</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">类型</span>理工类 · 公办本科</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">2025 最低分</span>438 分（位次约 175,000）</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">硕士点</span>有</div>
+        </div>
+        <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：化学、机械工程、电子信息工程。考生 432 分略低于 2025 年录取线 6 分，但存在大小年波动可能；建议选择服从调剂。</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #A8442E;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <h4 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">湖南城市学院</h4>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南益阳</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">类型</span>综合类 · 公办本科</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">2025 最低分</span>约 445 分（位次约 168,000）</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">硕士点</span>有</div>
+        </div>
+        <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：城乡规划、土木工程、信息与计算科学。分数差约 13 分，冲刺难度较大，但部分冷门专业组可能存在降分机会。</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #946111;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <h4 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">邵阳学院</h4>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南邵阳</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">类型</span>综合类 · 公办本科</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">2025 最低分</span>约 420 分（位次约 190,000）</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">硕士点</span>有</div>
+        </div>
+        <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：机械工程、食品工程、临床医学。考生分数高出约 12 分，录取概率较高，专业选择有一定空间。</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #946111;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <h4 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">湖南科技学院</h4>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳 / 保</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南永州</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">类型</span>综合类 · 公办本科</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">2025 最低分</span>399 分（位次约 215,000）</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">硕士点</span>无</div>
+        </div>
+        <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：电子信息工程、计算机科学与技术、数学与应用数学。考生分数高出 30 分以上，可冲击该校热门专业。</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #2E6B4F;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <h4 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">湖南文理学院</h4>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#2E6B4F; background:rgba(46,107,79,0.12);">保</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南常德</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">类型</span>综合类 · 公办本科</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">2025 最低分</span>401 分（位次约 212,000）</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">硕士点</span>有</div>
+        </div>
+        <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：生物科学、汉语言文学、机械工程。考生分数高出 30 分以上，保底稳妥，可选择优势专业。</div>
+      </div>
+
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #2E6B4F;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <h4 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">湘南学院</h4>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#2E6B4F; background:rgba(46,107,79,0.12);">保</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南郴州</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">类型</span>综合类 · 公办本科</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">2025 最低分</span>390 分（位次 227,983）</div>
+          <div><span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">硕士点</span>无</div>
+        </div>
+        <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：临床医学、护理学、电子信息工程。公办二本最低门槛校，考生分数高出 42 分，保底最安全。</div>
+      </div>
+    </section>
+
+    <!-- ============ V 建议志愿表 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">V.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">建议志愿表</h2>
+      </div>
+      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:12px 18px; margin-bottom:16px; font-size:13.5px; line-height:1.85; color:var(--ink-soft);">以下为参考排序，具体专业组代码、专业代码须以湖南省教育考试院 2026 年官方招生计划手册为准。</div>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">序号</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">层级</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">所在地</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">2025 参考分</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">服从调剂</div>
+        </div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">1</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南理工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">岳阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">438 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">2</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南城市学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">益阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">445 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">3</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">衡阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">425 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">4</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">邵阳学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">邵阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">420 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">5</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南人文科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">娄底</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">415 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">6</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">怀化学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">怀化</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">410 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">视专业组</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">7</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">永州</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">399 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">可不服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">8</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#2E6B4F; background:rgba(46,107,79,0.12);">保</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南文理学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">常德</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">401 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">9</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC',serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#2E6B4F; background:rgba(46,107,79,0.12);">保</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湘南学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">郴州</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">390 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+      </div>
+    </section>
+
+    <!-- ============ VI 风险提醒 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">VI.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">风险提醒与注意事项</h2>
+      </div>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin:6px 0 8px; letter-spacing:0.5px;">6.1　数据时效性</h3>
+      <ul style="margin:6px 0 8px 4px; padding-left:20px; color:var(--ink-soft); font-size:14px; line-height:1.95;">
+        <li>本方案 2026 年批次线基于结构化接口返回的 <span style="color:var(--ink); font-weight:500;">2026 年湖南物理类本科批 400 分</span></li>
+        <li>院校录取参考数据主要来自 <span style="color:var(--ink); font-weight:500;">2025 年</span>录取结果，仅作参考</li>
+        <li>2026 年实际录取分数受招生计划变动、报考热度变化等因素影响，可能存在波动</li>
+      </ul>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin:20px 0 8px; letter-spacing:0.5px;">6.2　选科匹配</h3>
+      <ul style="margin:6px 0 8px 4px; padding-left:20px; color:var(--ink-soft); font-size:14px; line-height:1.95;">
+        <li>考生选科为 <span style="color:var(--ink); font-weight:500;">物理 + 化学 + 生物</span>，可报考绝大多数理工类专业</li>
+        <li>部分院校的医学类、化学类、生物类专业组可能要求化学或生物选科，考生选科满足要求</li>
+        <li>填报前务必逐个核对目标专业组的选科要求</li>
+      </ul>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin:20px 0 8px; letter-spacing:0.5px;">6.3　专业调剂建议</h3>
+      <ul style="margin:6px 0 8px 4px; padding-left:20px; color:var(--ink-soft); font-size:14px; line-height:1.95;">
+        <li>「冲」的院校建议<span style="color:var(--ink); font-weight:500;">全部服从调剂</span>，避免退档风险</li>
+        <li>「稳」的院校中，如对专业有明确偏好，可选择不服从调剂，但需承担退档风险</li>
+        <li>「保」的院校建议服从调剂，确保不退档</li>
+      </ul>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin:20px 0 8px; letter-spacing:0.5px;">6.4　特殊类型招生</h3>
+      <ul style="margin:6px 0 8px 4px; padding-left:20px; color:var(--ink-soft); font-size:14px; line-height:1.95;">
+        <li>若考生符合国家专项、地方专项、高校专项计划条件，可额外关注相关招生类型，可能降低录取门槛</li>
+        <li>提前批（军事、公安、免费师范生等）不影响本科批填报，可兼报</li>
+      </ul>
+
+      <h3 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin:20px 0 8px; letter-spacing:0.5px;">6.5　单科成绩关注</h3>
+      <ul style="margin:6px 0 8px 4px; padding-left:20px; color:var(--ink-soft); font-size:14px; line-height:1.95;">
+        <li>考生数学 74 分、英语 92 分，部分院校的英语、中外合作办学专业可能对单科成绩有要求</li>
+        <li>填报时注意查看院校招生章程中的单科成绩限制</li>
+      </ul>
+    </section>
+
+    <!-- ============ VII 来源声明 ============ -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">VII.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">来源与时效声明</h2>
+      </div>
+      <div class="mj-table" style="border-top:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">数据项</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">来源</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">采集年份</div>
+          <div style="padding:10px 14px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">采集时间</div>
+        </div>
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2026 湖南物理类本科批分数线（400 分 / 221,240）</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">腾讯元宝高考结构化数据接口</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 湖南物理类本科批分数线（405 分 / 211,431）</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">腾讯元宝高考结构化数据接口</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2025</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2026 年 432 分一分一段（同分 1144 人 / 位次 188,022）</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">腾讯元宝高考结构化数据接口</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 湖南公办二本院校物理类录取分数线</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">高考 100（gk100.com）整理湖南省教育考试院数据</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2025</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">湖南公办二本院校名单及属性</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">高考知识库检索（gaokao-search）</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2025</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 湖南物理类特控线（476 分）</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">高考 100（gk100.com）</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2025</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
+      </div>
+      <div style="border:1px solid var(--line-strong); background:rgba(22,35,63,0.02); padding:18px 22px; margin-top:18px;">
+        <div style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:2.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Nota Bene · 免责声明</div>
+        <div style="font-size:13px; line-height:1.9; color:var(--muted);">以上信息基于当前可检索数据整理，仅供参考，不构成最终志愿填报建议。高考招生政策、招生计划、投档线和录取结果以各省级招生考试机构及高校官方发布为准。最终决定请你和家人结合官方信息综合判断。</div>
+      </div>
+    </section>
+
+    <div style="text-align:center; margin-top:34px;">
+      <a href="index.html" style="display:inline-block; padding:14px 40px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; letter-spacing:4px; text-indent:4px; text-decoration:none;">生成我的志愿方案</a>
+    </div>
+
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,35,63,0.02);">
+    <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="position:relative; width:30px; height:30px;">
+          <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:14px; color:var(--gold);">澄</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 澄明志愿 · CHENGMING ADVISORY</span>
+      </div>
+      <div style="display:flex; gap:26px;">
+        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">数据来源</a>
+        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">隐私政策</a>
+        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">联系我们</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>关于我们 · 澄明志愿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: #F3EEE2; }
+  @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  ::selection { background: rgba(168,130,60,0.22); }
+  ::placeholder { color: #A79E88; }
+
+  .mj-nav a:hover { color: var(--gold); }
+  .mj-email-card:hover { border-color: var(--gold) !important; box-shadow: 0 0 0 3px rgba(168,130,60,0.12); }
+  .mj-field:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(168,130,60,0.14); }
+  .mj-submit { transition: background .28s, color .28s, border-color .28s; }
+  .mj-submit:hover { background: var(--gold); border-color: var(--gold); color: #1c1305; }
+  .mj-reset:hover { border-color: var(--gold); color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .mj-nav { display: none !important; }
+    .mj-header { padding: 20px !important; }
+    .mj-wrap { padding: 0 16px 60px !important; }
+    .mj-hero h1 { font-size: 32px !important; }
+    .mj-sec { padding: 26px 20px !important; }
+    .mj-principles { grid-template-columns: 1fr !important; }
+    .mj-form-grid { grid-template-columns: 1fr !important; }
+    .mj-email-card { flex-direction: column; align-items: flex-start !important; }
+  }
+</style>
+</head>
+<body>
+<div style="--paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C; --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--ink); position:relative;">
+
+  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
+    <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
+      <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
+        <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
+      </div>
+      <div style="line-height:1.15;">
+        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
+      </div>
+    </a>
+    <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
+      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">志愿参考</a>
+      <a href="#" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">院校数据</a>
+      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案说明</a>
+      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">关于我们</a>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
+    </nav>
+  </header>
+
+  <div class="mj-wrap" style="max-width:920px; margin:0 auto; padding:0 40px 80px;">
+
+    <!-- HERO -->
+    <section class="mj-hero" style="position:relative; margin-top:56px; text-align:center; animation:mj-rise .8s ease both;">
+      <div style="font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px;">About · 关于我们</div>
+      <h1 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:44px; line-height:1.4; letter-spacing:3px; color:var(--ink); margin:0 0 20px;">让每一个分数<br>都被认真对待</h1>
+      <p style="max-width:560px; margin:0 auto; font-size:16px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px;">澄明志愿是一支专注高考志愿参考的团队，<br>以官方数据为准绳，帮助考生与家庭看清选择、从容决策。</p>
+      <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin:34px auto 0; max-width:300px;">
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--line-strong));"></span>
+        <span style="width:7px; height:7px; background:var(--gold); transform:rotate(45deg);"></span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, var(--line-strong), transparent);"></span>
+      </div>
+    </section>
+
+    <!-- I 使命 -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:44px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">I.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">我们的使命</h2>
+      </div>
+      <p style="font-size:15px; line-height:2.05; color:var(--ink-soft); margin:0;">志愿填报是十二年求学路上最重要的一次选择，却常被信息不对称与时间压力所困。我们希望用清晰的数据与克制的表达，把复杂的录取规律讲明白，让考生和家长在有限的时间里，看见更全面的选项、做出更笃定的决定。我们不替你做决定，只让每一次决定都建立在可核实的事实之上。</p>
+    </section>
+
+    <!-- II 原则 -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:24px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">II.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">我们坚持的原则</h2>
+      </div>
+      <div class="mj-principles" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+        <div style="border:1px solid var(--line); background:#fff; padding:22px 24px;">
+          <div style="font-family:'Noto Serif SC',serif; font-size:32px; font-weight:600; color:var(--gold); line-height:1;">壹</div>
+          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">客观中立</div>
+          <div style="font-size:13px; line-height:1.85; color:var(--muted);">不受任何院校委托或竞价影响，方案只服务于考生本人。</div>
+        </div>
+        <div style="border:1px solid var(--line); background:#fff; padding:22px 24px;">
+          <div style="font-family:'Noto Serif SC',serif; font-size:32px; font-weight:600; color:var(--gold); line-height:1;">贰</div>
+          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">数据透明</div>
+          <div style="font-size:13px; line-height:1.85; color:var(--muted);">每一项结论都标注来源与采集时间，便于自行复核。</div>
+        </div>
+        <div style="border:1px solid var(--line); background:#fff; padding:22px 24px;">
+          <div style="font-family:'Noto Serif SC',serif; font-size:32px; font-weight:600; color:var(--gold); line-height:1;">叁</div>
+          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">官方为准</div>
+          <div style="font-size:13px; line-height:1.85; color:var(--muted);">始终提醒以省考试院与高校官方发布为最终依据。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- III 联系我们 + 留言 -->
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+      <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:24px;">
+        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">III.</span>
+        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">联系我们</h2>
+      </div>
+
+      <!-- email card -->
+      <a href="mailto:76106737@qq.com" class="mj-email-card" style="display:flex; align-items:center; justify-content:space-between; gap:20px; text-decoration:none; border:1px solid var(--line-strong); background:#fff; padding:22px 28px; margin-bottom:30px; transition:border-color .2s, box-shadow .2s;">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Email · 电子邮箱</div>
+          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:24px; letter-spacing:1px; color:var(--ink);">76106737@qq.com</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif; font-size:14px; letter-spacing:1px; color:var(--gold); border:1px solid var(--gold); padding:8px 18px; border-radius:2px; white-space:nowrap;">写信给我们 →</span>
+      </a>
+
+      <!-- message form -->
+      <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); letter-spacing:1px; margin-bottom:4px;">留言窗口</div>
+      <div style="font-size:13px; color:var(--muted); font-weight:300; margin-bottom:20px;">填写下方表单，我们会在收到后尽快通过邮箱与你联系。</div>
+
+      <!-- 成功提示（默认隐藏） -->
+      <div id="sentBox" hidden style="border:1px solid var(--gold); background:rgba(168,130,60,0.07); padding:30px 28px; text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:2.5px; color:var(--gold); text-transform:uppercase; margin-bottom:10px;">Received · 已收到</div>
+        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; color:var(--ink); margin-bottom:8px;">谢谢你的留言</div>
+        <div style="font-size:14px; line-height:1.9; color:var(--ink-soft);">我们已记录你的信息，将尽快通过邮箱回复。<br>如需即时沟通，也可直接发送邮件至 76106737@qq.com。</div>
+        <button type="button" id="resetBtn" class="mj-reset" style="margin-top:20px; padding:11px 26px; background:transparent; color:var(--ink); border:1px solid var(--line-strong); border-radius:2px; font-family:'Noto Sans SC',sans-serif; font-size:14px; letter-spacing:1px; cursor:pointer; transition:border-color .2s, color .2s;">再写一条</button>
+      </div>
+
+      <!-- 留言表单 -->
+      <form id="msgForm">
+        <div class="mj-form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px;">
+          <div>
+            <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">称呼 <span style="color:var(--gold);">*</span></label>
+            <input name="name" placeholder="如 李先生 / 张同学" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">联系邮箱 <span style="color:var(--gold);">*</span></label>
+            <input name="email" type="email" placeholder="便于我们回复你" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
+          </div>
+        </div>
+        <label style="display:block; font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin-bottom:11px;">留言内容 <span style="color:var(--gold);">*</span></label>
+        <textarea name="msg" rows="4" placeholder="欢迎写下你的问题或想咨询的省份、分数与意向……" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; line-height:1.7; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; resize:vertical;"></textarea>
+        <div id="formError" hidden style="font-size:13px; color:#A8442E; margin-top:12px; letter-spacing:0.5px;">请填写称呼、联系邮箱与留言内容后再提交。</div>
+        <button type="submit" class="mj-submit" style="width:100%; margin-top:24px; padding:18px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; letter-spacing:8px; text-indent:8px; cursor:pointer;">提交留言</button>
+      </form>
+    </section>
+
+  </div>
+
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,35,63,0.02);">
+    <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="position:relative; width:30px; height:30px;">
+          <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:14px; color:var(--gold);">澄</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 澄明志愿 · CHENGMING ADVISORY</span>
+      </div>
+      <div style="display:flex; gap:26px; align-items:center;">
+        <span style="font-size:13px; letter-spacing:0.5px; color:var(--muted);">76106737@qq.com</span>
+        <a href="index.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">返回首页</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('msgForm');
+  var sentBox = document.getElementById('sentBox');
+  var errorBox = document.getElementById('formError');
+  var resetBtn = document.getElementById('resetBtn');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var data = new FormData(form);
+    var name = (data.get('name') || '').trim();
+    var email = (data.get('email') || '').trim();
+    var msg = (data.get('msg') || '').trim();
+    if (!name || !email || !msg) {
+      errorBox.hidden = false;
+      return;
+    }
+    // 纯前端演示：与设计稿一致，提交后展示“已收到”，不做真实发送
+    errorBox.hidden = true;
+    form.hidden = true;
+    sentBox.hidden = false;
+  });
+
+  resetBtn.addEventListener('click', function () {
+    form.reset();
+    sentBox.hidden = true;
+    form.hidden = false;
+  });
+})();
+</script>
+</body>
+</html>

@@ -9,7 +9,8 @@
 - **冲稳保分层**：按 k = R_school / R_user 位次比算法判定，冲∶稳∶保 ≈ 3∶4∶3 配比
 - **来源三件套**：每条硬数据标注数据项 + 来源 + 采集年份 + 采集时间，可追溯
 - **多格式导出**：网页展示 / HTML 下载 / Word 文档下载 / PDF 打印
-- **超时保护**：前端 180 秒 + DeepSeek 120 秒 + 服务端 200 秒三层超时控制
+- **超时保护**：前端 230 秒 + 服务端 250 秒 + Agent 195 秒内部预算 + 单次搜索/接口 8-10 秒超时，多层协同防卡死
+- **并发提速**：同一轮内多个搜索并行执行、预取结构化数据并行，大幅缩短总耗时
 
 ## 快速开始
 
@@ -173,8 +174,12 @@ sudo certbot --nginx -d 你的域名
 | `DEEPSEEK_MODEL` | 模型名 | `deepseek-chat` |
 | `SEARCH_PROVIDER` | 搜索引擎（ddg/bing/tavily） | `ddg` |
 | `SEARCH_MAX_CALLS` | 单次请求最大搜索次数 | `15` |
+| `SEARCH_TIMEOUT_MS` | 单次搜索超时（毫秒） | `10000` |
+| `GAOKAO_TIMEOUT_MS` | 结构化接口单次请求超时（毫秒） | `8000` |
 | `TAVILY_API_KEY` | Tavily Key（provider=tavily 时必填） | - |
 | `AGENT_MAX_ROUNDS` | Agent 最大循环轮数 | `6` |
+| `AGENT_DEADLINE_MS` | Agent 总时间预算，超过不再开新一轮（毫秒） | `195000` |
+| `DEEPSEEK_TIMEOUT_MS` | 单次 DeepSeek 调用超时上限（毫秒） | `120000` |
 | `PORT` | 服务端口 | `3000` |
 
 ## 成本估算

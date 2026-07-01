@@ -10,6 +10,9 @@ const API_KEY = process.env.DEEPSEEK_API_KEY;
 const BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
 const MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
 const MAX_ROUNDS = parseInt(process.env.AGENT_MAX_ROUNDS || '6', 10);
+// Agent 总时间预算：超过后不再开新一轮，尽量在前端超时前收尾
+const AGENT_DEADLINE_MS = parseInt(process.env.AGENT_DEADLINE_MS || '195000', 10);
+const DEEPSEEK_TIMEOUT_MS = parseInt(process.env.DEEPSEEK_TIMEOUT_MS || '120000', 10);
 
 // ===== 工具定义（OpenAI function calling schema） =====
 const TOOLS = [
@@ -502,12 +505,19 @@ export async function generatePlan(input) {
   const preflightSources = [];
 
   try {
-    // 预取当年+去年批次线
+    // 预取当年+去年批次线（并行，各自带超时，避免串行等待）
     const mode = getProvinceMode(province, currentYear);
     const classify = mode.defaultSubject;
-    for (const yr of [String(currentYear), String(currentYear - 1)]) {
-      const bl = await queryBatchLines({ place: province, year: yr, student: classify });
-      if (bl.batchLines?.length) {
+    const years = [String(currentYear), String(currentYear - 1)];
+    const batchResults = await Promise.all(
+      years.map(yr =>
+        queryBatchLines({ place: province, year: yr, student: classify })
+          .then(bl => ({ yr, bl }))
+          .catch(e => { console.log(`[agent] preflight batch ${yr} failed: ${e.message}`); return { yr, bl: null }; })
+      )
+    );
+    for (const { yr, bl } of batchResults) {
+      if (bl?.batchLines?.length) {
         preflightData.batchLines.push(...bl.batchLines);
         preflightSources.push({
           item: `${yr}年${province}${classify}批次线`,
@@ -608,16 +618,19 @@ ${rankSummary}
 
   let finalData = null;
   let rounds = 0;
+  const startedAt = Date.now();
 
-  while (rounds < MAX_ROUNDS) {
+  while (rounds < MAX_ROUNDS && Date.now() - startedAt < AGENT_DEADLINE_MS) {
     rounds++;
-    console.log(`[agent] round ${rounds}, search calls: ${getCallCountForLog()}`);
+    console.log(`[agent] round ${rounds}, search calls: ${getCallCountForLog()}, elapsed: ${Math.round((Date.now() - startedAt) / 1000)}s`);
 
     let resp;
     try {
-      // 调用 DeepSeek（带 120 秒超时）
+      // 调用 DeepSeek：超时取「配置上限」与「剩余预算」的较小值，避免最后一轮拖过服务端超时
+      const remaining = AGENT_DEADLINE_MS - (Date.now() - startedAt);
+      const dsTimeoutMs = Math.max(20000, Math.min(DEEPSEEK_TIMEOUT_MS, remaining));
       const dsController = new AbortController();
-      const dsTimeout = setTimeout(() => dsController.abort(), 120000);
+      const dsTimeout = setTimeout(() => dsController.abort(), dsTimeoutMs);
       resp = await fetch(`${BASE_URL}/v1/chat/completions`, {
         method: 'POST',
         headers: {
@@ -637,10 +650,10 @@ ${rankSummary}
       clearTimeout(dsTimeout);
     } catch (fetchErr) {
       if (fetchErr.name === 'AbortError') {
-        console.error(`[agent] round ${rounds} DeepSeek 请求超时（120秒）`);
+        console.error(`[agent] round ${rounds} DeepSeek 请求超时`);
         // 超时：尝试返回已收集的部分数据
         if (finalData) break; // 已有 finish 数据，直接返回
-        throw { status: 504, message: 'AI 处理超时（120秒），七板块数据量较大。建议减少"院校偏好"描述，让查询更聚焦；或稍后重试。' };
+        throw { status: 504, message: 'AI 处理超时，七板块数据量较大。建议减少"院校偏好"描述，让查询更聚焦；或稍后重试。' };
       }
       throw fetchErr;
     }
@@ -665,23 +678,16 @@ ${rankSummary}
       break;
     }
 
-    // 执行工具
+    // 执行工具：同一轮内的多个工具调用并行执行（搜索是网络瓶颈，串行会成倍拖慢）
     let shouldFinish = false;
-    for (const tc of msg.tool_calls) {
+    const execResults = await Promise.all(msg.tool_calls.map(async (tc) => {
       let args;
       try {
         args = JSON.parse(tc.function.arguments || '{}');
       } catch (e) {
         console.log(`[agent] JSON parse failed for tool ${tc.function.name}, attempting repair...`);
         args = repairTruncatedJSON(tc.function.arguments || '{}', tc.function.name);
-        if (!args) {
-          messages.push({
-            role: 'tool',
-            tool_call_id: tc.id,
-            content: JSON.stringify({ error: '参数 JSON 解析失败，请重新调用并输出完整的 JSON。建议分多次输出：先输出 executiveSummary/dataBasis/scoreAnalysis，再输出 tiers/schoolDetails/volunteerTable/riskChecklist/sources。' })
-          });
-          continue;
-        }
+        if (!args) return { tc, parseFailed: true };
       }
       console.log(`[agent] tool: ${tc.function.name}`, JSON.stringify(args).slice(0, 200));
       if (tc.function.name === 'finish') {
@@ -706,6 +712,21 @@ ${rankSummary}
         }
       }
       const result = await executeTool(tc.function.name, args);
+      return { tc, args, result };
+    }));
+
+    // 顺序合并结果（保持 messages / allSources 语义与原实现一致）
+    for (const er of execResults) {
+      const tc = er.tc;
+      if (er.parseFailed) {
+        messages.push({
+          role: 'tool',
+          tool_call_id: tc.id,
+          content: JSON.stringify({ error: '参数 JSON 解析失败，请重新调用并输出完整的 JSON。建议分多次输出：先输出 executiveSummary/dataBasis/scoreAnalysis，再输出 tiers/schoolDetails/volunteerTable/riskChecklist/sources。' })
+        });
+        continue;
+      }
+      const { args, result } = er;
 
       if (result.__finished) {
         // 容错：确保七板块字段类型正确

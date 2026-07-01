@@ -5,122 +5,333 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>高考志愿填报方案生成器</title>
 <link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: #F3EEE2; }
+  @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes mj-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes mj-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  ::selection { background: rgba(168,130,60,0.22); }
+  ::placeholder { color: #A79E88; }
+  select option { color: #16233F; }
+
+  .mj-root {
+    --paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C;
+    --muted:#6E6754; --gold:#A8823C; --gold-soft:#C6A96A;
+    --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26);
+    min-height:100vh; background-color:var(--paper);
+    background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px);
+    background-size:46px 46px;
+    font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--ink);
+    position:relative; overflow:hidden;
+  }
+
+  /* 输入控件聚焦（对应设计稿 style-focus） */
+  .mj-field:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(168,130,60,0.14); }
+
+  /* 再选科目 chip（原生 checkbox，保留 name="reselect" 供 FormData 读取） */
+  .mj-chip {
+    display:flex; align-items:center; justify-content:center; gap:9px; box-sizing:border-box;
+    width:100%; padding:14px 8px; font-family:'Noto Sans SC',sans-serif; font-size:15px; letter-spacing:1px;
+    background:#fff; border-radius:2px; cursor:pointer; transition:all .2s;
+    border:1px solid var(--line-strong); color:var(--ink-soft); user-select:none;
+  }
+  .mj-chip input { position:absolute; opacity:0; width:0; height:0; margin:0; }
+  .mj-chip .mj-box {
+    display:flex; align-items:center; justify-content:center; width:18px; height:18px; font-size:12px;
+    border-radius:2px; background:transparent; color:transparent; border:1px solid var(--line-strong); transition:all .2s;
+  }
+  .mj-chip:has(input:checked) { border:1.5px solid var(--gold); color:var(--ink); box-shadow:0 0 0 3px rgba(168,130,60,0.12); }
+  .mj-chip:has(input:checked) .mj-box { background:var(--gold); color:#fff; border:1px solid var(--gold); }
+  .mj-chip:has(input:disabled) { opacity:0.4; cursor:not-allowed; }
+
+  /* 提交按钮 */
+  .mj-submit { transition:background .28s, color .28s, border-color .28s; }
+  .mj-submit:hover:not(:disabled) { background:var(--gold); border-color:var(--gold); color:#1c1305; }
+  .mj-submit:disabled { opacity:0.55; cursor:not-allowed; }
+
+  .mj-nav a:hover { color:var(--gold); }
+
+  @media (max-width:768px) {
+    .mj-nav { display:none !important; }
+    .mj-header { padding:20px !important; }
+    .mj-hero { padding:44px 20px 20px !important; }
+    .mj-hero-watermark { font-size:180px !important; }
+    .mj-h1 { font-size:34px !important; }
+    .mj-badges { flex-direction:column !important; gap:8px !important; }
+    .mj-badges .mj-badge-sep { display:none !important; }
+    .mj-formsec { padding:16px 16px 50px !important; }
+    .mj-card-inner { padding:28px 20px 32px !important; }
+    .mj-grid { grid-template-columns:1fr !important; }
+    .mj-second-grid { grid-template-columns:repeat(2,1fr) !important; }
+    .mj-resultsec, .mj-notasec { padding-left:20px !important; padding-right:20px !important; }
+  }
+</style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>高考志愿填报参考方案生成器</h1>
-    <p class="subtitle">输入分数位次 · AI 联网搜索实时数据 · 生成冲稳保分层方案</p>
+<div class="mj-root">
+
+  <div style="position:absolute; inset:0; background:radial-gradient(120% 80% at 50% -10%, transparent 40%, rgba(22,35,63,0.05) 100%); pointer-events:none;"></div>
+
+  <!-- ============ TOP BAR ============ -->
+  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); animation:mj-fade .8s ease both;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
+        <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
+      </div>
+      <div style="line-height:1.15;">
+        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
+        <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
+      </div>
+    </div>
+    <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
+      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none; transition:color .2s;">志愿参考</a>
+      <a href="#" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none; transition:color .2s;">院校数据</a>
+      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none; transition:color .2s;">方案说明</a>
+      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none; transition:color .2s;">关于我们</a>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
+    </nav>
   </header>
 
-  <form id="planForm" class="card">
-    <div class="form-grid">
-      <div class="form-group">
-        <label>省份 <span class="required">*</span></label>
-        <select name="province" required>
-          <option value="">请选择</option>
-          <option value="湖北">湖北</option>
-          <option value="湖南">湖南</option>
-          <option value="河南">河南</option>
-          <option value="广东">广东</option>
-          <option value="江苏">江苏</option>
-          <option value="浙江">浙江</option>
-          <option value="山东">山东</option>
-          <option value="四川">四川</option>
-          <option value="河北">河北</option>
-          <option value="安徽">安徽</option>
-          <option value="福建">福建</option>
-          <option value="江西">江西</option>
-          <option value="重庆">重庆</option>
-          <option value="北京">北京</option>
-          <option value="上海">上海</option>
-          <option value="天津">天津</option>
-          <option value="辽宁">辽宁</option>
-          <option value="吉林">吉林</option>
-          <option value="黑龙江">黑龙江</option>
-          <option value="广西">广西</option>
-          <option value="海南">海南</option>
-          <option value="贵州">贵州</option>
-          <option value="甘肃">甘肃</option>
-        </select>
+  <!-- ============ HERO ============ -->
+  <section class="mj-hero" style="position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:64px 40px 30px; text-align:center;">
+    <div class="mj-hero-watermark" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); font-family:'Noto Serif SC',serif; font-weight:700; font-size:300px; line-height:1; color:rgba(22,35,63,0.035); pointer-events:none; user-select:none;">志</div>
+    <div style="position:relative;">
+      <div style="font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:20px; animation:mj-rise .8s ease both;">Consilium · 循分识途</div>
+      <h1 class="mj-h1" style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:52px; line-height:1.35; letter-spacing:3px; color:var(--ink); margin:0 0 22px; animation:mj-rise .8s ease .08s both;">为每一分，<br>找到最合适的去处</h1>
+      <p style="max-width:600px; margin:0 auto; font-size:16px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px; animation:mj-rise .8s ease .16s both;">输入分数与位次，依据各省实时录取数据，<br>为你生成「冲 · 稳 · 保」三档志愿参考方案。</p>
+
+      <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin:38px auto 0; max-width:340px; animation:mj-fade 1s ease .3s both;">
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--line-strong)); transform-origin:right; animation:mj-line .9s ease .3s both;"></span>
+        <span style="width:7px; height:7px; background:var(--gold); transform:rotate(45deg); flex:0 0 auto;"></span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, var(--line-strong), transparent); transform-origin:left; animation:mj-line .9s ease .3s both;"></span>
       </div>
 
-      <div class="form-group">
-        <label>高考分数 <span class="required">*</span></label>
-        <input type="number" name="score" min="0" max="750" placeholder="如 580" required>
+      <div class="mj-badges" style="display:flex; align-items:center; justify-content:center; gap:0; margin-top:26px; animation:mj-fade 1s ease .42s both;">
+        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">31 省市招生数据</span>
+        <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--line-strong);"></span>
+        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">冲 · 稳 · 保 三档分层</span>
+        <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--line-strong);"></span>
+        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">以官方发布为准</span>
       </div>
+    </div>
+  </section>
 
-      <div class="form-group">
-        <label>全省位次</label>
-        <input type="number" name="rank" min="1" placeholder="如 28000">
-        <small class="hint">可选，但提供后方案更精准</small>
-      </div>
+  <!-- ============ FORM CARD ============ -->
+  <section class="mj-formsec" style="position:relative; z-index:2; max-width:920px; margin:0 auto; padding:24px 40px 40px; animation:mj-rise .9s ease .5s both;">
+    <div style="position:relative; background:var(--paper2); border:1px solid var(--line-strong); box-shadow:0 40px 80px -40px rgba(22,35,63,0.3);">
 
-      <div class="form-group">
-        <label>首选科目 <span class="required">*</span></label>
-        <select name="firstChoice" required>
-          <option value="">请选择</option>
-          <option value="物理">物理</option>
-          <option value="历史">历史</option>
-        </select>
-      </div>
+      <div style="position:absolute; top:6px; left:6px; width:16px; height:16px; border-top:1.5px solid var(--gold); border-left:1.5px solid var(--gold);"></div>
+      <div style="position:absolute; top:6px; right:6px; width:16px; height:16px; border-top:1.5px solid var(--gold); border-right:1.5px solid var(--gold);"></div>
+      <div style="position:absolute; bottom:6px; left:6px; width:16px; height:16px; border-bottom:1.5px solid var(--gold); border-left:1.5px solid var(--gold);"></div>
+      <div style="position:absolute; bottom:6px; right:6px; width:16px; height:16px; border-bottom:1.5px solid var(--gold); border-right:1.5px solid var(--gold);"></div>
 
-      <div class="form-group full">
-        <label>再选科目（四选二）<span class="required">*</span></label>
-        <div class="checkbox-group">
-          <label class="checkbox"><input type="checkbox" name="reselect" value="化学"> 化学</label>
-          <label class="checkbox"><input type="checkbox" name="reselect" value="生物"> 生物</label>
-          <label class="checkbox"><input type="checkbox" name="reselect" value="政治"> 政治</label>
-          <label class="checkbox"><input type="checkbox" name="reselect" value="地理"> 地理</label>
+      <form id="planForm" class="mj-card-inner" style="margin:11px; border:1px solid var(--line); padding:44px 50px 48px;">
+
+        <!-- card header -->
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; border-bottom:1.5px solid var(--ink); padding-bottom:16px; margin-bottom:34px;">
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:6px;">Registration Form</div>
+            <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:26px; letter-spacing:3px; color:var(--ink); margin:0;">志愿信息登记表</h2>
+          </div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:2px; color:var(--muted); text-align:right;">NO. 2026<br><span style="font-size:12px;">新高考 · 参考方案</span></div>
+        </div>
+
+        <!-- grid -->
+        <div class="mj-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:30px 44px;">
+
+          <!-- 01 省份 -->
+          <div>
+            <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:11px;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--gold); letter-spacing:1px;">01</span>
+              <label style="font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin:0;">生源省份 <span style="color:var(--gold);">*</span></label>
+            </div>
+            <div style="position:relative;">
+              <select name="province" required class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:14px 40px 14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;">
+                <option value="">请选择</option>
+                <option value="湖北">湖北</option>
+                <option value="湖南">湖南</option>
+                <option value="河南">河南</option>
+                <option value="广东">广东</option>
+                <option value="江苏">江苏</option>
+                <option value="浙江">浙江</option>
+                <option value="山东">山东</option>
+                <option value="四川">四川</option>
+                <option value="河北">河北</option>
+                <option value="安徽">安徽</option>
+                <option value="福建">福建</option>
+                <option value="江西">江西</option>
+                <option value="重庆">重庆</option>
+                <option value="北京">北京</option>
+                <option value="上海">上海</option>
+                <option value="天津">天津</option>
+                <option value="辽宁">辽宁</option>
+                <option value="吉林">吉林</option>
+                <option value="黑龙江">黑龙江</option>
+                <option value="广西">广西</option>
+                <option value="海南">海南</option>
+                <option value="贵州">贵州</option>
+                <option value="甘肃">甘肃</option>
+              </select>
+              <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
+            </div>
+          </div>
+
+          <!-- 02 分数 -->
+          <div>
+            <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:11px;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--gold); letter-spacing:1px;">02</span>
+              <label style="font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin:0;">高考总分 <span style="color:var(--gold);">*</span></label>
+            </div>
+            <input type="number" name="score" min="0" max="750" required inputmode="numeric" placeholder="如 580" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
+          </div>
+
+          <!-- 03 位次 -->
+          <div>
+            <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:11px;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--gold); letter-spacing:1px;">03</span>
+              <label style="font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin:0;">全省位次</label>
+            </div>
+            <input type="number" name="rank" min="1" inputmode="numeric" placeholder="如 28000" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
+            <div style="font-size:12px; color:var(--muted); margin-top:8px; letter-spacing:0.5px; font-weight:300;">可选 — 提供后方案更精准</div>
+          </div>
+
+          <!-- 04 首选科目 -->
+          <div>
+            <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:11px;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--gold); letter-spacing:1px;">04</span>
+              <label style="font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin:0;">首选科目 <span style="color:var(--gold);">*</span></label>
+            </div>
+            <div style="position:relative;">
+              <select name="firstChoice" required class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:14px 40px 14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;">
+                <option value="">请选择</option>
+                <option value="物理">物理</option>
+                <option value="历史">历史</option>
+              </select>
+              <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
+            </div>
+          </div>
+
+          <!-- 05 再选科目 -->
+          <div style="grid-column:1 / -1;">
+            <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:13px;">
+              <div style="display:flex; align-items:baseline; gap:9px;">
+                <span style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--gold); letter-spacing:1px;">05</span>
+                <label style="font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin:0;">再选科目 · 四选二 <span style="color:var(--gold);">*</span></label>
+              </div>
+              <span id="reselectCount" style="font-size:12px; color:var(--muted); letter-spacing:0.5px;">已选 0 / 2</span>
+            </div>
+            <div class="mj-second-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px;">
+              <label class="mj-chip"><input type="checkbox" name="reselect" value="化学"><span class="mj-box">✓</span><span>化学</span></label>
+              <label class="mj-chip"><input type="checkbox" name="reselect" value="生物"><span class="mj-box">✓</span><span>生物</span></label>
+              <label class="mj-chip"><input type="checkbox" name="reselect" value="政治"><span class="mj-box">✓</span><span>政治</span></label>
+              <label class="mj-chip"><input type="checkbox" name="reselect" value="地理"><span class="mj-box">✓</span><span>地理</span></label>
+            </div>
+          </div>
+
+          <!-- 06 偏好 -->
+          <div style="grid-column:1 / -1;">
+            <div style="display:flex; align-items:baseline; gap:9px; margin-bottom:11px;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--gold); letter-spacing:1px;">06</span>
+              <label style="font-size:14px; font-weight:500; letter-spacing:1px; color:var(--ink-soft); margin:0;">院校与专业意向 <span style="font-size:12px; color:var(--muted); font-weight:300;">（可选）</span></label>
+            </div>
+            <textarea name="preferences" rows="3" placeholder="例如：倾向计算机类专业，优先武汉、南京等地高校，希望离家较近。" class="mj-field" style="width:100%; box-sizing:border-box; padding:14px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; line-height:1.7; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; resize:vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- submit -->
+        <button type="submit" id="submitBtn" class="mj-submit" style="width:100%; margin-top:38px; padding:19px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC',serif; font-weight:600; font-size:17px; letter-spacing:8px; text-indent:8px; cursor:pointer;">
+          <span class="btn-text">生成志愿参考方案</span>
+          <span class="btn-loading" hidden>生成中，约 30-60 秒...</span>
+        </button>
+        <div style="text-align:center; margin-top:16px; font-size:12px; letter-spacing:1px; color:var(--muted); font-weight:300;">约 120 秒 · 无需注册</div>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ 状态 / 结果 / 错误 ============ -->
+  <section class="mj-resultsec" style="position:relative; z-index:2; max-width:920px; margin:0 auto; padding:0 40px;">
+    <div id="status" class="status" hidden></div>
+
+    <div id="result" class="result" hidden>
+      <div class="result-header">
+        <h2>志愿方案已生成</h2>
+        <div class="result-actions">
+          <button onclick="downloadDocx()" class="btn-download btn-docx">📄 下载 Word</button>
+          <button onclick="downloadPdf()" class="btn-download btn-pdf">📕 保存为 PDF</button>
+          <button onclick="downloadHtml()" class="btn-secondary">下载 HTML</button>
+          <button onclick="openReport()" class="btn-secondary">新窗口打开</button>
         </div>
       </div>
-
-      <div class="form-group full">
-        <label>院校/专业偏好（可选）</label>
-        <textarea name="preferences" rows="2" placeholder="如：想学计算机，倾向于武汉的高校，希望离家近"></textarea>
-      </div>
+      <iframe id="reportFrame" class="report-frame"></iframe>
     </div>
 
-    <button type="submit" id="submitBtn" class="btn-primary">
-      <span class="btn-text">生成志愿方案</span>
-      <span class="btn-loading" hidden>生成中，约 30-60 秒...</span>
-    </button>
-  </form>
+    <div id="error" class="error-card" hidden></div>
+  </section>
 
-  <div id="status" class="status" hidden></div>
-
-  <div id="loadingOverlay" class="loading-overlay" hidden>
-    <div class="loading-card">
-      <div class="spinner"></div>
-      <div class="loading-title">正在生成志愿方案</div>
-      <div class="loading-tip" id="loadingTip">AI 正在联网搜索院校数据，请耐心等待...</div>
-      <div class="loading-progress">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-      <div class="loading-elapsed" id="loadingElapsed">已用时 0 秒</div>
+  <!-- ============ NOTA BENE ============ -->
+  <section class="mj-notasec" style="position:relative; z-index:2; max-width:760px; margin:0 auto; padding:40px 40px 60px; text-align:center;">
+    <div style="display:inline-flex; align-items:center; gap:14px; margin-bottom:16px;">
+      <span style="width:40px; height:1px; background:var(--line-strong);"></span>
+      <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:3px; color:var(--gold); text-transform:uppercase;">Nota Bene · 附注</span>
+      <span style="width:40px; height:1px; background:var(--line-strong);"></span>
     </div>
-  </div>
+    <p style="font-size:13.5px; line-height:2; color:var(--muted); font-weight:300; letter-spacing:0.5px; margin:0;">本工具基于人工智能与联网检索生成参考方案，数据可能存在延迟或偏差。志愿填报为重大决策，最终请以各省教育考试院官方发布信息为准。</p>
+  </section>
 
-  <div id="result" class="result" hidden>
-    <div class="result-header">
-      <h2>志愿方案已生成</h2>
-      <div class="result-actions">
-        <button onclick="downloadDocx()" class="btn-download btn-docx">📄 下载 Word</button>
-        <button onclick="downloadPdf()" class="btn-download btn-pdf">📕 保存为 PDF</button>
-        <button onclick="downloadHtml()" class="btn-secondary">下载 HTML</button>
-        <button onclick="openReport()" class="btn-secondary">新窗口打开</button>
+  <!-- ============ FOOTER ============ -->
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,35,63,0.02);">
+    <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="position:relative; width:30px; height:30px;">
+          <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:14px; color:var(--gold);">澄</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 澄明志愿 · CHENGMING ADVISORY</span>
+      </div>
+      <div style="display:flex; gap:26px;">
+        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">数据来源</a>
+        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">隐私政策</a>
+        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">联系我们</a>
       </div>
     </div>
-    <iframe id="reportFrame" class="report-frame"></iframe>
-  </div>
-
-  <div id="error" class="error-card" hidden></div>
-
-  <footer class="footer">
-    <p>⚠️ 本工具基于 AI + 联网搜索生成参考方案，数据可能存在延迟或偏差。志愿填报是重大决策，请以各省教育考试院官方发布为准。</p>
   </footer>
+
 </div>
 
+<!-- ============ Loading 遮罩（功能保留） ============ -->
+<div id="loadingOverlay" class="loading-overlay" hidden>
+  <div class="loading-card">
+    <div class="spinner"></div>
+    <div class="loading-title">正在生成志愿方案</div>
+    <div class="loading-tip" id="loadingTip">AI 正在联网搜索院校数据，请耐心等待...</div>
+    <div class="loading-progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="loading-elapsed" id="loadingElapsed">已用时 0 秒</div>
+  </div>
+</div>
+
+<!-- 再选科目：更新“已选 N / 2”计数，并在选满 2 门后禁用其余（不改动 app.js 的 FormData 逻辑） -->
+<script>
+(function () {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input[name="reselect"]'));
+  var counter = document.getElementById('reselectCount');
+  function sync() {
+    var n = boxes.filter(function (b) { return b.checked; }).length;
+    if (counter) counter.textContent = '已选 ' + n + ' / 2';
+    boxes.forEach(function (b) { b.disabled = (!b.checked && n >= 2); });
+  }
+  boxes.forEach(function (b) { b.addEventListener('change', sync); });
+  sync();
+})();
+</script>
 <script src="app.js"></script>
 </body>
 </html>

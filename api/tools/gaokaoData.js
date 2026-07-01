@@ -6,6 +6,18 @@
 
 const BASE_URL = 'https://gaokao.search.qq.com/skills_data';
 const SOURCE = 'open_tB0fU5wP';
+// 结构化接口单次请求超时，防止预取阶段卡死
+const GAOKAO_TIMEOUT_MS = parseInt(process.env.GAOKAO_TIMEOUT_MS || '8000', 10);
+
+async function fetchWithTimeout(url, opts = {}, timeoutMs = GAOKAO_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...opts, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 /**
  * 一分一段查询：分数 → 位次（或获取完整一分一段表）
@@ -29,7 +41,7 @@ export async function queryScoreToRank({ place, year, classify, score }) {
   const url = `${BASE_URL}?${params.toString()}`;
   console.log('[gaokaoData] score_range:', url);
 
-  const resp = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  const resp = await fetchWithTimeout(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
   if (!resp.ok) throw new Error(`一分一段接口 HTTP ${resp.status}`);
   const data = await resp.json();
 
@@ -119,7 +131,7 @@ export async function queryBatchLines({ place, year, student }) {
   const url = `${BASE_URL}?${params.toString()}`;
   console.log('[gaokaoData] province_score_line:', url);
 
-  const resp = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+  const resp = await fetchWithTimeout(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
   if (!resp.ok) throw new Error(`批次线接口 HTTP ${resp.status}`);
   const data = await resp.json();
 

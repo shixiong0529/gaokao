@@ -63,7 +63,7 @@ form.addEventListener('submit', async (e) => {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 180000); // 180 秒超时
+    const timeoutId = setTimeout(() => controller.abort(), 230000); // 230 秒超时
 
     const resp = await fetch('/api/generate', {
       method: 'POST',
@@ -87,7 +87,7 @@ form.addEventListener('submit', async (e) => {
     hideLoading();
   } catch (err) {
     if (err.name === 'AbortError') {
-      showError('⏱ 请求超时（180秒）。AI 正在联网搜索院校数据，请稍后重试。建议不填"院校偏好"让 AI 自主筛选，可加快速度。');
+      showError('⏱ 请求超时（230秒）。AI 正在联网搜索院校数据，请稍后重试。建议不填"院校偏好"让 AI 自主筛选，可加快速度。');
     } else {
       showError(err.message || '生成失败，请检查网络或稍后重试');
     }
