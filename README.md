@@ -126,6 +126,8 @@ gaokao/
 
 ## 部署到阿里云 ECS
 
+以下是当前线上部署方式，适用于 `gaokao.moyu.in` 指向同一台阿里云 ECS 的场景。项目目录建议放在 `/opt/gaokao`，服务本身监听内网端口 `3001`，由 Nginx 负责 HTTPS 反向代理。
+
 ### 环境准备
 
 ```bash
@@ -141,34 +143,157 @@ npm i -g pm2
 sudo apt update && sudo apt install -y nginx
 ```
 
+### 域名解析
+
+在阿里云 DNS 中添加 A 记录：
+
+| 主机记录 | 记录类型 | 记录值 |
+|----------|----------|--------|
+| `gaokao` | A | 服务器公网 IP，例如 `8.148.27.161` |
+
+解析完成后可在服务器上检查：
+
+```bash
+dig +short gaokao.moyu.in
+```
+
 ### 部署代码
 
 ```bash
+cd /opt
 git clone <你的仓库地址> gaokao
-cd gaokao
+cd /opt/gaokao
 npm install
 cp .env.example .env
-# 编辑 .env 填入真实 Key
-mkdir -p logs
+nano .env
+mkdir -p data logs
+```
 
-# PM2 启动
-pm2 start ecosystem.config.cjs
+服务器 `.env` 至少需要配置：
+
+```bash
+DEEPSEEK_API_KEY=你的 DeepSeek Key
+SEARCH_PROVIDER=tavily
+TAVILY_API_KEY=你的 Tavily Key
+PORT=3001
+DATABASE_PATH=./data/gaokao.db
+ADMIN_TOKEN=你的管理员口令
+```
+
+注意：每个项目都应该有自己的 `.env`。不要把 `/opt/biscord/.env` 复制覆盖成 `/opt/gaokao/.env`，也不要把 `/opt/gaokao/.env` 放到其他项目目录里。
+
+### PM2 启动
+
+```bash
+cd /opt/gaokao
+pm2 start ecosystem.config.cjs --name gaokao-advisor
 pm2 save
-pm2 startup  # 开机自启
+pm2 startup
+```
+
+检查服务是否正常：
+
+```bash
+curl http://127.0.0.1:3001/api/health
 ```
 
 ### Nginx 反代
 
-```bash
-sudo cp nginx.conf.example /etc/nginx/sites-available/gaokao
-sudo ln -s /etc/nginx/sites-available/gaokao /etc/nginx/sites-enabled/
-sudo nginx -t && sudo nginx -s reload
+首次部署时请先完成下一节的 HTTPS 证书申请，再启用下面这份配置。因为配置里引用了 `/etc/letsencrypt/live/gaokao.moyu.in/` 下的证书文件；证书不存在时，`nginx -t` 会失败。
+
+创建 `/etc/nginx/sites-available/gaokao`：
+
+```nginx
+server {
+    listen 80;
+    server_name gaokao.moyu.in;
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name gaokao.moyu.in;
+
+    ssl_certificate /etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/gaokao.moyu.in/privkey.pem;
+
+    client_max_body_size 10m;
+
+    location / {
+        proxy_pass http://127.0.0.1:3001;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+}
 ```
 
-### HTTPS
+启用并重载：
 
 ```bash
-sudo certbot --nginx -d 你的域名
+ln -s /etc/nginx/sites-available/gaokao /etc/nginx/sites-enabled/gaokao
+nginx -t
+systemctl reload nginx
+```
+
+### HTTPS 证书
+
+如果 `certbot --webroot` 或 `certbot --standalone` 在 HTTP-01 校验时返回 `403`，可改用 DNS 手动验证：
+
+```bash
+certbot certonly \
+  --manual \
+  --preferred-challenges dns \
+  --cert-name gaokao.moyu.in \
+  --key-type rsa \
+  -d gaokao.moyu.in
+```
+
+按 Certbot 提示，在阿里云 DNS 中添加 TXT 记录：
+
+| 主机记录 | 记录类型 | 记录值 |
+|----------|----------|--------|
+| `_acme-challenge.gaokao` | TXT | Certbot 给出的 token |
+
+确认 TXT 生效后再按回车继续：
+
+```bash
+dig +short TXT _acme-challenge.gaokao.moyu.in
+```
+
+证书生成后路径应为：
+
+```text
+/etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem
+/etc/letsencrypt/live/gaokao.moyu.in/privkey.pem
+```
+
+本次手动 DNS 证书不会自动续期。当前线上证书到期日为 `2026-09-29`，到期前需要重新执行同样的 DNS 验证流程，或后续接入阿里云 DNS API 自动续期。
+
+### 日常更新
+
+本地代码 push 后，服务器更新：
+
+```bash
+cd /opt/gaokao
+git pull
+npm install
+pm2 restart gaokao-advisor --update-env
+```
+
+如果只改了 `.env`，执行：
+
+```bash
+pm2 restart gaokao-advisor --update-env
 ```
 
 ## 环境变量说明
@@ -183,7 +308,7 @@ sudo certbot --nginx -d 你的域名
 | `SEARCH_TIMEOUT_MS` | 单次搜索超时（毫秒） | `10000` |
 | `GAOKAO_TIMEOUT_MS` | 结构化接口单次请求超时（毫秒） | `8000` |
 | `TAVILY_API_KEY` | Tavily Key（provider=tavily 时必填） | - |
-| `DATABASE_PATH` | SQLite 数据库文件路径 | `./data/app.db` |
+| `DATABASE_PATH` | SQLite 数据库文件路径，生产建议使用 `./data/gaokao.db` 避免与其他项目重名 | `./data/app.db` |
 | `ADMIN_TOKEN` | 管理员 API/邀请码页面口令 | - |
 | `AGENT_MAX_ROUNDS` | Agent 最大循环轮数 | `6` |
 | `AGENT_DEADLINE_MS` | Agent 总时间预算，超过不再开新一轮（毫秒） | `195000` |
@@ -213,7 +338,7 @@ sudo certbot --nginx -d 你的域名
 - 留言表单提交到 `POST /api/messages`，保存到 SQLite。
 - 管理员访问 `/admin-invites.html`，输入 `.env` 中的 `ADMIN_TOKEN` 后可生成邀请码。
 - 用户生成报告时必须填写邀请码。后端会先预占邀请码；报告生成成功后确认消耗，生成失败或超时会释放本次预占。
-- SQLite 文件默认在 `./data/app.db`，不要提交到 Git；生产环境请定期备份该文件。
+- SQLite 文件建议放在 `./data/gaokao.db`，不要提交到 Git；生产环境请定期备份该文件。
 
 ## 免责声明
 
