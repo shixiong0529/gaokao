@@ -16,6 +16,7 @@ test('index uses updated wait copy for report generation', () => {
   assert.match(html, /等待120秒 · 无需注册/);
   assert.match(html, /生成中，请耐心等待2分钟/);
   assert.match(html, /请耐心等待2分钟/);
+  assert.match(html, /class="loading-wait-notice"[^>]*>生成报告将耗时2分钟左右<\/div>/);
 });
 
 test('index form marks required fields with red asterisks', () => {
