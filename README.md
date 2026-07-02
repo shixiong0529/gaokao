@@ -259,17 +259,11 @@ systemctl reload nginx
 
 ### HTTPS 证书
 
-**优先用这个（自动续期，装完不用再管）：**
+**现状（已验证生效）**：`gaokao.moyu.in` 用 `acme.sh` + DNS-01（阿里云 DNS API）自动续期，装完不用再管。
 
-```bash
-certbot --nginx -d gaokao.moyu.in
-```
+**根因排查记录**：这台 ECS 装了阿里云云安全中心（Aegis/云盾），会拦截被判定为"可疑"的境外流量。Let's Encrypt 的验证节点大多在境外，请求命中拦截规则——**nginx access log 里能看到请求已经被正确处理并返回了 200**，但 Aegis 在更前面把响应换成了 403 发给 Let's Encrypt，导致 HTTP-01（`certbot --webroot`/`--standalone`/`--nginx`）在本机 curl 完全正常的情况下始终验证失败。这个坑不止 gaokao.moyu.in 一个域名会踩，同服务器上其他域名只要用 HTTP-01 都会一样被拦。
 
-`--nginx` 插件走 HTTP-01，自动改好 nginx 配置、自动申请证书。certbot 安装时自带系统定时任务（systemd timer `certbot.timer` 或 `/etc/cron.d/certbot`），到期前自动续期，永久不用手动操作。
-
-> 首次执行前确认：阿里云 ECS 安全组的入方向规则已放行公网 `80` 端口（`0.0.0.0/0`）；如果开了 WAF / 云盾，注意其对**境外来源 IP** 的默认拦截规则——Let's Encrypt 验证节点大多在境外，会被当成可疑流量拦掉，出现"本机 curl 能访问、Certbot 校验却返回 403"的现象。需要给 WAF 加白名单或临时关闭后再重试。
-
-**如果 80 端口验证长期走不通**（比如安全策略不允许对外开放、WAF 规则无法调整），改用 DNS-01 + 阿里云 DNS API 自动应答，同样能全自动续期，且完全不依赖 80 端口：
+**解法**：改用 DNS-01 验证，完全不需要公网 80 端口被外部访问到，绕开 Aegis 这一层：
 
 ```bash
 curl https://get.acme.sh | sh -s email=你的邮箱
@@ -279,20 +273,30 @@ source ~/.bashrc
 export Ali_Key="你的AccessKeyId"
 export Ali_Secret="你的AccessKeySecret"
 
-~/.acme.sh/acme.sh --issue --dns dns_ali -d gaokao.moyu.in
+# 国内网络访问境外公共 DNS 做传播检查经常超时/失败（curl error 35/28），
+# 加 --dnssleep 30 跳过这个不可靠的自检，改成固定等 30 秒再直接问 Let's Encrypt
+~/.acme.sh/acme.sh --issue --dns dns_ali -d gaokao.moyu.in --server letsencrypt --dnssleep 30
 
 ~/.acme.sh/acme.sh --install-cert -d gaokao.moyu.in \
   --key-file       /etc/letsencrypt/live/gaokao.moyu.in/privkey.pem \
   --fullchain-file /etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem \
-  --reloadcmd      "systemctl reload nginx"
+  --reloadcmd      "nginx -t && systemctl reload nginx"
 ```
 
-`acme.sh` 会自己写 cron，到期前用同一个 AccessKey 自动改 DNS TXT 记录、自动续期、自动 reload nginx，不需要再手动去控制台粘贴 TXT 值。
+`acme.sh` 装的时候会自己写 cron（默认 `crontab -l` 能看到一条 `acme.sh --cron` 的定时任务），到期前自动改 DNS TXT 记录、自动续期、自动 reload nginx，不需要再手动去控制台粘贴 TXT 值。
+
+> ⚠️ **多账号踩坑记录**：这台服务器上还跑着其他域名（`moyu.in`、`chat.slow.best`、`shi.show`），分属阿里云国际站和中国站两个不同账号。`dns_ali` 插件把 `Ali_Key`/`Ali_Secret` 存在**全局共享**的 `~/.acme.sh/account.conf` 里，不是按域名分开存的——如果同一台机器上有域名分属不同阿里云账号，后签发的会把前面的 AccessKey 覆盖掉，几个月后自动续期时会用错账号的 key 导致静默失败。解法：给每个账号一个独立的 `--config-home`（同一份 acme.sh 安装，配置状态分开）：
+> ```bash
+> mkdir -p /root/.acme.sh-<账号标识>
+> export Ali_Key="..." Ali_Secret="..."
+> ~/.acme.sh/acme.sh --issue --dns dns_ali -d 域名 --server letsencrypt --dnssleep 30 --config-home /root/.acme.sh-<账号标识>
+> ```
+> 并给 cron 加一条对应 `--config-home` 的独立续期任务，不要指望默认那条 cron 覆盖所有账号。改完用 `~/.acme.sh/acme.sh --list` 和 `~/.acme.sh/acme.sh --list --config-home /root/.acme.sh-<账号标识>` 分别确认每个账号下只有自己的域名。
 
 <details>
-<summary>历史记录：首次证书是怎么申请下来的（手动 DNS 验证，不会自动续期）</summary>
+<summary>历史记录：首次证书是怎么申请下来的（手动 DNS 验证，不会自动续期，已废弃）</summary>
 
-当时 `certbot --webroot` / `--standalone` 在 HTTP-01 校验时持续返回 `403`（本机 curl 能访问，但验证服务器不行，符合上面提到的 WAF 境外 IP 拦截特征），临时用了手动 DNS 验证兜底：
+当时 `certbot --webroot` / `--standalone` 在 HTTP-01 校验时持续返回 `403`（本机 curl 能访问，但验证服务器不行，即上面查明的 Aegis 拦截），临时用了手动 DNS 验证兜底：
 
 ```bash
 certbot certonly \
@@ -303,19 +307,7 @@ certbot certonly \
   -d gaokao.moyu.in
 ```
 
-按 Certbot 提示，在阿里云 DNS 中添加 TXT 记录：
-
-| 主机记录 | 记录类型 | 记录值 |
-|----------|----------|--------|
-| `_acme-challenge.gaokao` | TXT | Certbot 给出的 token |
-
-确认 TXT 生效后再按回车继续：
-
-```bash
-dig +short TXT _acme-challenge.gaokao.moyu.in
-```
-
-这种方式生成的证书**不会自动续期**（`certbot renew` 非交互执行，manual 插件无法弹出提示要求你粘贴新的 TXT 值，会静默失败）。当前证书到期日 `2026-09-29`，已改用上面的自动化方案，到期前无需再手动操作；如果发现还是走的这条旧路径，务必切换到方案 A 或 B。
+这种方式生成的证书不会自动续期（`certbot renew` 非交互执行，manual 插件无法弹出提示要求你粘贴新的 TXT 值，会静默失败）。已切换到上面的 `acme.sh` 方案，`/etc/letsencrypt/renewal/gaokao.moyu.in.conf` 等四个域名的旧续期配置已挪到 `/etc/letsencrypt/renewal-disabled/`，certbot 不会再尝试续期它们。
 
 </details>
 
