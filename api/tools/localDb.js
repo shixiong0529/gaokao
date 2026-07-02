@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -34,6 +35,38 @@ function withStatus(message, status = 400) {
   const err = new Error(message);
   err.status = status;
   return err;
+}
+
+const ADVISOR_STAGES = new Set([
+  'basic_info',
+  'interest_profile',
+  'personal_profile',
+  'exploration',
+  'draft_plan',
+  'final_report'
+]);
+
+function publicAdvisorSession(row) {
+  if (!row) return null;
+  let data = {};
+  try {
+    data = row.data_json ? JSON.parse(row.data_json) : {};
+  } catch (err) {
+    data = {};
+  }
+  return {
+    id: row.id,
+    currentStage: row.current_stage,
+    data,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+function assertAdvisorStage(stage) {
+  if (!ADVISOR_STAGES.has(stage)) {
+    throw withStatus('未知的志愿流程阶段');
+  }
 }
 
 export function createLocalDb(databasePath = defaultDbPath()) {
@@ -75,6 +108,14 @@ export function createLocalDb(databasePath = defaultDbPath()) {
       completed_at TEXT,
       released_at TEXT
     );
+
+    CREATE TABLE IF NOT EXISTS advisor_sessions (
+      id TEXT PRIMARY KEY,
+      current_stage TEXT NOT NULL,
+      data_json TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
 
   const saveMessageStmt = db.prepare(`
@@ -107,6 +148,16 @@ export function createLocalDb(databasePath = defaultDbPath()) {
     UPDATE invite_code_uses
     SET status = 'released', released_at = @releasedAt
     WHERE id = @id AND status = 'reserved'
+  `);
+  const insertAdvisorSessionStmt = db.prepare(`
+    INSERT INTO advisor_sessions (id, current_stage, data_json, created_at, updated_at)
+    VALUES (@id, @currentStage, @dataJson, @createdAt, @updatedAt)
+  `);
+  const getAdvisorSessionStmt = db.prepare('SELECT * FROM advisor_sessions WHERE id = ?');
+  const updateAdvisorSessionStmt = db.prepare(`
+    UPDATE advisor_sessions
+    SET current_stage = @currentStage, data_json = @dataJson, updated_at = @updatedAt
+    WHERE id = @id
   `);
 
   function saveMessage(input) {
@@ -243,6 +294,40 @@ export function createLocalDb(databasePath = defaultDbPath()) {
     return listInvitesStmt.all(Math.max(1, Math.min(Number(limit) || 100, 500))).map(publicInvite);
   }
 
+  function createAdvisorSession(initialData = {}) {
+    const id = `adv_${crypto.randomBytes(12).toString('hex')}`;
+    const createdAt = nowIso();
+    insertAdvisorSessionStmt.run({
+      id,
+      currentStage: 'basic_info',
+      dataJson: JSON.stringify(initialData && typeof initialData === 'object' ? initialData : {}),
+      createdAt,
+      updatedAt: createdAt
+    });
+    return publicAdvisorSession(getAdvisorSessionStmt.get(id));
+  }
+
+  function getAdvisorSession(id) {
+    const session = publicAdvisorSession(getAdvisorSessionStmt.get(id));
+    if (!session) throw withStatus('志愿流程会话不存在', 404);
+    return session;
+  }
+
+  function updateAdvisorSession(id, input = {}) {
+    const existing = getAdvisorSession(id);
+    const nextStage = input.currentStage || existing.currentStage;
+    assertAdvisorStage(nextStage);
+    const patch = input.data && typeof input.data === 'object' && !Array.isArray(input.data) ? input.data : {};
+    const nextData = { ...existing.data, ...patch };
+    updateAdvisorSessionStmt.run({
+      id,
+      currentStage: nextStage,
+      dataJson: JSON.stringify(nextData),
+      updatedAt: nowIso()
+    });
+    return getAdvisorSession(id);
+  }
+
   function close() {
     db.close();
   }
@@ -255,6 +340,9 @@ export function createLocalDb(databasePath = defaultDbPath()) {
     completeInviteReservation,
     releaseInviteReservation,
     listInviteCodes,
+    createAdvisorSession,
+    getAdvisorSession,
+    updateAdvisorSession,
     close
   };
 }

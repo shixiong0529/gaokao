@@ -11,7 +11,7 @@ test('college data page exists with filters and data table', () => {
   assert.match(html, /院校数据/);
   assert.match(html, /id="provinceFilter"/);
   assert.match(html, /id="collegeRows"/);
-  assert.match(html, /COLLEGES/);
+  assert.match(html, /fetch\('colleges\.json'\)/);
 });
 
 test('public navigation links to college data page', () => {

@@ -80,7 +80,7 @@
         <div>
           <label style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">地区</label>
           <div style="position:relative;">
-            <select id="regionSelect" class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;"></select>
+            <select id="provinceFilter" class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 16px; font-family:'Noto Sans SC',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;"></select>
             <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
           </div>
         </div>
@@ -128,7 +128,7 @@
             <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">类型</div>
             <div style="padding:13px 16px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:13px; color:var(--ink);">办学</div>
           </div>
-          <div id="rows"></div>
+          <div id="collegeRows"></div>
           <div id="loadingState" style="padding:56px 20px; text-align:center; color:var(--muted); font-weight:300;">正在加载院校数据……</div>
           <div id="emptyState" hidden style="padding:56px 20px; text-align:center;">
             <div style="font-family:'Noto Serif SC',serif; font-size:17px; color:var(--ink); margin-bottom:8px;">未找到匹配的院校</div>
@@ -170,11 +170,11 @@
   var schools = [];
 
   var searchInput = document.getElementById('searchInput');
-  var regionSelect = document.getElementById('regionSelect');
+  var regionSelect = document.getElementById('provinceFilter');
   var typeSelect = document.getElementById('typeSelect');
   var levelSelect = document.getElementById('levelSelect');
   var chipsBox = document.getElementById('levelChips');
-  var rowsBox = document.getElementById('rows');
+  var rowsBox = document.getElementById('collegeRows');
   var loadingState = document.getElementById('loadingState');
   var emptyState = document.getElementById('emptyState');
   var countNum = document.getElementById('countNum');

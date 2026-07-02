@@ -71,3 +71,42 @@ test('rejects expired invite codes', () => {
     /邀请码已过期/
   );
 });
+
+test('creates and advances advisor sessions with persisted stage data', () => {
+  const db = createLocalDb(tempDbPath());
+
+  const session = db.createAdvisorSession({
+    province: '湖南',
+    score: 580
+  });
+
+  assert.match(session.id, /^adv_[a-f0-9]{24}$/);
+  assert.equal(session.currentStage, 'basic_info');
+  assert.equal(session.data.province, '湖南');
+  assert.equal(session.data.score, 580);
+
+  const updated = db.updateAdvisorSession(session.id, {
+    currentStage: 'interest_profile',
+    data: { majorInterests: ['计算机类'] }
+  });
+
+  assert.equal(updated.currentStage, 'interest_profile');
+  assert.deepEqual(updated.data, {
+    province: '湖南',
+    score: 580,
+    majorInterests: ['计算机类']
+  });
+
+  const reloaded = db.getAdvisorSession(session.id);
+  assert.deepEqual(reloaded, updated);
+});
+
+test('rejects invalid advisor session stage transitions', () => {
+  const db = createLocalDb(tempDbPath());
+  const session = db.createAdvisorSession();
+
+  assert.throws(
+    () => db.updateAdvisorSession(session.id, { currentStage: 'random_stage' }),
+    /未知的志愿流程阶段/
+  );
+});

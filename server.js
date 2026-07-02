@@ -69,6 +69,35 @@ app.get('/api/admin/invite-codes', requireAdmin, (req, res) => {
   }
 });
 
+app.post('/api/advisor-sessions', (req, res) => {
+  try {
+    const session = getLocalDb().createAdvisorSession(req.body?.data || {});
+    res.json({ ok: true, session });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message || '志愿流程会话创建失败' });
+  }
+});
+
+app.get('/api/advisor-sessions/:id', (req, res) => {
+  try {
+    res.json({ ok: true, session: getLocalDb().getAdvisorSession(req.params.id) });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message || '志愿流程会话读取失败' });
+  }
+});
+
+app.patch('/api/advisor-sessions/:id', (req, res) => {
+  try {
+    const session = getLocalDb().updateAdvisorSession(req.params.id, {
+      currentStage: req.body?.currentStage,
+      data: req.body?.data
+    });
+    res.json({ ok: true, session });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message || '志愿流程会话更新失败' });
+  }
+});
+
 app.post('/api/admin/invite-codes', requireAdmin, (req, res) => {
   try {
     const input = { ...req.body };

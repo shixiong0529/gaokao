@@ -26,3 +26,62 @@ test('index form marks required fields with red asterisks', () => {
     assert.match(html, new RegExp(label + String.raw` <span class="required-star" style="color:#C9362C;">\*</span>`));
   }
 });
+
+test('index exposes advisor session progress without replacing the quick form', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  assert.match(html, /id="advisorProgress"/);
+  assert.match(html, /id="advisorStageText"/);
+  assert.match(html, /深度模式进度/);
+  assert.match(html, /志愿信息登记表/);
+});
+
+test('index places optional advisor stages after invite code as collapsed panels', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  const inviteIndex = html.indexOf('name="inviteCode"');
+  const stageIndex = html.indexOf('id="majorInterestPanel"');
+
+  assert.ok(inviteIndex > -1);
+  assert.ok(stageIndex > inviteIndex);
+  assert.match(html, /<details id="majorInterestPanel"[^>]*>/);
+  assert.doesNotMatch(html, /<details id="majorInterestPanel"[^>]*open/);
+  assert.match(html, /可选项，可以跳过，点开才展开具体选项内容。/);
+  assert.match(html, /专业兴趣初筛/);
+  assert.match(html, /name="majorInterest" value="计算机类"/);
+  assert.match(html, /name="majorInterest" value="师范教育类"/);
+  for (const panelId of ['personalProfilePanel', 'explorationPanel', 'draftPlanPanel', 'finalReportPanel']) {
+    assert.match(html, new RegExp(`<details id="${panelId}"[^>]*>`));
+    assert.doesNotMatch(html, new RegExp(`<details id="${panelId}"[^>]*open`));
+  }
+});
+
+test('index moves freeform preference text into the optional final stage', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  assert.doesNotMatch(html, /院校与专业意向/);
+  assert.match(html, /其他补充说明/);
+  assert.match(html, /textarea name="preferences"/);
+  assert.ok(html.indexOf('textarea name="preferences"') > html.indexOf('id="finalReportPanel"'));
+});
+
+test('index exposes structured optional advisor controls', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  for (const fieldName of [
+    'cityPreference',
+    'costPreference',
+    'cooperationPreference',
+    'excludedOption',
+    'priorityFactor',
+    'graduationGoal',
+    'learningStrength',
+    'riskPreference',
+    'strategyRatio',
+    'reportOption',
+    'reportLength',
+    'reportFocus'
+  ]) {
+    assert.match(html, new RegExp(`name="${fieldName}"`));
+  }
+});

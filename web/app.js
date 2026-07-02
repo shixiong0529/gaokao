@@ -11,6 +11,9 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 const loadingTip = document.getElementById('loadingTip');
 const loadingElapsed = document.getElementById('loadingElapsed');
 const progressBar = document.getElementById('progressBar');
+const advisorStageText = document.getElementById('advisorStageText');
+const advisorStageBar = document.getElementById('advisorStageBar');
+const majorInterestInputs = Array.from(document.querySelectorAll('input[name="majorInterest"]'));
 
 let currentHtml = '';
 let currentDocxBase64 = null;
@@ -18,6 +21,16 @@ let currentReportUrl = null;
 let loadingTimer = null;
 let elapsedTimer = null;
 let startTime = 0;
+let advisorSessionId = null;
+
+const ADVISOR_STAGE_META = {
+  basic_info: { label: '阶段一：基础信息收集中', pct: 16 },
+  interest_profile: { label: '阶段二：专业兴趣待补充', pct: 32 },
+  personal_profile: { label: '阶段三：个人画像待补充', pct: 48 },
+  exploration: { label: '阶段四：偏好探索待开始', pct: 64 },
+  draft_plan: { label: '阶段五：正在生成候选方案', pct: 82 },
+  final_report: { label: '阶段六：最终报告已生成', pct: 100 }
+};
 
 // 进度提示文案（按时间推进，给用户感知）
 const PROGRESS_TIPS = [
@@ -38,6 +51,8 @@ form.addEventListener('submit', async (e) => {
   const scoreVal = formData.get('score');
   const rankVal = formData.get('rank');
   const inviteCode = String(formData.get('inviteCode') || '').trim();
+  const majorInterests = formData.getAll('majorInterest');
+  const advisorPreferences = collectAdvisorPreferences(formData);
 
   if (reselect.length !== 2) {
     showError('请选择恰好 2 门再选科目');
@@ -60,8 +75,9 @@ form.addEventListener('submit', async (e) => {
     rank: rankVal ? Number(rankVal) : null,
     firstChoice: formData.get('firstChoice'),
     reselect,
-    preferences: formData.get('preferences') || '',
-    inviteCode
+    preferences: buildPreferences(formData, advisorPreferences),
+    inviteCode,
+    sessionId: advisorSessionId
   };
 
   // UI 切换为加载态
@@ -72,6 +88,22 @@ form.addEventListener('submit', async (e) => {
   showLoading();
 
   try {
+    await ensureAdvisorSession();
+    payload.sessionId = advisorSessionId;
+    await updateAdvisorSessionStage({
+      currentStage: 'draft_plan',
+      data: {
+        province: payload.province,
+        score: payload.score,
+        rank: payload.rank,
+        firstChoice: payload.firstChoice,
+        reselect: payload.reselect,
+        majorInterests,
+        advisorPreferences,
+        preferences: payload.preferences
+      }
+    });
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 230000); // 230 秒超时
 
@@ -92,6 +124,13 @@ form.addEventListener('submit', async (e) => {
 
     currentHtml = data.html;
     currentDocxBase64 = data.docxBase64;
+    await updateAdvisorSessionStage({
+      currentStage: 'final_report',
+      data: {
+        reportGeneratedAt: new Date().toISOString(),
+        meta: data.meta || null
+      }
+    });
     resultEl.hidden = false;
     renderReportPreview(data.html);
     hideLoading();
@@ -108,10 +147,158 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+initAdvisorSession();
+bindMajorInterestStage();
+
 function setLoading(loading) {
   submitBtn.disabled = loading;
   btnText.hidden = loading;
   btnLoading.hidden = !loading;
+}
+
+function collectAdvisorPreferences(formData) {
+  const single = (name) => String(formData.get(name) || '').trim();
+  const multi = (name) => formData.getAll(name).map(value => String(value).trim()).filter(Boolean);
+
+  return {
+    majorInterests: multi('majorInterest'),
+    cityPreference: single('cityPreference'),
+    costPreference: single('costPreference'),
+    cooperationPreference: single('cooperationPreference'),
+    excludedOptions: multi('excludedOption'),
+    priorityFactor: single('priorityFactor'),
+    graduationGoal: single('graduationGoal'),
+    learningStrengths: multi('learningStrength'),
+    riskPreference: single('riskPreference'),
+    strategyRatio: single('strategyRatio'),
+    reportOptions: multi('reportOption'),
+    reportLength: single('reportLength'),
+    reportFocus: single('reportFocus'),
+    freeformNotes: single('preferences')
+  };
+}
+
+function buildPreferences(formData, advisorPreferences = collectAdvisorPreferences(formData)) {
+  const text = String(formData.get('preferences') || '').trim();
+  const lines = [];
+
+  if (advisorPreferences.majorInterests.length) {
+    lines.push(`专业兴趣：${advisorPreferences.majorInterests.join('、')}`);
+  }
+  if (advisorPreferences.cityPreference) {
+    lines.push(`城市偏好：${advisorPreferences.cityPreference}`);
+  }
+  if (advisorPreferences.costPreference) {
+    lines.push(`费用偏好：${advisorPreferences.costPreference}`);
+  }
+  if (advisorPreferences.cooperationPreference) {
+    lines.push(`中外合作：${advisorPreferences.cooperationPreference}`);
+  }
+  if (advisorPreferences.excludedOptions.length) {
+    lines.push(`明确排除：${advisorPreferences.excludedOptions.join('、')}`);
+  }
+  if (advisorPreferences.priorityFactor) {
+    lines.push(`优先级：${advisorPreferences.priorityFactor}`);
+  }
+  if (advisorPreferences.graduationGoal) {
+    lines.push(`毕业倾向：${advisorPreferences.graduationGoal}`);
+  }
+  if (advisorPreferences.learningStrengths.length) {
+    lines.push(`学习优势：${advisorPreferences.learningStrengths.join('、')}`);
+  }
+  if (advisorPreferences.riskPreference) {
+    lines.push(`风险偏好：${advisorPreferences.riskPreference}`);
+  }
+  if (advisorPreferences.strategyRatio) {
+    lines.push(`冲稳保比例：${advisorPreferences.strategyRatio}`);
+  }
+  if (advisorPreferences.reportOptions.length) {
+    lines.push(`报告内容要求：${advisorPreferences.reportOptions.join('、')}`);
+  }
+  if (advisorPreferences.reportLength) {
+    lines.push(`报告长度：${advisorPreferences.reportLength}`);
+  }
+  if (advisorPreferences.reportFocus) {
+    lines.push(`报告重点：${advisorPreferences.reportFocus}`);
+  }
+  if (text) {
+    lines.push(`其他补充说明：${text}`);
+  }
+
+  if (lines.length > 1 && text) {
+    lines.push('结构化选项与其他补充说明如有冲突，以结构化选项为准，并在报告中提示冲突。');
+  }
+
+  return lines.join('\n');
+}
+
+function bindMajorInterestStage() {
+  majorInterestInputs.forEach(input => {
+    input.addEventListener('change', async () => {
+      const formData = new FormData(form);
+      const majorInterests = formData.getAll('majorInterest');
+      if (majorInterests.length === 0) {
+        renderAdvisorStage('basic_info');
+        return;
+      }
+      try {
+        await ensureAdvisorSession();
+        await updateAdvisorSessionStage({
+          currentStage: 'interest_profile',
+          data: { majorInterests }
+        });
+      } catch (err) {
+        renderAdvisorStage('interest_profile');
+      }
+    });
+  });
+}
+
+async function initAdvisorSession() {
+  try {
+    await ensureAdvisorSession();
+  } catch (err) {
+    renderAdvisorStage(null, '流程会话暂不可用，不影响一键生成');
+  }
+}
+
+async function ensureAdvisorSession() {
+  if (advisorSessionId) return advisorSessionId;
+  const resp = await fetch('/api/advisor-sessions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: {} })
+  });
+  const body = await resp.json();
+  if (!resp.ok) throw new Error(body.error || '流程会话创建失败');
+  advisorSessionId = body.session.id;
+  renderAdvisorStage(body.session.currentStage);
+  return advisorSessionId;
+}
+
+async function updateAdvisorSessionStage(input) {
+  if (!advisorSessionId) return null;
+  try {
+    const resp = await fetch(`/api/advisor-sessions/${encodeURIComponent(advisorSessionId)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input)
+    });
+    const body = await resp.json();
+    if (!resp.ok) throw new Error(body.error || '流程会话更新失败');
+    renderAdvisorStage(body.session.currentStage);
+    return body.session;
+  } catch (err) {
+    console.warn('[advisor-session] update failed:', err);
+    return null;
+  }
+}
+
+function renderAdvisorStage(stage, fallbackText) {
+  if (!advisorStageText || !advisorStageBar) return;
+  const meta = ADVISOR_STAGE_META[stage];
+  advisorStageText.textContent = fallbackText || (meta ? meta.label : '阶段一：基础信息收集中');
+  advisorStageBar.style.width = `${meta ? meta.pct : 16}%`;
 }
 
 // ===== Loading 动画与超时提示 =====
