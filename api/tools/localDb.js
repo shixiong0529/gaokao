@@ -70,6 +70,20 @@ function assertAdvisorStage(stage) {
   }
 }
 
+// 会话 data 存储上限：正常表单数据 <2KB，超限直接拒绝，防止匿名接口塞垃圾撑爆磁盘
+const ADVISOR_DATA_MAX_BYTES = 16 * 1024;
+// 超过 30 天未更新的会话视为废弃，可被清理
+const ADVISOR_SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+function serializeAdvisorData(data) {
+  const obj = data && typeof data === 'object' && !Array.isArray(data) ? data : {};
+  const json = JSON.stringify(obj);
+  if (Buffer.byteLength(json, 'utf8') > ADVISOR_DATA_MAX_BYTES) {
+    throw withStatus('会话数据过大', 413);
+  }
+  return json;
+}
+
 export function createLocalDb(databasePath = defaultDbPath()) {
   fs.mkdirSync(path.dirname(databasePath), { recursive: true });
   const db = new Database(databasePath);
@@ -160,6 +174,7 @@ export function createLocalDb(databasePath = defaultDbPath()) {
     SET current_stage = @currentStage, data_json = @dataJson, updated_at = @updatedAt
     WHERE id = @id
   `);
+  const pruneAdvisorSessionsStmt = db.prepare('DELETE FROM advisor_sessions WHERE updated_at < ?');
 
   function saveMessage(input) {
     const name = String(input?.name || '').trim();
@@ -296,16 +311,22 @@ export function createLocalDb(databasePath = defaultDbPath()) {
   }
 
   function createAdvisorSession(initialData = {}) {
+    pruneAdvisorSessions();
     const id = `adv_${crypto.randomBytes(12).toString('hex')}`;
     const createdAt = nowIso();
     insertAdvisorSessionStmt.run({
       id,
       currentStage: 'basic_info',
-      dataJson: JSON.stringify(initialData && typeof initialData === 'object' ? initialData : {}),
+      dataJson: serializeAdvisorData(initialData),
       createdAt,
       updatedAt: createdAt
     });
     return publicAdvisorSession(getAdvisorSessionStmt.get(id));
+  }
+
+  function pruneAdvisorSessions() {
+    const cutoff = new Date(Date.now() - ADVISOR_SESSION_TTL_MS).toISOString();
+    pruneAdvisorSessionsStmt.run(cutoff);
   }
 
   function getAdvisorSession(id) {
@@ -323,7 +344,7 @@ export function createLocalDb(databasePath = defaultDbPath()) {
     updateAdvisorSessionStmt.run({
       id,
       currentStage: nextStage,
-      dataJson: JSON.stringify(nextData),
+      dataJson: serializeAdvisorData(nextData),
       updatedAt: nowIso()
     });
     return getAdvisorSession(id);

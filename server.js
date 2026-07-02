@@ -1,4 +1,5 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,9 +11,31 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.set('trust proxy', true);
+// 只信任 Nginx 这一层代理；true 会信任任意 X-Forwarded-For，导致 IP 可伪造、限流失效
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+function makeLimiter({ windowMs, limit, message, skipFailedRequests = false }) {
+  return rateLimit({
+    windowMs,
+    limit,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    skipFailedRequests,
+    message: { error: message }
+  });
+}
+
+// 生成报告：单次成本高（LLM + 搜索 + 2-4 分钟占用），从严；
+// 失败的请求（4xx/5xx）不计入额度，避免用户在服务波动时被 429 锁死
+const generateLimiter = makeLimiter({ windowMs: 10 * 60 * 1000, limit: 5, message: '生成请求过于频繁，请 10 分钟后再试', skipFailedRequests: true });
+// 留言：防脚本灌库
+const messagesLimiter = makeLimiter({ windowMs: 60 * 60 * 1000, limit: 5, message: '留言过于频繁，请稍后再试' });
+// 管理接口：防口令暴力猜测
+const adminLimiter = makeLimiter({ windowMs: 15 * 60 * 1000, limit: 30, message: '管理接口请求过于频繁，请稍后再试' });
+// 流程会话：页面加载建 1 次 + 表单变更防抖更新，正常用户远低于此
+const advisorLimiter = makeLimiter({ windowMs: 10 * 60 * 1000, limit: 120, message: '会话请求过于频繁，请稍后再试' });
 
 app.get('/vendor/html2canvas.min.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'node_modules/html2canvas/dist/html2canvas.min.js'));
@@ -37,14 +60,15 @@ function requireAdmin(req, res, next) {
   if (!adminToken) {
     return res.status(503).json({ error: 'ADMIN_TOKEN 未配置，管理员接口不可用' });
   }
-  const provided = req.get('x-admin-token') || req.query.token;
+  // 只认 header，token 走 query string 会进 Nginx 访问日志
+  const provided = req.get('x-admin-token');
   if (provided !== adminToken) {
     return res.status(401).json({ error: '管理员口令不正确' });
   }
   next();
 }
 
-app.post('/api/messages', (req, res) => {
+app.post('/api/messages', messagesLimiter, (req, res) => {
   try {
     const saved = getLocalDb().saveMessage({ ...req.body, ...clientMeta(req) });
     res.json({ ok: true, message: saved });
@@ -53,7 +77,7 @@ app.post('/api/messages', (req, res) => {
   }
 });
 
-app.get('/api/admin/messages', requireAdmin, (req, res) => {
+app.get('/api/admin/messages', adminLimiter, requireAdmin, (req, res) => {
   try {
     res.json({ ok: true, messages: getLocalDb().listMessages({ limit: req.query.limit }) });
   } catch (err) {
@@ -61,7 +85,7 @@ app.get('/api/admin/messages', requireAdmin, (req, res) => {
   }
 });
 
-app.get('/api/admin/invite-codes', requireAdmin, (req, res) => {
+app.get('/api/admin/invite-codes', adminLimiter, requireAdmin, (req, res) => {
   try {
     res.json({ ok: true, inviteCodes: getLocalDb().listInviteCodes({ limit: req.query.limit }) });
   } catch (err) {
@@ -69,7 +93,7 @@ app.get('/api/admin/invite-codes', requireAdmin, (req, res) => {
   }
 });
 
-app.post('/api/advisor-sessions', (req, res) => {
+app.post('/api/advisor-sessions', advisorLimiter, (req, res) => {
   try {
     const session = getLocalDb().createAdvisorSession(req.body?.data || {});
     res.json({ ok: true, session });
@@ -78,7 +102,7 @@ app.post('/api/advisor-sessions', (req, res) => {
   }
 });
 
-app.get('/api/advisor-sessions/:id', (req, res) => {
+app.get('/api/advisor-sessions/:id', advisorLimiter, (req, res) => {
   try {
     res.json({ ok: true, session: getLocalDb().getAdvisorSession(req.params.id) });
   } catch (err) {
@@ -86,7 +110,7 @@ app.get('/api/advisor-sessions/:id', (req, res) => {
   }
 });
 
-app.patch('/api/advisor-sessions/:id', (req, res) => {
+app.patch('/api/advisor-sessions/:id', advisorLimiter, (req, res) => {
   try {
     const session = getLocalDb().updateAdvisorSession(req.params.id, {
       currentStage: req.body?.currentStage,
@@ -98,7 +122,7 @@ app.patch('/api/advisor-sessions/:id', (req, res) => {
   }
 });
 
-app.post('/api/admin/invite-codes', requireAdmin, (req, res) => {
+app.post('/api/admin/invite-codes', adminLimiter, requireAdmin, (req, res) => {
   try {
     const input = { ...req.body };
     let lastErr = null;
@@ -123,7 +147,7 @@ app.post('/api/admin/invite-codes', requireAdmin, (req, res) => {
 });
 
 // API 路由（带超时保护）
-app.post('/api/generate', async (req, res) => {
+app.post('/api/generate', generateLimiter, async (req, res) => {
   let reservation = null;
   let timedOut = false;
   // 250 秒服务端超时（前端 230 秒 + 20 秒余量，均大于 Agent 195 秒内部预算）
@@ -160,20 +184,6 @@ app.post('/api/generate', async (req, res) => {
         detail: process.env.NODE_ENV === 'development' ? err.stack : undefined
       });
     }
-  }
-});
-
-// 专门下载 docx 文件（前端拿到 base64 后通过此端点转 blob 也可，这里提供直链备用）
-app.post('/api/download-docx', express.json({ limit: '10mb' }), (req, res) => {
-  try {
-    const { docxBase64, filename } = req.body;
-    if (!docxBase64) return res.status(400).json({ error: '缺少 docxBase64' });
-    const buf = Buffer.from(docxBase64, 'base64');
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename || '高考志愿方案.docx')}"`);
-    res.send(buf);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
   }
 });
 

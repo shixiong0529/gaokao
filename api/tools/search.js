@@ -7,10 +7,20 @@ const MAX_CALLS = parseInt(process.env.SEARCH_MAX_CALLS || '15', 10);
 // 单次搜索超时（秒级），防止某个慢/被限流的搜索拖垮整个请求
 const SEARCH_TIMEOUT_MS = parseInt(process.env.SEARCH_TIMEOUT_MS || '10000', 10);
 
-// 调用计数器（单次请求内）
-let callCount = 0;
-export function resetCallCount() { callCount = 0; }
-export function getCallCount() { return callCount; }
+// 请求级搜索上下文：计数器挂在每次 /api/generate 自己的 ctx 上。
+// 不能用模块级变量——并发请求会互相重置/消耗对方的搜索限额。
+export function createSearchContext() {
+  return { calls: 0 };
+}
+
+// 兜底 ctx：调用方没传 ctx 时退化为进程级计数（仅防失控，不保证隔离）
+const fallbackCtx = createSearchContext();
+
+function consumeCall(ctx) {
+  const c = ctx || fallbackCtx;
+  c.calls++;
+  return c.calls <= MAX_CALLS;
+}
 
 // 带超时的 fetch：到点即 abort，避免无限等待
 async function fetchWithTimeout(url, opts = {}, timeoutMs = SEARCH_TIMEOUT_MS) {
@@ -25,11 +35,6 @@ async function fetchWithTimeout(url, opts = {}, timeoutMs = SEARCH_TIMEOUT_MS) {
 
 // ===== DuckDuckGo HTML 抓取（开发期，免费无 Key） =====
 async function searchDDG(query, options = {}) {
-  callCount++;
-  if (callCount > MAX_CALLS) {
-    return { results: [], truncated: true, reason: '达到单次请求搜索次数上限' };
-  }
-
   const { includeDomains = [], maxResults = 8 } = options;
   const url = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
   const headers = {
@@ -89,10 +94,6 @@ async function searchDDG(query, options = {}) {
 
 // ===== Bing 备选（HTML 结构不稳定，留作备选） =====
 async function searchBing(query, options = {}) {
-  callCount++;
-  if (callCount > MAX_CALLS) {
-    return { results: [], truncated: true, reason: '达到单次请求搜索次数上限' };
-  }
   const { includeDomains = [], maxResults = 8 } = options;
   const url = `https://www.bing.com/search?q=${encodeURIComponent(query)}&count=${maxResults + 4}&setlang=zh-CN`;
   const headers = {
@@ -103,8 +104,8 @@ async function searchBing(query, options = {}) {
   if (!resp.ok) throw new Error(`Bing HTTP ${resp.status}`);
   const html = await resp.text();
   const results = [];
-  // Bing 新结构：h2 > a
-  const linkRegex = /<h2><a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a><\/h2>/g;
+  // Bing 结构多变：h2 可能带 class 等属性，放宽匹配
+  const linkRegex = /<h2[^>]*><a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a><\/h2>/g;
   let m;
   while ((m = linkRegex.exec(html)) !== null && results.length < maxResults) {
     const linkUrl = m[1];
@@ -117,10 +118,6 @@ async function searchBing(query, options = {}) {
 
 // ===== Tavily（上线期，需 Key） =====
 async function searchTavily(query, options = {}) {
-  callCount++;
-  if (callCount > MAX_CALLS) {
-    return { results: [], truncated: true, reason: '达到单次请求搜索次数上限' };
-  }
   const { includeDomains = [], maxResults = 8 } = options;
   const apiKey = process.env.TAVILY_API_KEY;
   if (!apiKey) throw new Error('TAVILY_API_KEY 未配置');
@@ -135,28 +132,63 @@ async function searchTavily(query, options = {}) {
       max_results: maxResults
     })
   });
-  if (!resp.ok) throw new Error(`Tavily HTTP ${resp.status}`);
+  if (!resp.ok) {
+    const body = await resp.text().catch(() => '');
+    throw new Error(`Tavily HTTP ${resp.status}${/usage limit/i.test(body) ? '（额度已用完）' : ''}`);
+  }
   const data = await resp.json();
+  // Tavily 额度耗尽时可能返回 200 + detail.error
+  if (data.detail?.error) throw new Error(`Tavily: ${data.detail.error}`);
   return {
     results: (data.results || []).map(r => ({ title: r.title, url: r.url, snippet: r.content })),
     truncated: false
   };
 }
 
+// ===== 渠道降级链 =====
+// 主渠道失败（额度耗尽/被限流/网络不通）自动切换其他渠道，故障渠道冷却 5 分钟
+const PROVIDER_FNS = { tavily: searchTavily, bing: searchBing, ddg: searchDDG };
+const PROVIDER_COOLDOWN_MS = 5 * 60 * 1000;
+const providerCooldown = new Map(); // provider → 冷却截止时间戳
+
+function providerChain() {
+  const primary = PROVIDER_FNS[PROVIDER] ? PROVIDER : 'ddg';
+  return [primary, ...Object.keys(PROVIDER_FNS).filter(p => p !== primary)];
+}
+
+function isCoolingDown(provider) {
+  const until = providerCooldown.get(provider);
+  return until != null && Date.now() < until;
+}
+
 // ===== 统一入口 =====
 // 任何失败（超时/网络/限流）都不抛出，返回空结果并附 error，避免单个搜索拖垮整个请求
 export async function webSearch(query, options = {}) {
-  try {
-    if (PROVIDER === 'tavily') return await searchTavily(query, options);
-    if (PROVIDER === 'bing') return await searchBing(query, options);
-    return await searchDDG(query, options);
-  } catch (err) {
-    const reason = err.name === 'AbortError'
-      ? `搜索超时（${Math.round(SEARCH_TIMEOUT_MS / 1000)}秒）`
-      : (err.message || '搜索失败');
-    console.error(`[search] "${String(query).slice(0, 40)}" 失败: ${reason}`);
-    return { results: [], error: reason };
+  if (!consumeCall(options.ctx)) {
+    return { results: [], truncated: true, reason: '达到单次请求搜索次数上限' };
   }
+
+  let lastError = null;
+  for (const provider of providerChain()) {
+    if (isCoolingDown(provider)) continue;
+    try {
+      const res = await PROVIDER_FNS[provider](query, options);
+      if (res.results.length > 0) return res;
+      // 域名白名单可能把结果全过滤掉了：放宽限制在本渠道重试一次
+      if (options.includeDomains?.length) {
+        const relaxed = await PROVIDER_FNS[provider](query, { ...options, includeDomains: [] });
+        if (relaxed.results.length > 0) return relaxed;
+      }
+      // 本渠道正常但确实搜不到，换下一渠道再试
+    } catch (err) {
+      lastError = err.name === 'AbortError'
+        ? `搜索超时（${Math.round(SEARCH_TIMEOUT_MS / 1000)}秒）`
+        : (err.message || '搜索失败');
+      providerCooldown.set(provider, Date.now() + PROVIDER_COOLDOWN_MS);
+      console.error(`[search] ${provider} "${String(query).slice(0, 40)}" 失败并冷却5分钟: ${lastError}`);
+    }
+  }
+  return { results: [], error: lastError || '各搜索渠道均未返回结果' };
 }
 
 // 权威站点白名单（高考数据可信源）

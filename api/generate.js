@@ -2,7 +2,7 @@
 // Agent 编排核心：DeepSeek function calling 循环
 // 工作流：用户输入 → LLM 决策调工具 → 搜索/计算 → 回传 LLM → 生成志愿方案 HTML
 
-import { webSearch, resetCallCount, AUTHORITY_DOMAINS } from './tools/search.js';
+import { webSearch, createSearchContext, AUTHORITY_DOMAINS } from './tools/search.js';
 import { generateReport } from './tools/report.js';
 import { queryScoreToRank, queryBatchLines, getProvinceMode } from './tools/gaokaoData.js';
 import { hasLocalAdmission, queryLocalCandidates, formatLocalCandidates } from './tools/localAdmission.js';
@@ -373,48 +373,75 @@ const SYSTEM_PROMPT = `你是一名资深高考志愿填报顾问，服务对象
 4. **目标：6 轮内完成**。典型路径：① 结构化接口查批次线+位次 → ② 搜 5-6 所候选院校信息 → ③ 批量搜近三年分数线 → ④ 搜选科要求 → ⑤ 调 finish。
 5. 每轮可并行调用多个工具，但避免单轮超过 6 个工具调用。`;
 
-// ===== 工具执行器（带缓存，避免重复搜索） =====
+// ===== 搜索结果缓存（跨请求共享，带 TTL 和容量上限） =====
+const CACHE_TTL_MS = 60 * 60 * 1000;
+const CACHE_MAX_ENTRIES = 500;
 const searchCache = new Map();
-async function executeTool(name, args) {
+
+function cacheGet(key) {
+  const entry = searchCache.get(key);
+  if (!entry) return undefined;
+  if (Date.now() > entry.expires) {
+    searchCache.delete(key);
+    return undefined;
+  }
+  return entry.value;
+}
+
+function cacheSet(key, value) {
+  if (searchCache.size >= CACHE_MAX_ENTRIES) {
+    // Map 迭代按插入序，删最老的一批
+    for (const k of searchCache.keys()) {
+      searchCache.delete(k);
+      if (searchCache.size < CACHE_MAX_ENTRIES * 0.9) break;
+    }
+  }
+  searchCache.set(key, { value, expires: Date.now() + CACHE_TTL_MS });
+}
+
+// ===== 工具执行器（searchCtx 为请求级搜索限额上下文） =====
+async function executeTool(name, args, searchCtx) {
   const cacheKey = name + ':' + JSON.stringify(args);
-  if (searchCache.has(cacheKey)) {
+  const cached = cacheGet(cacheKey);
+  if (cached !== undefined) {
     console.log(`[agent] cache hit: ${name}`);
-    return searchCache.get(cacheKey);
+    return cached;
   }
   let result;
   switch (name) {
     case 'search_college_info':
       result = await webSearch(`${args.keyword} 院校简介 办学层次 特色专业`, {
         maxResults: 6,
-        includeDomains: [...AUTHORITY_DOMAINS.chsi, ...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.college]
+        includeDomains: [...AUTHORITY_DOMAINS.chsi, ...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.college],
+        ctx: searchCtx
       });
       break;
 
     case 'search_admission_score':
       result = await webSearch(
         `${args.college} ${args.province} ${args.firstChoice}类 近三年 录取分数线 最低位次 2022 2023 2024`,
-        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.chsi] }
+        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.chsi], ctx: searchCtx }
       );
       break;
 
     case 'search_recruitment_plan':
       result = await webSearch(
         `${args.college} ${args.province} ${args.year || new Date().getFullYear()} 招生计划 招生人数 专业组`,
-        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.chsi, ...AUTHORITY_DOMAINS.eol] }
+        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.chsi, ...AUTHORITY_DOMAINS.eol], ctx: searchCtx }
       );
       break;
 
     case 'search_rank_table':
       result = await webSearch(
         `${args.province} ${args.year || new Date().getFullYear()} ${args.firstChoice}类 一分一段表 ${args.score}分 位次`,
-        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.exam院] }
+        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.exam院], ctx: searchCtx }
       );
       break;
 
     case 'search_subject_requirement':
       result = await webSearch(
         `${args.college} ${args.province} 选科要求 专业组 首选物理历史 再选科目`,
-        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.chsi] }
+        { maxResults: 8, includeDomains: [...AUTHORITY_DOMAINS.eol, ...AUTHORITY_DOMAINS.chsi], ctx: searchCtx }
       );
       break;
 
@@ -462,13 +489,13 @@ async function executeTool(name, args) {
     }
 
     case 'finish':
-      result = { __finished: true, data: args };
-      break;
+      // finish 不缓存：它是控制流，不是可复用的搜索结果
+      return { __finished: true, data: args };
 
     default:
       result = { error: `未知工具: ${name}` };
   }
-  searchCache.set(cacheKey, result);
+  cacheSet(cacheKey, result);
   return result;
 }
 
@@ -485,7 +512,7 @@ export async function generatePlan(input) {
     throw { status: 400, message: '请填写高考分数' };
   }
 
-  resetCallCount();
+  const searchCtx = createSearchContext();
 
   const allSources = [];
 
@@ -567,6 +594,7 @@ export async function generatePlan(input) {
 
   // ===== 本地投档线候选池（输入侧：把官方投档线按等效分初筛成冲稳保候选，不进 LLM 输出）=====
   let localAdmissionSummary = '';
+  let localCand = null; // 提升作用域：LLM 彻底失败时用它构造兜底报告
   if (hasLocalAdmission(province) && candidate.score) {
     const bk = preflightData.batchLines.filter(b => /本科/.test(b.batch));
     const y26 = bk.find(b => String(b.year) === String(currentYear));
@@ -577,7 +605,7 @@ export async function generatePlan(input) {
       equiv = Math.round(candidate.score - (y26.score - y25.score));
       equivNote = `（按本科线差 ${y26.score}→${y25.score} 平移到 ${currentYear - 1} 年口径）`;
     }
-    const localCand = queryLocalCandidates({ province, subjectType: candidate.subjectType, equivScore: equiv });
+    localCand = queryLocalCandidates({ province, subjectType: candidate.subjectType, equivScore: equiv });
     if (localCand) {
       localAdmissionSummary = formatLocalCandidates(localCand, equivNote);
       allSources.push({
@@ -648,63 +676,39 @@ ${localAdmissionSummary
 
   let finalData = null;
   let rounds = 0;
+  let nudgedToFinish = false;
   const startedAt = Date.now();
+  // 给「强制收尾」预留的时间：循环提前结束，保证还有一次强制 finish 的机会
+  const FORCED_FINISH_RESERVE_MS = 50000;
 
-  while (rounds < MAX_ROUNDS && Date.now() - startedAt < AGENT_DEADLINE_MS) {
+  while (rounds < MAX_ROUNDS && Date.now() - startedAt < AGENT_DEADLINE_MS - FORCED_FINISH_RESERVE_MS) {
     rounds++;
-    console.log(`[agent] round ${rounds}, search calls: ${getCallCountForLog()}, elapsed: ${Math.round((Date.now() - startedAt) / 1000)}s`);
+    console.log(`[agent] round ${rounds}, search calls: ${searchCtx.calls}, elapsed: ${Math.round((Date.now() - startedAt) / 1000)}s`);
 
-    let resp;
+    const remaining = AGENT_DEADLINE_MS - FORCED_FINISH_RESERVE_MS - (Date.now() - startedAt);
+    let msg;
     try {
-      // 调用 DeepSeek：超时取「配置上限」与「剩余预算」的较小值，避免最后一轮拖过服务端超时
-      const remaining = AGENT_DEADLINE_MS - (Date.now() - startedAt);
-      const dsTimeoutMs = Math.max(20000, Math.min(DEEPSEEK_TIMEOUT_MS, remaining));
-      const dsController = new AbortController();
-      const dsTimeout = setTimeout(() => dsController.abort(), dsTimeoutMs);
-      resp = await fetch(`${BASE_URL}/v1/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          messages,
-          tools: TOOLS,
-          tool_choice: 'auto',
-          temperature: 0.3,
-          max_tokens: 16000
-        }),
-        signal: dsController.signal
+      msg = await callDeepSeek(messages, {
+        toolChoice: 'auto',
+        timeoutMs: Math.max(20000, Math.min(DEEPSEEK_TIMEOUT_MS, remaining))
       });
-      clearTimeout(dsTimeout);
-    } catch (fetchErr) {
-      if (fetchErr.name === 'AbortError') {
-        console.error(`[agent] round ${rounds} DeepSeek 请求超时`);
-        // 超时：尝试返回已收集的部分数据
-        if (finalData) break; // 已有 finish 数据，直接返回
-        throw { status: 504, message: 'AI 处理超时，七板块数据量较大。建议减少"院校偏好"描述，让查询更聚焦；或稍后重试。' };
-      }
-      throw fetchErr;
+    } catch (err) {
+      // 单轮失败（超时/网络/5xx 重试后仍失败）不再整单报错：跳出循环走强制收尾
+      console.error(`[agent] round ${rounds} DeepSeek 调用失败，转入强制收尾:`, err.message || err);
+      break;
     }
-
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.error('[deepseek] error:', resp.status, errText);
-      throw { status: 502, message: `DeepSeek API 错误 ${resp.status}: ${errText.slice(0, 200)}` };
-    }
-
-    const data = await resp.json();
-    const msg = data.choices[0].message;
     messages.push(msg);
 
-    // 无 tool_calls → 结束
+    // 无 tool_calls：模型直接回了文本。提醒一次让它调 finish；再犯就走强制收尾
     if (!msg.tool_calls || msg.tool_calls.length === 0) {
-      // LLM 直接返回文本（未调 finish），构造空骨架
-      finalData = {
-        executiveSummary: { rows: [], conclusion: msg.content || '方案已生成' },
-        rawText: msg.content
-      };
+      if (!nudgedToFinish) {
+        nudgedToFinish = true;
+        messages.push({
+          role: 'user',
+          content: '请不要直接输出文本。立即调用 finish 工具，把方案以七板块结构化参数输出。'
+        });
+        continue;
+      }
       break;
     }
 
@@ -741,7 +745,7 @@ ${localAdmissionSummary
           }
         }
       }
-      const result = await executeTool(tc.function.name, args);
+      const result = await executeTool(tc.function.name, args, searchCtx);
       return { tc, args, result };
     }));
 
@@ -818,8 +822,50 @@ ${localAdmissionSummary
     if (shouldFinish) break;
   }
 
+  let fallbackMode = null;
+
+  // ===== 第二道防线：强制收尾 =====
+  // 循环耗尽仍没有 finish：强制模型基于已收集数据立即输出七板块
   if (!finalData) {
-    throw { status: 500, message: `Agent 在 ${MAX_ROUNDS} 轮内未完成，可能搜索结果不足` };
+    console.log('[agent] 循环结束未拿到 finish，尝试强制收尾');
+    try {
+      messages.push({
+        role: 'user',
+        content: '时间预算已用完。请立即调用 finish 工具，基于以上已收集的全部数据输出完整七板块方案。查不到的数据标注"数据待核实"，不要编造。这是最后一次调用，不要再使用其他工具。'
+      });
+      const msg = await callDeepSeek(messages, {
+        toolChoice: { type: 'function', function: { name: 'finish' } },
+        timeoutMs: 45000
+      });
+      const tc = (msg.tool_calls || [])[0];
+      if (tc && tc.function?.name === 'finish') {
+        let args;
+        try {
+          args = JSON.parse(tc.function.arguments || '{}');
+        } catch (e) {
+          args = repairTruncatedJSON(tc.function.arguments || '{}', 'finish');
+        }
+        if (args && Object.keys(args).length > 0) {
+          finalData = normalizeFinishData(args);
+          fallbackMode = 'forced-finish';
+          console.log('[agent] 强制收尾成功');
+        }
+      }
+    } catch (e) {
+      console.error('[agent] 强制收尾失败:', e.message || e);
+    }
+  }
+
+  // ===== 第三道防线：本地官方投档线确定性兜底 =====
+  // LLM 彻底不可用时，用官方投档线候选池直接构造报告（不依赖任何外部服务）
+  if (!finalData && localCand) {
+    console.log('[agent] LLM 不可用，启用本地投档线兜底报告');
+    finalData = buildLocalFallbackReport(candidate, localCand, preflightData, currentYear);
+    fallbackMode = 'local-admission';
+  }
+
+  if (!finalData) {
+    throw { status: 500, message: `生成失败：AI 服务暂时不可用，且该省份暂无本地兜底数据。请稍后重试（本次不消耗邀请码）。` };
   }
 
   // 来源兜底：若 LLM 在 finish.sources 里给了三件套，优先用；否则用 allSources 兜底
@@ -867,10 +913,181 @@ ${localAdmissionSummary
     sources: finalSources,
     meta: {
       rounds,
-      searchCalls: getCallCountForLog(),
-      model: MODEL
+      searchCalls: searchCtx.calls,
+      model: MODEL,
+      fallback: fallbackMode
     }
   };
+}
+
+/**
+ * 调用 DeepSeek chat completions，瞬时故障（网络错误/5xx/429）自动重试一次
+ * @returns {Promise<Object>} choices[0].message
+ */
+async function callDeepSeek(messages, { toolChoice = 'auto', timeoutMs = DEEPSEEK_TIMEOUT_MS } = {}) {
+  const MAX_ATTEMPTS = 3;
+  const BACKOFF_MS = [0, 2000, 6000]; // 高峰期 503 常在几秒后恢复，递增退避
+  let lastErr = null;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    if (BACKOFF_MS[attempt - 1]) await new Promise(r => setTimeout(r, BACKOFF_MS[attempt - 1]));
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const resp = await fetch(`${BASE_URL}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages,
+          tools: TOOLS,
+          tool_choice: toolChoice,
+          temperature: 0.3,
+          max_tokens: 16000
+        }),
+        signal: controller.signal
+      });
+      if (!resp.ok) {
+        const errText = await resp.text().catch(() => '');
+        const retriable = resp.status >= 500 || resp.status === 429;
+        lastErr = new Error(`DeepSeek API 错误 ${resp.status}: ${errText.slice(0, 200)}`);
+        console.error(`[deepseek] attempt ${attempt}/${MAX_ATTEMPTS}:`, resp.status, errText.slice(0, 150));
+        if (retriable && attempt < MAX_ATTEMPTS) continue;
+        throw lastErr;
+      }
+      const data = await resp.json();
+      const msg = data.choices?.[0]?.message;
+      if (!msg) throw new Error('DeepSeek 返回结构异常：无 choices[0].message');
+      return msg;
+    } catch (err) {
+      lastErr = err;
+      if (err.name === 'AbortError') {
+        // 超时不重试（时间预算已耗），直接抛给上层决策
+        throw new Error(`DeepSeek 请求超时（${Math.round(timeoutMs / 1000)}秒）`);
+      }
+      if (attempt < MAX_ATTEMPTS) {
+        console.error(`[deepseek] attempt ${attempt}/${MAX_ATTEMPTS} 失败，退避后重试:`, err.message);
+        continue;
+      }
+      throw lastErr;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastErr;
+}
+
+/**
+ * 第三道防线：LLM 彻底不可用时，用本地官方投档线候选池直接构造七板块报告。
+ * 全部数据来自官方投档线与预取批次线，无编造成分；分析文字为模板生成。
+ */
+function buildLocalFallbackReport(candidate, localCand, preflightData, currentYear) {
+  const tierMeta = [
+    { level: '冲', label: '冲一冲（录取概率较低，但有希望）', take: 3 },
+    { level: '稳', label: '稳一稳（录取概率中等偏上）', take: 4 },
+    { level: '保', label: '保一保（录取概率高，兜底院校）', take: 3 }
+  ];
+
+  const describe = (r) => {
+    const diffTxt = r.diff > 0 ? `高于等效分 ${r.diff} 分` : (r.diff < 0 ? `低于等效分 ${-r.diff} 分` : '与等效分持平');
+    return `${localCand.dataYear} 年官方投档线 ${r.score} 分，${diffTxt}${r.nature ? '，' + r.nature : ''}${r.note ? '，' + r.note : ''}`;
+  };
+
+  const tiers = tierMeta.map(({ level, label, take }) => ({
+    level,
+    label,
+    schools: (localCand.tiers[level] || []).slice(0, take).map(r => ({
+      name: `${r.school} ${r.group}`,
+      score: String(r.score),
+      reason: describe(r)
+    }))
+  })).filter(t => t.schools.length > 0);
+
+  let order = 0;
+  const volunteerTable = tiers.flatMap(t =>
+    t.schools.map(s => ({
+      order: ++order,
+      category: t.level,
+      college: s.name,
+      city: '',
+      refScore: s.score,
+      transfer: t.level === '冲' ? '✅ 是' : '视专业组而定'
+    }))
+  );
+
+  const schoolDetails = tiers.flatMap(t =>
+    t.schools.map(s => ({
+      name: s.name,
+      category: t.level,
+      location: '湖南或详见招生计划',
+      type: '',
+      ownership: '',
+      minScore: s.score,
+      rank: '',
+      hasMaster: '',
+      strengths: '待核实（本报告为数据兜底版，未联网补充院校详情）',
+      analysis: s.reason
+    }))
+  );
+
+  const batchLines = preflightData.batchLines || [];
+  const rows = [
+    { k: '省份 / 科类', v: `${candidate.province} ${candidate.subjectType}` },
+    { k: '高考总分', v: `${candidate.score}分` },
+    ...(candidate.rank ? [{ k: '全省位次', v: `约 ${Number(candidate.rank).toLocaleString()}` }] : []),
+    { k: '等效分（换算到 ' + localCand.dataYear + ' 年）', v: `约 ${localCand.equivScore}分` },
+    { k: '报告类型', v: '官方投档线数据版（AI 深度分析暂不可用）' }
+  ];
+
+  return normalizeFinishData({
+    executiveSummary: {
+      rows,
+      conclusion: `本报告由 ${localCand.dataYear} 年${candidate.province}省本科批官方投档线数据自动生成：按你的等效分 ${localCand.equivScore} 分，筛选出冲 ${tiers.find(t => t.level === '冲')?.schools.length || 0} 所、稳 ${tiers.find(t => t.level === '稳')?.schools.length || 0} 所、保 ${tiers.find(t => t.level === '保')?.schools.length || 0} 所院校专业组。AI 深度分析服务暂时不可用，院校详情请自行核实；投档线数据本身来自省教育考试院官方公布，真实可靠。`
+    },
+    dataBasis: {
+      yearLabel: `${currentYear} 年批次线 + ${localCand.dataYear} 年官方投档线`,
+      batchLines,
+      schoolRefs: volunteerTable.map(v => ({ name: v.college, score: v.refScore, rank: '', nature: '', type: '' })),
+      note: '投档线精确到院校专业组，来自省教育考试院官方公布。',
+      sourceNote: '批次线来自结构化数据接口；投档线来自湖南省教育考试院官方公布（本地库）。'
+    },
+    scoreAnalysis: {
+      paragraphs: [
+        `你的高考总分为 ${candidate.score} 分${candidate.rank ? `，全省位次约 ${Number(candidate.rank).toLocaleString()}` : ''}。`,
+        `按两年本科线差平移，换算到 ${localCand.dataYear} 年约为 ${localCand.equivScore} 分，以此对照 ${localCand.dataYear} 年各院校专业组投档线筛选志愿。`,
+        '本报告为数据版：仅使用官方投档线做客观分层，未含 AI 对院校实力、专业前景的主观分析，请结合官方资料自行判断。'
+      ],
+      equivalentScore: `约 ${localCand.equivScore} 分（${localCand.dataYear} 年口径）`
+    },
+    tiers,
+    schoolDetails,
+    volunteerTable,
+    riskChecklist: {
+      timeliness: [
+        `投档线为 ${localCand.dataYear} 年数据，${currentYear} 年招生计划与分数线可能变动，以省教育考试院最新公布为准。`,
+        '院校存在"大小年"波动，历史投档线不代表今年结果。'
+      ],
+      subjectMatch: [
+        '本报告未核对各专业组的再选科目要求，填报前务必在官方招生计划中核实自己的选科是否符合。',
+        '选科不符的专业组填报无效，属于硬性约束。'
+      ],
+      transfer: [
+        '冲档院校建议服从专业调剂，降低退档风险。',
+        '服从调剂前请查看专业组内全部专业，确认没有完全不能接受的专业。'
+      ],
+      specialAdmission: [
+        '民族班、专项计划、定向等特殊类型已从候选中排除；如你符合专项资格，可关注相应批次的降分机会。',
+        '提前批与本批次志愿互不影响，可按需另行填报。'
+      ],
+      subjectScore: [
+        '部分专业对单科成绩有要求（如外语类对英语），请在招生章程中核实。',
+        '基于近年数据的参考判断，非录取保证。'
+      ]
+    },
+    sources: []
+  });
 }
 
 // 把工具调用翻译成"数据项"标签，用于来源三件套兜底
@@ -915,11 +1132,6 @@ const PROVINCE_AUTHORITY = {
   '上海': { name: '上海市教育考试院', url: 'https://www.shmeea.edu.cn/' },
   '天津': { name: '天津市教育招生考试院', url: 'http://www.zhaokao.net/' }
 };
-
-function getCallCountForLog() {
-  // 从 search.js 读取（简单实现）
-  return 'N';
-}
 
 /**
  * 修复被 max_tokens 截断的 JSON 参数
