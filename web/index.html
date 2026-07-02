@@ -48,6 +48,20 @@
   .mj-chip:has(input:checked) .mj-box { background:var(--gold); color:#fff; border:1px solid var(--gold); }
   .mj-chip:has(input:disabled) { opacity:0.4; cursor:not-allowed; }
 
+  .mj-stage-panel { transition:border-color .2s, background .2s, box-shadow .2s; }
+  .mj-stage-panel[open] {
+    border-color:rgba(168,130,60,0.44) !important;
+    background:#FFFEF8 !important;
+    box-shadow:inset 4px 0 0 var(--gold), 0 14px 28px -24px rgba(22,35,63,0.34);
+  }
+  .mj-stage-panel[open] > .mj-stage-summary {
+    background:rgba(168,130,60,0.12);
+    border-bottom:1px solid rgba(168,130,60,0.26);
+  }
+  .mj-stage-panel[open] .mj-stage-body {
+    background:rgba(22,35,63,0.025);
+  }
+
   /* 提交按钮 */
   .mj-submit { transition:background .28s, color .28s, border-color .28s; }
   .mj-submit:hover:not(:disabled) { background:var(--gold); border-color:var(--gold); color:#1c1305; }
@@ -259,15 +273,15 @@
           </div>
 
           <div id="optionalStagePanels" style="grid-column:1 / -1; display:flex; flex-direction:column; gap:12px;">
-            <details id="majorInterestPanel" data-advisor-stage="interest_profile" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
-              <summary style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
+            <details id="majorInterestPanel" class="mj-stage-panel" data-advisor-stage="interest_profile" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
+              <summary class="mj-stage-summary" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
                 <span>
                   <span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.4px; color:var(--gold); text-transform:uppercase;">Stage 2</span>
                   <span style="display:block; font-family:'Noto Serif SC',serif; font-size:18px; letter-spacing:1.5px; color:var(--ink); margin-top:2px;">专业兴趣初筛</span>
                 </span>
                 <span style="font-size:12px; color:var(--muted); letter-spacing:0.5px; text-align:right;">可选项，可以跳过，点开才展开具体选项内容。</span>
               </summary>
-              <div style="border-top:1px solid var(--line); padding:18px;">
+              <div class="mj-stage-body" style="border-top:1px solid var(--line); padding:18px;">
                 <div class="mj-stage-chip-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
                   <label class="mj-chip"><input type="checkbox" name="majorInterest" value="计算机类"><span class="mj-box">✓</span><span>计算机类</span></label>
                   <label class="mj-chip"><input type="checkbox" name="majorInterest" value="电子信息类"><span class="mj-box">✓</span><span>电子信息类</span></label>
@@ -281,15 +295,15 @@
               </div>
             </details>
 
-            <details id="personalProfilePanel" data-advisor-stage="personal_profile" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
-              <summary style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
+            <details id="personalProfilePanel" class="mj-stage-panel" data-advisor-stage="personal_profile" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
+              <summary class="mj-stage-summary" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
                 <span>
                   <span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.4px; color:var(--gold); text-transform:uppercase;">Stage 3</span>
                   <span style="display:block; font-family:'Noto Serif SC',serif; font-size:18px; letter-spacing:1.5px; color:var(--ink); margin-top:2px;">个人情况补充</span>
                 </span>
                 <span style="font-size:12px; color:var(--muted); letter-spacing:0.5px; text-align:right;">可选项，可以跳过，点开才展开具体选项内容。</span>
               </summary>
-              <div class="mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="mj-stage-body mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
                   <label style="display:block; font-size:13px; color:var(--muted); margin-bottom:8px;">城市偏好</label>
                   <select name="cityPreference" class="mj-field" style="width:100%; box-sizing:border-box; padding:12px 14px; font-family:'Noto Sans SC',sans-serif; font-size:14px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
@@ -334,15 +348,15 @@
               </div>
             </details>
 
-            <details id="explorationPanel" data-advisor-stage="exploration" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
-              <summary style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
+            <details id="explorationPanel" class="mj-stage-panel" data-advisor-stage="exploration" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
+              <summary class="mj-stage-summary" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
                 <span>
                   <span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.4px; color:var(--gold); text-transform:uppercase;">Stage 4</span>
                   <span style="display:block; font-family:'Noto Serif SC',serif; font-size:18px; letter-spacing:1.5px; color:var(--ink); margin-top:2px;">深度偏好探索</span>
                 </span>
                 <span style="font-size:12px; color:var(--muted); letter-spacing:0.5px; text-align:right;">可选项，可以跳过，点开才展开具体选项内容。</span>
               </summary>
-              <div class="mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="mj-stage-body mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
                   <label style="display:block; font-size:13px; color:var(--muted); margin-bottom:8px;">优先级</label>
                   <select name="priorityFactor" class="mj-field" style="width:100%; box-sizing:border-box; padding:12px 14px; font-family:'Noto Sans SC',sans-serif; font-size:14px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
@@ -376,15 +390,15 @@
               </div>
             </details>
 
-            <details id="draftPlanPanel" data-advisor-stage="draft_plan" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
-              <summary style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
+            <details id="draftPlanPanel" class="mj-stage-panel" data-advisor-stage="draft_plan" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
+              <summary class="mj-stage-summary" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
                 <span>
                   <span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.4px; color:var(--gold); text-transform:uppercase;">Stage 5</span>
                   <span style="display:block; font-family:'Noto Serif SC',serif; font-size:18px; letter-spacing:1.5px; color:var(--ink); margin-top:2px;">候选方案</span>
                 </span>
                 <span style="font-size:12px; color:var(--muted); letter-spacing:0.5px; text-align:right;">可选项，可以跳过，点开才展开具体选项内容。</span>
               </summary>
-              <div class="mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="mj-stage-body mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
                   <label style="display:block; font-size:13px; color:var(--muted); margin-bottom:8px;">风险偏好</label>
                   <select name="riskPreference" class="mj-field" style="width:100%; box-sizing:border-box; padding:12px 14px; font-family:'Noto Sans SC',sans-serif; font-size:14px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">
@@ -415,15 +429,15 @@
               </div>
             </details>
 
-            <details id="finalReportPanel" data-advisor-stage="report_settings" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
-              <summary style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
+            <details id="finalReportPanel" class="mj-stage-panel" data-advisor-stage="report_settings" style="border:1px solid var(--line); background:rgba(255,255,255,0.62);">
+              <summary class="mj-stage-summary" style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style-position:inside;">
                 <span>
                   <span style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.4px; color:var(--gold); text-transform:uppercase;">Stage 6</span>
                   <span style="display:block; font-family:'Noto Serif SC',serif; font-size:18px; letter-spacing:1.5px; color:var(--ink); margin-top:2px;">最终报告</span>
                 </span>
                 <span style="font-size:12px; color:var(--muted); letter-spacing:0.5px; text-align:right;">可选项，可以跳过，点开才展开具体选项内容。</span>
               </summary>
-              <div class="mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="mj-stage-body mj-stage-grid" style="border-top:1px solid var(--line); padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
                   <label style="display:block; font-size:13px; color:var(--muted); margin-bottom:8px;">报告长度</label>
                   <select name="reportLength" class="mj-field" style="width:100%; box-sizing:border-box; padding:12px 14px; font-family:'Noto Sans SC',sans-serif; font-size:14px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none;">

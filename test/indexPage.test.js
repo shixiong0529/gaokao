@@ -90,3 +90,14 @@ test('index exposes structured optional advisor controls', () => {
     assert.match(html, new RegExp(`name="${fieldName}"`));
   }
 });
+
+test('index visually separates expanded optional advisor stages', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  assert.match(html, /\.mj-stage-panel\[open\]/);
+  assert.match(html, /\.mj-stage-panel\[open\] > \.mj-stage-summary/);
+  assert.match(html, /\.mj-stage-panel\[open\] \.mj-stage-body/);
+  assert.match(html, /box-shadow:inset 4px 0 0 var\(--gold\)/);
+  assert.match(html, /class="mj-stage-summary"/);
+  assert.match(html, /class="mj-stage-body/);
+});
