@@ -108,7 +108,6 @@ gaokao/
 ├── server.js                 # Express 入口（静态文件 + API 路由 + 限流 + 超时控制）
 ├── ecosystem.config.cjs      # PM2 配置
 ├── nginx.conf.example        # Nginx 反代配置
-├── docs/plans/               # 设计文档
 └── .env                      # 环境变量（API Key 等）
 ```
 
