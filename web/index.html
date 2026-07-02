@@ -78,6 +78,11 @@
   .mj-nav a:hover { color:var(--gold); }
   .mj-nav-burger { display: none; }
 
+  /* 首页引入了 style.css（结果区/加载态需要），其中 * { box-sizing:border-box }
+     会让顶栏比子页窄 80px、Logo 小一圈（子页未引入该文件，是 content-box）。
+     这里把顶栏及其内部还原为 content-box，与子页渲染完全一致 */
+  .mj-header, .mj-header * { box-sizing: content-box; }
+
   /* 生成结果区脱离 .mj-resultsec 的 920px 限宽，铺满视口方便阅读长表格 */
   #result {
     width: 100vw;

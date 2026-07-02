@@ -18,6 +18,7 @@ const advisorStagePanels = Array.from(document.querySelectorAll('[data-advisor-s
 let currentHtml = '';
 let currentDocxBase64 = null;
 let currentReportUrl = null;
+let reportFrameResizeObserver = null;
 let loadingTimer = null;
 let elapsedTimer = null;
 let startTime = 0;
@@ -186,10 +187,15 @@ function restoreReportFromSession() {
     currentDocxBase64 = saved.docxBase64 || null;
     resultEl.hidden = false;
     renderReportPreview(saved.html);
-  } catch (e) { /* 恢复失败不影响正常流程 */ }
+  } catch (e) {
+    // 恢复失败不阻断正常流程，但必须可见——上次就是静默 catch 吞掉了 TDZ 错误，
+    // 留下一块 600px 的空白 iframe
+    console.warn('[report-restore] 恢复上次报告失败:', e);
+    resultEl.hidden = true;
+  }
 }
-
-restoreReportFromSession();
+// 注意：restoreReportFromSession() 的调用在文件末尾——
+// 它依赖全文件的函数与 let 声明都初始化完毕（let 存在暂时性死区）
 
 initAdvisorSession();
 bindAdvisorStagePanels();
@@ -435,8 +441,6 @@ function scrollToReportResult() {
 }
 
 // ===== 报告预览 =====
-let reportFrameResizeObserver = null;
-
 function resetReportPreview() {
   if (currentReportUrl) {
     URL.revokeObjectURL(currentReportUrl);
@@ -675,3 +679,6 @@ window.openReport = function() {
   w.document.write(currentHtml);
   w.document.close();
 };
+
+// 恢复上次生成的报告（刷新不丢）。必须放在文件末尾：见 restoreReportFromSession 的注释
+restoreReportFromSession();

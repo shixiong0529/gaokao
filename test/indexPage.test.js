@@ -13,6 +13,14 @@ test('index footer does not expose admin entry and links compliance pages', () =
   assert.match(html, /href="terms\.html"/);
 });
 
+test('index header neutralizes style.css border-box so it matches sub pages', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  // 首页引入 style.css（* { box-sizing:border-box }），子页没有；
+  // 不还原为 content-box 时首页顶栏会窄 80px、Logo 小一圈
+  assert.match(html, /\.mj-header, \.mj-header \* \{ box-sizing: content-box; \}/);
+});
+
 test('all public pages have mobile nav burger menu', () => {
   for (const page of ['index.html', 'reference.html', 'college-data.html', 'methodology.html', 'about.html', 'privacy.html', 'terms.html']) {
     const html = readFileSync(new URL(`../web/${page}`, import.meta.url), 'utf8');
