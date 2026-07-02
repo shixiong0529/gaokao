@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { generateInviteCode, getLocalDb } from './api/tools/localDb.js';
+import { createSemaphore } from './api/tools/semaphore.js';
 
 dotenv.config();
 
@@ -36,6 +37,14 @@ const messagesLimiter = makeLimiter({ windowMs: 60 * 60 * 1000, limit: 5, messag
 const adminLimiter = makeLimiter({ windowMs: 15 * 60 * 1000, limit: 30, message: '管理接口请求过于频繁，请稍后再试' });
 // 流程会话：页面加载建 1 次 + 表单变更防抖更新，正常用户远低于此
 const advisorLimiter = makeLimiter({ windowMs: 10 * 60 * 1000, limit: 120, message: '会话请求过于频繁，请稍后再试' });
+
+// 生成报告全局并发闸门：超出上限的请求排队最多 30 秒，队列满/等待超时快速失败（不动邀请码）。
+// 排队上限 30 秒的依据：闸门等待 + 服务端 250 秒处理都发生在前端 260 秒超时之内。
+const generateGate = createSemaphore({
+  max: parseInt(process.env.GENERATE_MAX_CONCURRENT || '8', 10),
+  queueMax: parseInt(process.env.GENERATE_QUEUE_MAX || '10', 10),
+  waitMs: parseInt(process.env.GENERATE_QUEUE_WAIT_MS || '30000', 10)
+});
 
 app.get('/vendor/html2canvas.min.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'node_modules/html2canvas/dist/html2canvas.min.js'));
@@ -146,11 +155,18 @@ app.post('/api/admin/invite-codes', adminLimiter, requireAdmin, (req, res) => {
   }
 });
 
-// API 路由（带超时保护）
+// API 路由（带超时保护 + 全局并发闸门）
 app.post('/api/generate', generateLimiter, async (req, res) => {
+  // 先拿并发槽位：拿不到快速失败，此时还没预占邀请码
+  try {
+    await generateGate.acquire();
+  } catch (err) {
+    return res.status(err.status || 503).json({ error: err.message });
+  }
+
   let reservation = null;
   let timedOut = false;
-  // 250 秒服务端超时（前端 230 秒 + 20 秒余量，均大于 Agent 195 秒内部预算）
+  // 250 秒服务端超时（前端 260 秒余量之内，大于 Agent 195 秒内部预算）
   const reqTimeout = setTimeout(() => {
     timedOut = true;
     if (reservation) {
@@ -161,8 +177,8 @@ app.post('/api/generate', generateLimiter, async (req, res) => {
     }
   }, 250000);
 
-  const { generatePlan } = await import('./api/generate.js');
   try {
+    const { generatePlan } = await import('./api/generate.js');
     reservation = getLocalDb().reserveInviteCode(req.body.inviteCode, clientMeta(req));
     const result = await generatePlan(req.body);
     clearTimeout(reqTimeout);
@@ -184,12 +200,14 @@ app.post('/api/generate', generateLimiter, async (req, res) => {
         detail: process.env.NODE_ENV === 'development' ? err.stack : undefined
       });
     }
+  } finally {
+    generateGate.release();
   }
 });
 
-// 健康检查
+// 健康检查（含生成链路负载，便于运维观察）
 app.get('/api/health', (req, res) => {
-  res.json({ ok: true, time: new Date().toISOString() });
+  res.json({ ok: true, time: new Date().toISOString(), generate: generateGate.stats() });
 });
 
 app.listen(PORT, '0.0.0.0', () => {

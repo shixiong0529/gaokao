@@ -314,6 +314,9 @@ pm2 restart gaokao-advisor --update-env
 | `TAVILY_API_KEY` | Tavily Key（provider=tavily 时必填） | - |
 | `DATABASE_PATH` | SQLite 数据库文件路径，生产建议使用 `./data/gaokao.db` 避免与其他项目重名 | `./data/app.db` |
 | `ADMIN_TOKEN` | 管理员 API/邀请码页面口令 | - |
+| `GENERATE_MAX_CONCURRENT` | 同时生成报告的全局上限，超出排队 | `8` |
+| `GENERATE_QUEUE_MAX` | 生成排队队列长度上限，超出立即拒绝 | `10` |
+| `GENERATE_QUEUE_WAIT_MS` | 排队最长等待时间（毫秒），超时拒绝 | `30000` |
 | `AGENT_MAX_ROUNDS` | Agent 最大循环轮数 | `6` |
 | `AGENT_DEADLINE_MS` | Agent 总时间预算，超过不再开新一轮（毫秒） | `195000` |
 | `DEEPSEEK_TIMEOUT_MS` | 单次 DeepSeek 调用超时上限（毫秒） | `120000` |

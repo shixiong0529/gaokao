@@ -2,6 +2,7 @@
 // Agent 编排核心：DeepSeek function calling 循环
 // 工作流：用户输入 → LLM 决策调工具 → 搜索/计算 → 回传 LLM → 生成志愿方案 HTML
 
+import { Worker } from 'node:worker_threads';
 import { webSearch, createSearchContext, AUTHORITY_DOMAINS } from './tools/search.js';
 import { generateReport } from './tools/report.js';
 import { queryScoreToRank, queryBatchLines, getProvinceMode } from './tools/gaokaoData.js';
@@ -888,17 +889,9 @@ ${localAdmissionSummary
     usedLocalAdmission: !!localAdmissionSummary
   });
 
-  // 同步生成 docx（用于下载）
-  let docxBase64 = null;
-  try {
-    const HTMLtoDOCX = (await import('html-to-docx')).default;
-    // docx 需要完整 HTML 文档（含 html/body 包裹）
-    const fullHtml = html.startsWith('<!DOCTYPE') ? html : `<!DOCTYPE html><html><body>${html}</body></html>`;
-    const buffer = await HTMLtoDOCX(fullHtml, null, { table: { row: { cantSplit: true } } });
-    docxBase64 = buffer.toString('base64');
-  } catch (e) {
-    console.error('[generate] docx 转换失败:', e.message);
-  }
+  // 生成 docx（worker 线程，不阻塞事件循环；失败只丢 Word 下载，不影响报告）
+  const fullHtml = html.startsWith('<!DOCTYPE') ? html : `<!DOCTYPE html><html><body>${html}</body></html>`;
+  const docxBase64 = await convertDocxInWorker(fullHtml);
 
   return {
     html,
@@ -918,6 +911,38 @@ ${localAdmissionSummary
       fallback: fallbackMode
     }
   };
+}
+
+/**
+ * 在 worker 线程中做 html → docx 转换，主线程不被 CPU 密集操作阻塞。
+ * 任何失败（含超时）都返回 null——Word 是附属产物，不值得让整单失败。
+ */
+function convertDocxInWorker(html, timeoutMs = 30000) {
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = (value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      worker.terminate().catch(() => {});
+      resolve(value);
+    };
+    const worker = new Worker(new URL('./tools/docxWorker.js', import.meta.url), {
+      workerData: { html }
+    });
+    const timer = setTimeout(() => {
+      console.error('[generate] docx worker 超时，放弃 Word 生成');
+      done(null);
+    }, timeoutMs);
+    worker.once('message', (msg) => {
+      if (!msg.ok) console.error('[generate] docx 转换失败:', msg.error);
+      done(msg.ok ? msg.base64 : null);
+    });
+    worker.once('error', (err) => {
+      console.error('[generate] docx worker 错误:', err.message);
+      done(null);
+    });
+  });
 }
 
 /**
