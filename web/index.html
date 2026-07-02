@@ -48,14 +48,18 @@
   .mj-chip:has(input:checked) .mj-box { background:var(--gold); color:#fff; border:1px solid var(--gold); }
   .mj-chip:has(input:disabled) { opacity:0.4; cursor:not-allowed; }
 
-  .mj-stage-panel { transition:border-color .2s, background .2s, box-shadow .2s; }
-  .mj-stage-panel[open] {
+  .mj-stage-panel {
     border-color:rgba(168,130,60,0.44) !important;
     background:#FFFEF8 !important;
+    transition:box-shadow .2s;
+  }
+  .mj-stage-panel > .mj-stage-summary {
+    background:rgba(168,130,60,0.12);
+  }
+  .mj-stage-panel[open] {
     box-shadow:inset 4px 0 0 var(--gold), 0 14px 28px -24px rgba(22,35,63,0.34);
   }
   .mj-stage-panel[open] > .mj-stage-summary {
-    background:rgba(168,130,60,0.12);
     border-bottom:1px solid rgba(168,130,60,0.26);
   }
   .mj-stage-panel[open] .mj-stage-body {

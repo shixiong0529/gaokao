@@ -94,10 +94,14 @@ test('index exposes structured optional advisor controls', () => {
 test('index visually separates expanded optional advisor stages', () => {
   const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
 
+  assert.match(html, /\.mj-stage-panel \{/);
+  assert.match(html, /\.mj-stage-panel > \.mj-stage-summary/);
   assert.match(html, /\.mj-stage-panel\[open\]/);
   assert.match(html, /\.mj-stage-panel\[open\] > \.mj-stage-summary/);
   assert.match(html, /\.mj-stage-panel\[open\] \.mj-stage-body/);
   assert.match(html, /box-shadow:inset 4px 0 0 var\(--gold\)/);
+  assert.match(html, /background:#FFFEF8 !important/);
+  assert.match(html, /background:rgba\(168,130,60,0\.12\)/);
   assert.match(html, /class="mj-stage-summary"/);
   assert.match(html, /class="mj-stage-body/);
 });
