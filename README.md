@@ -259,7 +259,40 @@ systemctl reload nginx
 
 ### HTTPS 证书
 
-如果 `certbot --webroot` 或 `certbot --standalone` 在 HTTP-01 校验时返回 `403`，可改用 DNS 手动验证：
+**优先用这个（自动续期，装完不用再管）：**
+
+```bash
+certbot --nginx -d gaokao.moyu.in
+```
+
+`--nginx` 插件走 HTTP-01，自动改好 nginx 配置、自动申请证书。certbot 安装时自带系统定时任务（systemd timer `certbot.timer` 或 `/etc/cron.d/certbot`），到期前自动续期，永久不用手动操作。
+
+> 首次执行前确认：阿里云 ECS 安全组的入方向规则已放行公网 `80` 端口（`0.0.0.0/0`）；如果开了 WAF / 云盾，注意其对**境外来源 IP** 的默认拦截规则——Let's Encrypt 验证节点大多在境外，会被当成可疑流量拦掉，出现"本机 curl 能访问、Certbot 校验却返回 403"的现象。需要给 WAF 加白名单或临时关闭后再重试。
+
+**如果 80 端口验证长期走不通**（比如安全策略不允许对外开放、WAF 规则无法调整），改用 DNS-01 + 阿里云 DNS API 自动应答，同样能全自动续期，且完全不依赖 80 端口：
+
+```bash
+curl https://get.acme.sh | sh -s email=你的邮箱
+source ~/.bashrc
+
+# 阿里云 RAM 控制台建一个子账号 AccessKey，只给 AliyunDNSFullAccess 权限（不要用主账号 AK）
+export Ali_Key="你的AccessKeyId"
+export Ali_Secret="你的AccessKeySecret"
+
+~/.acme.sh/acme.sh --issue --dns dns_ali -d gaokao.moyu.in
+
+~/.acme.sh/acme.sh --install-cert -d gaokao.moyu.in \
+  --key-file       /etc/letsencrypt/live/gaokao.moyu.in/privkey.pem \
+  --fullchain-file /etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem \
+  --reloadcmd      "systemctl reload nginx"
+```
+
+`acme.sh` 会自己写 cron，到期前用同一个 AccessKey 自动改 DNS TXT 记录、自动续期、自动 reload nginx，不需要再手动去控制台粘贴 TXT 值。
+
+<details>
+<summary>历史记录：首次证书是怎么申请下来的（手动 DNS 验证，不会自动续期）</summary>
+
+当时 `certbot --webroot` / `--standalone` 在 HTTP-01 校验时持续返回 `403`（本机 curl 能访问，但验证服务器不行，符合上面提到的 WAF 境外 IP 拦截特征），临时用了手动 DNS 验证兜底：
 
 ```bash
 certbot certonly \
@@ -282,14 +315,9 @@ certbot certonly \
 dig +short TXT _acme-challenge.gaokao.moyu.in
 ```
 
-证书生成后路径应为：
+这种方式生成的证书**不会自动续期**（`certbot renew` 非交互执行，manual 插件无法弹出提示要求你粘贴新的 TXT 值，会静默失败）。当前证书到期日 `2026-09-29`，已改用上面的自动化方案，到期前无需再手动操作；如果发现还是走的这条旧路径，务必切换到方案 A 或 B。
 
-```text
-/etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem
-/etc/letsencrypt/live/gaokao.moyu.in/privkey.pem
-```
-
-本次手动 DNS 证书不会自动续期。当前线上证书到期日为 `2026-09-29`，到期前需要重新执行同样的 DNS 验证流程，或后续接入阿里云 DNS API 自动续期。
+</details>
 
 ### 日常更新
 
