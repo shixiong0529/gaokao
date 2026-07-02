@@ -78,11 +78,6 @@
   .mj-nav a:hover { color:var(--gold); }
   .mj-nav-burger { display: none; }
 
-  /* 首页引入了 style.css（结果区/加载态需要），其中 * { box-sizing:border-box }
-     会让顶栏比子页窄 80px、Logo 小一圈（子页未引入该文件，是 content-box）。
-     这里把顶栏及其内部还原为 content-box，与子页渲染完全一致 */
-  .mj-header, .mj-header * { box-sizing: content-box; }
-
   /* 生成结果区脱离 .mj-resultsec 的 920px 限宽，铺满视口方便阅读长表格 */
   #result {
     width: 100vw;
@@ -494,7 +489,7 @@
         </div>
 
         <!-- submit -->
-        <button type="submit" id="submitBtn" class="mj-submit" style="width:100%; margin-top:38px; padding:19px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; letter-spacing:8px; text-indent:8px; cursor:pointer;">
+        <button type="submit" id="submitBtn" class="mj-submit" style="width:100%; box-sizing:border-box; margin-top:38px; padding:19px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; letter-spacing:8px; text-indent:8px; cursor:pointer;">
           <span class="btn-text">生成志愿参考方案</span>
           <span class="btn-loading" hidden>生成中，请耐心等待2分钟...</span>
         </button>

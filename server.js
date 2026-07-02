@@ -56,12 +56,13 @@ app.get('/vendor/pdf-lib.min.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'node_modules/pdf-lib/dist/pdf-lib.min.js'), VENDOR_CACHE);
 });
 
-// 静态前端：html 走协商缓存（随时可发新版），数据/样式缓存 1 小时
+// 静态前端：html/css/js 走协商缓存（随时可发新版，避免用户拿到新 HTML + 旧 CSS 的混搭），
+// 只有大而少变的数据文件缓存 1 小时
 app.use(express.static(path.join(__dirname, 'web'), {
   setHeaders(res, filePath) {
-    if (filePath.endsWith('.html')) {
+    if (/\.(html|css|js)$/.test(filePath)) {
       res.setHeader('Cache-Control', 'no-cache');
-    } else if (/\.(json|css|js|txt|xml)$/.test(filePath)) {
+    } else if (/\.(json|txt|xml)$/.test(filePath)) {
       res.setHeader('Cache-Control', 'public, max-age=3600');
     }
   }

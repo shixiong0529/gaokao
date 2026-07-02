@@ -13,12 +13,17 @@ test('index footer does not expose admin entry and links compliance pages', () =
   assert.match(html, /href="terms\.html"/);
 });
 
-test('index header neutralizes style.css border-box so it matches sub pages', () => {
-  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+test('style.css must not contain global element rules that leak into the marketing page', () => {
+  const css = readFileSync(new URL('../web/style.css', import.meta.url), 'utf8');
 
-  // 首页引入 style.css（* { box-sizing:border-box }），子页没有；
-  // 不还原为 content-box 时首页顶栏会窄 80px、Logo 小一圈
-  assert.match(html, /\.mj-header, \.mj-header \* \{ box-sizing: content-box; \}/);
+  // 首页营销版式全部内联样式；style.css 里的全局元素选择器会污染它——
+  // 曾因 header { text-align:center } 和 * { box-sizing:border-box }
+  // 导致首页顶栏与子页不一致（Logo 居中漂移、整体窄 80px）
+  assert.doesNotMatch(css, /^\s*\*\s*\{/m, '不允许 * 全局选择器');
+  assert.doesNotMatch(css, /^(header|body|h1|label|input|select|textarea)\b[^{]*\{/m, '不允许裸元素选择器');
+  // 组件级 box-sizing 必须保留
+  assert.match(css, /\.result, \.result \*/);
+  assert.match(css, /\.loading-overlay, \.loading-overlay \*/);
 });
 
 test('all public pages have mobile nav burger menu', () => {
