@@ -328,6 +328,8 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: #fff;
+  /* 高度由 app.js 按内容实际高度动态设置，避免出现内嵌小滚动条与外层页面滚动"打架" */
+  display: block;
 }
 
 .report-preview {

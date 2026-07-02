@@ -435,19 +435,27 @@ function scrollToReportResult() {
 }
 
 // ===== 报告预览 =====
+let reportFrameResizeObserver = null;
+
 function resetReportPreview() {
   if (currentReportUrl) {
     URL.revokeObjectURL(currentReportUrl);
     currentReportUrl = null;
   }
+  if (reportFrameResizeObserver) {
+    reportFrameResizeObserver.disconnect();
+    reportFrameResizeObserver = null;
+  }
   reportFrame.removeAttribute('src');
   reportFrame.removeAttribute('srcdoc');
+  reportFrame.style.height = '';
   reportPreview.innerHTML = '';
 }
 
 function renderReportPreview(html) {
   resetReportPreview();
   reportPreview.innerHTML = buildInlinePreviewHtml(html);
+  reportFrame.addEventListener('load', fitReportFrameToContent, { once: true });
 
   if (window.Blob && window.URL && URL.createObjectURL) {
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -466,6 +474,27 @@ function renderReportPreview(html) {
     doc.open();
     doc.write(html);
     doc.close();
+  }
+}
+
+// 报告用整页滚动阅读，而不是在一个固定高度的小窗口里内嵌滚动（那样和鼠标滚轮/外层滚动条互相打架）。
+// 用 iframe 内容自身高度撑开 iframe，只保留一条外层滚动条。
+function fitReportFrameToContent() {
+  const doc = reportFrame.contentDocument;
+  if (!doc || !doc.documentElement) return;
+
+  const measure = () => {
+    const h = Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0);
+    if (h > 0) reportFrame.style.height = h + 'px';
+  };
+  measure();
+
+  // 字体/图片异步加载可能撑高内容，用 ResizeObserver 持续跟随；不支持时退化为一次性测量
+  if (window.ResizeObserver) {
+    reportFrameResizeObserver = new ResizeObserver(measure);
+    reportFrameResizeObserver.observe(doc.documentElement);
+  } else {
+    setTimeout(measure, 300);
   }
 }
 

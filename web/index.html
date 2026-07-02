@@ -71,6 +71,16 @@
   .mj-nav a:hover { color:var(--gold); }
   .mj-nav-burger { display: none; }
 
+  /* 生成结果区脱离 .mj-resultsec 的 920px 限宽，铺满视口方便阅读长表格 */
+  #result {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 0 clamp(16px, 4vw, 56px);
+    box-sizing: border-box;
+  }
+
   @media (max-width:768px) {
     .mj-nav { display: none !important; }
     .mj-nav-burger { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--ink); font-size: 18px; cursor: pointer; user-select: none; flex: 0 0 auto; }

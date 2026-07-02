@@ -33,3 +33,27 @@ test('successful report generation scrolls to the result section', () => {
   assert.match(js, /resultEl\.scrollIntoView\(\{ behavior: 'smooth', block: 'start' \}\)/);
   assert.match(js, /renderReportPreview\(data\.html\);\s*hideLoading\(\);\s*scrollToReportResult\(\);/);
 });
+
+test('result section breaks out of the narrow form container to use full viewport width', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  // #result must escape .mj-resultsec's max-width:920px via a full-bleed rule
+  assert.match(html, /#result\s*\{[\s\S]*width:\s*100vw[\s\S]*\}/);
+  assert.match(html, /margin-left:\s*calc\(50% - 50vw\)/);
+});
+
+test('report frame height auto-fits its content instead of a fixed small scroll box', () => {
+  const js = readFileSync(new URL('../web/app.js', import.meta.url), 'utf8');
+
+  assert.match(js, /function fitReportFrameToContent\(\)/);
+  assert.match(js, /reportFrame\.addEventListener\('load', fitReportFrameToContent/);
+  assert.match(js, /reportFrame\.style\.height = h \+ 'px'/);
+  assert.match(js, /ResizeObserver/);
+});
+
+test('report internal container width is not capped as narrowly as the old 900px box', () => {
+  const reportJs = readFileSync(new URL('../api/tools/report.js', import.meta.url), 'utf8');
+
+  assert.match(reportJs, /\.container \{ max-width: 1[0-9]{3}px; margin: 0 auto; \}/);
+  assert.doesNotMatch(reportJs, /\.container \{ max-width: 900px/);
+});

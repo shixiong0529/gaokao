@@ -226,7 +226,7 @@ body {
   line-height: 1.8;
   padding: 20px;
 }
-.container { max-width: 900px; margin: 0 auto; }
+.container { max-width: 1400px; margin: 0 auto; }
 .header {
   background: var(--card);
   border-radius: 12px;
