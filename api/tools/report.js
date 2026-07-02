@@ -23,8 +23,16 @@ function formatScore(v) {
   return s ? `${escapeHtml(s)}分` : '-';
 }
 
+// 数字字段的安全渲染：LLM 可能把数字字段输出成任意字符串，必须转义
+function renderRank(rank) {
+  if (rank === null || rank === undefined || rank === '') return '-';
+  return typeof rank === 'number' ? rank.toLocaleString() : escapeHtml(String(rank));
+}
+
 function renderSource(source, url) {
-  if (url) return `<a href="${escapeHtml(url)}" target="_blank">${escapeHtml(source || url)}</a>`;
+  // 只放行 http/https：url 来自 LLM 输出（间接来自搜索到的网页），javascript: 等协议一律不渲染成链接
+  const safeUrl = typeof url === 'string' && /^https?:\/\//i.test(url.trim()) ? url.trim() : '';
+  if (safeUrl) return `<a href="${escapeHtml(safeUrl)}" target="_blank" rel="noopener">${escapeHtml(source || safeUrl)}</a>`;
   return escapeHtml(source || '-');
 }
 
@@ -89,7 +97,7 @@ export function generateReport(data) {
 
   // ===== 板块3：数据基础 =====
   const batchLinesHtml = (safeDataBasis.batchLines || []).map(b =>
-    `<tr><td><strong>${b.year}</strong></td><td>${escapeHtml(b.region)}</td><td>${escapeHtml(b.subject)}</td><td>${escapeHtml(b.batch)}</td><td><strong>${formatScore(b.score)}</strong></td><td>${b.rank ? b.rank.toLocaleString() : '-'}</td></tr>`
+    `<tr><td><strong>${escapeHtml(String(b.year ?? '-'))}</strong></td><td>${escapeHtml(b.region)}</td><td>${escapeHtml(b.subject)}</td><td>${escapeHtml(b.batch)}</td><td><strong>${formatScore(b.score)}</strong></td><td>${renderRank(b.rank)}</td></tr>`
   ).join('');
   const schoolRefsHtml = (safeDataBasis.schoolRefs || []).map(s =>
     `<tr><td>${escapeHtml(s.name)}</td><td>${formatScore(s.score)}</td><td>${s.rank ? (typeof s.rank === 'number' ? s.rank.toLocaleString() : escapeHtml(s.rank)) : '-'}</td><td>${escapeHtml(s.nature || '-')}</td><td>${escapeHtml(s.type || '-')}</td></tr>`
@@ -158,7 +166,7 @@ export function generateReport(data) {
   // ===== 板块6：建议志愿表 =====
   const volunteerRowsHtml = safeVolunteerTable.map(v => {
     const cat = v.category || '';
-    return `<tr><td>${v.order ?? ''}</td><td>${cat ? `<span class="tag ${tagClass[cat] || ''}">${escapeHtml(cat)}</span>` : ''}</td><td>${escapeHtml(v.college || '')}</td><td>${escapeHtml(v.city || '')}</td><td>${formatScore(v.refScore)}</td><td>${escapeHtml(v.transfer || '-')}</td></tr>`;
+    return `<tr><td>${escapeHtml(String(v.order ?? ''))}</td><td>${cat ? `<span class="tag ${tagClass[cat] || ''}">${escapeHtml(cat)}</span>` : ''}</td><td>${escapeHtml(v.college || '')}</td><td>${escapeHtml(v.city || '')}</td><td>${formatScore(v.refScore)}</td><td>${escapeHtml(v.transfer || '-')}</td></tr>`;
   }).join('');
   const volunteerHtml = volunteerRowsHtml ? `
 <div class="card">

@@ -46,16 +46,26 @@ const generateGate = createSemaphore({
   waitMs: parseInt(process.env.GENERATE_QUEUE_WAIT_MS || '30000', 10)
 });
 
+// vendor 库随 npm 版本锁定，几乎不变，长缓存
+const VENDOR_CACHE = { maxAge: '7d', immutable: true };
 app.get('/vendor/html2canvas.min.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'node_modules/html2canvas/dist/html2canvas.min.js'));
+  res.sendFile(path.join(__dirname, 'node_modules/html2canvas/dist/html2canvas.min.js'), VENDOR_CACHE);
 });
 
 app.get('/vendor/pdf-lib.min.js', (req, res) => {
-  res.sendFile(path.join(__dirname, 'node_modules/pdf-lib/dist/pdf-lib.min.js'));
+  res.sendFile(path.join(__dirname, 'node_modules/pdf-lib/dist/pdf-lib.min.js'), VENDOR_CACHE);
 });
 
-// 静态前端
-app.use(express.static(path.join(__dirname, 'web')));
+// 静态前端：html 走协商缓存（随时可发新版），数据/样式缓存 1 小时
+app.use(express.static(path.join(__dirname, 'web'), {
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else if (/\.(json|css|js|txt|xml)$/.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
+  }
+}));
 
 function clientMeta(req) {
   return {

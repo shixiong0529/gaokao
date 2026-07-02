@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin-invites.html
+Disallow: /admin-messages.html
+Disallow: /api/
+Allow: /
+
+Sitemap: https://gaokao.moyu.in/sitemap.xml

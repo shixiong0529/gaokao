@@ -542,10 +542,42 @@ window.downloadDocx = function() {
   }
 };
 
+// 按需加载 vendor 脚本：html2canvas + pdf-lib 共约 720KB，
+// 只有点"保存为 PDF"才需要，不值得让每个访客首屏都下载
+const vendorScriptPromises = {};
+function loadVendorScript(src) {
+  if (!vendorScriptPromises[src]) {
+    vendorScriptPromises[src] = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = () => {
+        delete vendorScriptPromises[src]; // 失败后允许下次重试
+        reject(new Error('加载失败: ' + src));
+      };
+      document.head.appendChild(s);
+    });
+  }
+  return vendorScriptPromises[src];
+}
+
+async function ensurePdfLibs() {
+  await Promise.all([
+    window.html2canvas ? null : loadVendorScript('/vendor/html2canvas.min.js'),
+    window.PDFLib ? null : loadVendorScript('/vendor/pdf-lib.min.js')
+  ]);
+}
+
 // 保存为 PDF（前端直接生成文件下载，不打开浏览器打印页）
 window.downloadPdf = async function() {
   if (!currentHtml) {
     showError('请先生成方案');
+    return;
+  }
+  try {
+    await ensurePdfLibs();
+  } catch (e) {
+    showError('PDF 生成组件加载失败，请检查网络后重试');
     return;
   }
   if (!window.html2canvas || !window.PDFLib) {

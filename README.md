@@ -14,6 +14,7 @@
 - **超时保护**：前端 230 秒 + 服务端 250 秒 + Agent 195 秒内部预算 + 单次搜索/接口 8-10 秒超时，多层协同防卡死
 - **并发提速**：同一轮内多个搜索并行执行、预取结构化数据并行，大幅缩短总耗时
 - **多页站点**：统一「澄明志愿」中式设计风格，含首页表单、志愿参考样例、院校数据库、方案说明、关于我们，导航互通
+- **支持省份**：17 个「3+1+2」新高考省份（湘鄂粤苏川冀皖闽赣渝辽豫吉黑桂黔陇）；3+3 模式省份（京津沪浙鲁琼）选科口径不同，前后端均明确拒绝
 
 ## 快速开始
 
@@ -81,23 +82,30 @@ gaokao/
 │   ├── college-data.html     # 院校数据：可搜索/筛选的院校数据库
 │   ├── methodology.html      # 方案说明：位次原理 + 四步流程 + 冲稳保逻辑
 │   ├── about.html            # 关于我们 + 留言表单
-│   ├── admin-invites.html    # 管理员邀请码生成页
+│   ├── privacy.html          # 隐私政策
+│   ├── terms.html            # 服务条款
+│   ├── admin-invites.html    # 管理员邀请码生成页（不对外链接，直接输 URL 访问）
 │   ├── admin-messages.html   # 管理员留言查看页
+│   ├── robots.txt            # 屏蔽 admin 页面收录
+│   ├── sitemap.xml           # 站点地图
 │   └── style.css             # 浅色主题样式
 ├── api/
 │   ├── generate.js           # Agent 编排核心
 │   │                         #   - System Prompt（七板块 + 冲稳保配比 + k区间 + 法务约束）
-│   │                         #   - function calling 循环（DeepSeek API）
+│   │                         #   - function calling 循环（DeepSeek API，瞬时故障重试×3）
 │   │                         #   - 预取结构化数据（批次线 + 位次）
+│   │                         #   - 强制收尾：超时前用 tool_choice 强制输出七板块
+│   │                         #   - 兜底报告：LLM 不可用时用本地官方投档线直接构造
 │   │                         #   - JSON 截断修复 + 字符串反序列化 + 字段容错
-│   │                         #   - 来源三件套收集
 │   └── tools/
-│       ├── search.js         # 搜索封装（DDG / Bing / Tavily 三后端）
+│       ├── search.js         # 搜索封装（Tavily / Bing / DDG 降级链 + 故障冷却）
 │       ├── gaokaoData.js     # 结构化数据接口（一分一段 + 批次线）
-│       ├── localDb.js        # SQLite 本地数据库（留言 + 邀请码）
-│       ├── probability.js    # 录取概率算法（k = R_school / R_user）
+│       ├── localAdmission.js # 本地官方投档线（湖南本科批，精确到专业组）
+│       ├── localDb.js        # SQLite 本地数据库（留言 + 邀请码 + 流程会话）
+│       ├── semaphore.js      # 生成并发闸门（排队 + 超时快速失败）
+│       ├── docxWorker.js     # Word 转换 worker 线程（不阻塞主线程）
 │       └── report.js         # 七板块 HTML 报告生成器
-├── server.js                 # Express 入口（静态文件 + API 路由 + 超时控制）
+├── server.js                 # Express 入口（静态文件 + API 路由 + 限流 + 超时控制）
 ├── ecosystem.config.cjs      # PM2 配置
 ├── nginx.conf.example        # Nginx 反代配置
 ├── docs/plans/               # 设计文档

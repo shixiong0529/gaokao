@@ -2,6 +2,14 @@
 # 部署：sudo cp nginx.conf.example /etc/nginx/sites-available/gaokao && sudo ln -s /etc/nginx/sites-available/gaokao /etc/nginx/sites-enabled/
 # 重载：sudo nginx -t && sudo nginx -s reload
 
+# gzip 压缩：colleges.json 464KB 压后约 60KB，报告 HTML 同样收益明显
+# （放在 http 级也可，这里放 server 级方便单站点启用）
+gzip on;
+gzip_comp_level 5;
+gzip_min_length 1024;
+gzip_types text/plain text/css text/xml application/json application/javascript application/xml image/svg+xml;
+gzip_vary on;
+
 # 开发期（IP:80 反代到 3000，无需域名）
 server {
     listen 80;
@@ -17,9 +25,9 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        # Agent 调用可能耗时较长（30-60s）
-        proxy_read_timeout 120s;
-        proxy_send_timeout 120s;
+        # 生成报告链路最长约 250s（服务端超时），反代要大于它
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
     }
 }
 
@@ -31,6 +39,8 @@ server {
 #     ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
 #     ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
 #
+#     client_max_body_size 10m;
+#
 #     location / {
 #         proxy_pass http://127.0.0.1:3000;
 #         proxy_http_version 1.1;
@@ -38,6 +48,7 @@ server {
 #         proxy_set_header X-Real-IP $remote_addr;
 #         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 #         proxy_set_header X-Forwarded-Proto $scheme;
-#         proxy_read_timeout 120s;
+#         proxy_read_timeout 300s;
+#         proxy_send_timeout 300s;
 #     }
 # }

@@ -8,6 +8,12 @@ import { generateReport } from './tools/report.js';
 import { queryScoreToRank, queryBatchLines, getProvinceMode } from './tools/gaokaoData.js';
 import { hasLocalAdmission, queryLocalCandidates, formatLocalCandidates } from './tools/localAdmission.js';
 
+// 表单与 Agent 均按 3+1+2 模式设计；3+3 省份（京津沪浙鲁琼）选科口径不同，明确拒绝
+const SUPPORTED_PROVINCES = new Set([
+  '湖北', '湖南', '河南', '广东', '江苏', '四川', '河北', '安徽', '福建',
+  '江西', '重庆', '辽宁', '吉林', '黑龙江', '广西', '贵州', '甘肃'
+]);
+
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 const BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
 const MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
@@ -508,6 +514,9 @@ export async function generatePlan(input) {
   const { name, score, rank, province, firstChoice, reselect, preferences } = input;
   if (!province || !firstChoice) {
     throw { status: 400, message: '缺少必填字段：province, firstChoice' };
+  }
+  if (!SUPPORTED_PROVINCES.has(province)) {
+    throw { status: 400, message: `暂不支持「${province}」：本工具按 3+1+2 新高考模式设计（首选物理/历史 + 再选四选二），京津沪浙鲁琼等 3+3 模式省份选科口径不同，强行生成会得到错误结论。` };
   }
   if (!score) {
     throw { status: 400, message: '请填写高考分数' };
@@ -1155,7 +1164,12 @@ const PROVINCE_AUTHORITY = {
   '辽宁': { name: '辽宁省高中等教育招生考试委员会办公室', url: 'https://www.lnzsks.com/' },
   '北京': { name: '北京教育考试院', url: 'https://www.bjeea.cn/' },
   '上海': { name: '上海市教育考试院', url: 'https://www.shmeea.edu.cn/' },
-  '天津': { name: '天津市教育招生考试院', url: 'http://www.zhaokao.net/' }
+  '天津': { name: '天津市教育招生考试院', url: 'http://www.zhaokao.net/' },
+  '吉林': { name: '吉林省教育考试院', url: 'http://www.jleea.com.cn/' },
+  '黑龙江': { name: '黑龙江省招生考试信息港', url: 'https://www.lzk.hl.cn/' },
+  '广西': { name: '广西壮族自治区招生考试院', url: 'https://www.gxeea.cn/' },
+  '贵州': { name: '贵州省招生考试院', url: 'https://zsksy.guizhou.gov.cn/' },
+  '甘肃': { name: '甘肃省教育考试院', url: 'https://www.ganseea.cn/' }
 };
 
 /**

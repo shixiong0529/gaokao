@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>高考志愿填报方案生成器</title>
+<meta name="description" content="澄明志愿：输入高考分数与位次，AI 结合省考试院批次线、一分一段与官方投档线，为 17 个 3+1+2 新高考省份生成「冲稳保」三档志愿填报参考方案，数据来源可追溯。">
+<link rel="canonical" href="https://gaokao.moyu.in/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="高考志愿填报方案生成器">
+<meta property="og:description" content="澄明志愿：输入高考分数与位次，AI 结合省考试院批次线、一分一段与官方投档线，为 17 个 3+1+2 新高考省份生成「冲稳保」三档志愿填报参考方案，数据来源可追溯。">
+<meta property="og:url" content="https://gaokao.moyu.in/">
+<meta property="og:site_name" content="澄明志愿">
 <link rel="stylesheet" href="style.css">
 <style>
   * { -webkit-font-smoothing: antialiased; }
@@ -147,7 +154,7 @@
       </div>
 
       <div class="mj-badges" style="display:flex; align-items:center; justify-content:center; gap:0; margin-top:26px; animation:mj-fade 1s ease .42s both;">
-        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">31 省市招生数据</span>
+        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">17 省新高考数据</span>
         <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--line-strong);"></span>
         <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">冲 · 稳 · 保 三档分层</span>
         <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--line-strong);"></span>
@@ -200,32 +207,29 @@
             <div style="position:relative;">
               <select name="province" required class="mj-field" style="width:100%; box-sizing:border-box; appearance:none; -webkit-appearance:none; padding:14px 40px 14px 16px; font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;">
                 <option value="">请选择</option>
+                <!-- 仅列 3+1+2 模式省份：表单按"首选物理/历史 + 再选四选二"设计，
+                     3+3 省份（京津沪浙鲁琼）选科结构不同，口径会错，暂不支持 -->
                 <option value="湖北">湖北</option>
                 <option value="湖南">湖南</option>
                 <option value="河南">河南</option>
                 <option value="广东">广东</option>
                 <option value="江苏">江苏</option>
-                <option value="浙江">浙江</option>
-                <option value="山东">山东</option>
                 <option value="四川">四川</option>
                 <option value="河北">河北</option>
                 <option value="安徽">安徽</option>
                 <option value="福建">福建</option>
                 <option value="江西">江西</option>
                 <option value="重庆">重庆</option>
-                <option value="北京">北京</option>
-                <option value="上海">上海</option>
-                <option value="天津">天津</option>
                 <option value="辽宁">辽宁</option>
                 <option value="吉林">吉林</option>
                 <option value="黑龙江">黑龙江</option>
                 <option value="广西">广西</option>
-                <option value="海南">海南</option>
                 <option value="贵州">贵州</option>
                 <option value="甘肃">甘肃</option>
               </select>
               <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
             </div>
+            <div style="font-size:12px; color:var(--muted); margin-top:8px; letter-spacing:0.5px; font-weight:300;">目前支持 17 个「3+1+2」新高考省份；京津沪浙鲁琼（3+3 模式）暂不支持</div>
           </div>
 
           <!-- 02 分数 -->
@@ -575,8 +579,7 @@
   sync();
 })();
 </script>
-<script src="/vendor/html2canvas.min.js"></script>
-<script src="/vendor/pdf-lib.min.js"></script>
+<!-- html2canvas / pdf-lib（共 720KB）只在点击"保存为 PDF"时由 app.js 按需加载 -->
 <script src="app.js"></script>
 </body>
 </html>
