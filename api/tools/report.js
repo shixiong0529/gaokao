@@ -15,6 +15,14 @@ function renderValue(v) {
   return escapeHtml(String(v));
 }
 
+// 格式化分数：去掉已有的"分"后缀再统一补上，避免 LLM 把候选池文本里
+// 已带"分"字的值原样复制（如"647分"）导致渲染成"647分分"
+function formatScore(v) {
+  if (v === null || v === undefined || v === '') return '-';
+  const s = String(v).trim().replace(/分+$/, '');
+  return s ? `${escapeHtml(s)}分` : '-';
+}
+
 function renderSource(source, url) {
   if (url) return `<a href="${escapeHtml(url)}" target="_blank">${escapeHtml(source || url)}</a>`;
   return escapeHtml(source || '-');
@@ -31,7 +39,8 @@ export function generateReport(data) {
     volunteerTable = [],
     riskChecklist = {},
     sources = [],
-    provinceAuthority = null
+    provinceAuthority = null,
+    usedLocalAdmission = false
   } = data || {};
 
   // 容错：确保数组字段真的是数组（防止 LLM 输出类型不符）
@@ -80,10 +89,10 @@ export function generateReport(data) {
 
   // ===== 板块3：数据基础 =====
   const batchLinesHtml = (safeDataBasis.batchLines || []).map(b =>
-    `<tr><td><strong>${b.year}</strong></td><td>${escapeHtml(b.region)}</td><td>${escapeHtml(b.subject)}</td><td>${escapeHtml(b.batch)}</td><td><strong>${escapeHtml(String(b.score))}分</strong></td><td>${b.rank ? b.rank.toLocaleString() : '-'}</td></tr>`
+    `<tr><td><strong>${b.year}</strong></td><td>${escapeHtml(b.region)}</td><td>${escapeHtml(b.subject)}</td><td>${escapeHtml(b.batch)}</td><td><strong>${formatScore(b.score)}</strong></td><td>${b.rank ? b.rank.toLocaleString() : '-'}</td></tr>`
   ).join('');
   const schoolRefsHtml = (safeDataBasis.schoolRefs || []).map(s =>
-    `<tr><td>${escapeHtml(s.name)}</td><td>${escapeHtml(String(s.score))}分</td><td>${s.rank ? (typeof s.rank === 'number' ? s.rank.toLocaleString() : escapeHtml(s.rank)) : '-'}</td><td>${escapeHtml(s.nature || '-')}</td><td>${escapeHtml(s.type || '-')}</td></tr>`
+    `<tr><td>${escapeHtml(s.name)}</td><td>${formatScore(s.score)}</td><td>${s.rank ? (typeof s.rank === 'number' ? s.rank.toLocaleString() : escapeHtml(s.rank)) : '-'}</td><td>${escapeHtml(s.nature || '-')}</td><td>${escapeHtml(s.type || '-')}</td></tr>`
   ).join('');
   const dataBasisHtml = `
 <div class="card">
@@ -103,7 +112,7 @@ export function generateReport(data) {
   const tiersHtml = safeTiers.map(t => {
     const schools = Array.isArray(t.schools) ? t.schools : [];
     const schoolsHtml = schools.map(s =>
-      `<tr><td>${escapeHtml(s.name)}</td><td>${escapeHtml(String(s.score))}分</td><td>${escapeHtml(s.reason || '')}</td></tr>`
+      `<tr><td>${escapeHtml(s.name)}</td><td>${formatScore(s.score)}</td><td>${escapeHtml(s.reason || '')}</td></tr>`
     ).join('');
     return `
     <div class="tier-section">
@@ -113,9 +122,14 @@ export function generateReport(data) {
       <table><tr><th>院校名称</th><th>近年最低分</th><th>${escapeHtml(t.level || '')}的理由</th></tr>${schoolsHtml}</table>
     </div>`;
   }).join('');
+  const groupExplainHtml = usedLocalAdmission ? `
+  <blockquote>
+    💡 <strong>「第 XX 组」是什么？</strong>下表院校名称后的编号是<strong>院校专业组</strong>——新高考不是直接填专业，而是先选"院校+专业组"，同一所大学会按选科要求把专业拆成好几个组（比如"计算机类"一组、"临床医学"一组），<strong>不同组的投档分数往往不同</strong>。表中投档线来自${escapeHtml(provinceAuthority?.name || candidate.province + '教育考试院')}官方公布的真实数据，精确到组，但<strong>组内具体包含哪些专业本页暂未标注</strong>，请用"潇湘高考"APP（考生本人账号登录）查询该专业组的完整专业清单后再确定填报顺序。
+  </blockquote>` : '';
   const strategyHtml = `
 <div class="card">
   <h2>三、志愿填报策略</h2>
+  ${groupExplainHtml}
   ${analysisParas ? `<h3>3.1 分数定位分析</h3>${analysisParas}` : ''}
   ${tiersHtml ? `<h3>3.2 冲稳保三层策略</h3>${tiersHtml}` : '<p>策略数据待补充</p>'}
 </div>`;
@@ -129,7 +143,7 @@ export function generateReport(data) {
       <div class="school-meta">
         <div>📍 <strong>所在地</strong>：${escapeHtml(s.location || '-')}</div>
         <div>🏫 <strong>类型</strong>：${escapeHtml(s.type || '-')} · ${escapeHtml(s.ownership || '-')}</div>
-        <div>📊 <strong>近年最低分</strong>：${escapeHtml(String(s.minScore || '-'))}分${s.rank ? `（位次${typeof s.rank === 'number' ? '约' + s.rank.toLocaleString() : escapeHtml(s.rank)}）` : ''}</div>
+        <div>📊 <strong>近年最低分</strong>：${formatScore(s.minScore)}${s.rank ? `（位次${typeof s.rank === 'number' ? '约' + s.rank.toLocaleString() : escapeHtml(s.rank)}）` : ''}</div>
         <div>🎓 <strong>硕士点</strong>：${escapeHtml(s.hasMaster || '-')}</div>
       </div>
       <div class="analysis">${escapeHtml(s.strengths ? '优势学科：' + s.strengths + '。' : '')}${escapeHtml(s.analysis || '分析待补充')}</div>
@@ -144,12 +158,12 @@ export function generateReport(data) {
   // ===== 板块6：建议志愿表 =====
   const volunteerRowsHtml = safeVolunteerTable.map(v => {
     const cat = v.category || '';
-    return `<tr><td>${v.order ?? ''}</td><td>${cat ? `<span class="tag ${tagClass[cat] || ''}">${escapeHtml(cat)}</span>` : ''}</td><td>${escapeHtml(v.college || '')}</td><td>${escapeHtml(v.city || '')}</td><td>${escapeHtml(String(v.refScore || '-'))}分</td><td>${escapeHtml(v.transfer || '-')}</td></tr>`;
+    return `<tr><td>${v.order ?? ''}</td><td>${cat ? `<span class="tag ${tagClass[cat] || ''}">${escapeHtml(cat)}</span>` : ''}</td><td>${escapeHtml(v.college || '')}</td><td>${escapeHtml(v.city || '')}</td><td>${formatScore(v.refScore)}</td><td>${escapeHtml(v.transfer || '-')}</td></tr>`;
   }).join('');
   const volunteerHtml = volunteerRowsHtml ? `
 <div class="card">
   <h2>五、建议志愿表</h2>
-  <blockquote>⚠️ 以下为参考方案，具体专业组代码、专业代码须以${escapeHtml(provinceAuthority?.name || candidate.province + '教育考试院')}当年官方招生计划手册为准。</blockquote>
+  <blockquote>⚠️ 以下为参考方案${usedLocalAdmission ? '（院校名称后的编号为真实专业组，投档线为官方数据）' : ''}，具体专业组内含哪些专业、招生人数与选科要求，须以${escapeHtml(provinceAuthority?.name || candidate.province + '教育考试院')}${usedLocalAdmission ? '「潇湘高考」APP 或' : ''}当年官方招生计划手册为准。</blockquote>
   <table><tr><th>序号</th><th>冲稳保</th><th>院校名称</th><th>所在地</th><th>近年参考分</th><th>建议服从调剂</th></tr>${volunteerRowsHtml}</table>
 </div>` : '';
 

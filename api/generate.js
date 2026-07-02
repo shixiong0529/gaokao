@@ -5,6 +5,7 @@
 import { webSearch, resetCallCount, AUTHORITY_DOMAINS } from './tools/search.js';
 import { generateReport } from './tools/report.js';
 import { queryScoreToRank, queryBatchLines, getProvinceMode } from './tools/gaokaoData.js';
+import { hasLocalAdmission, queryLocalCandidates, formatLocalCandidates } from './tools/localAdmission.js';
 
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 const BASE_URL = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
@@ -507,7 +508,8 @@ export async function generatePlan(input) {
   try {
     // 预取当年+去年批次线（并行，各自带超时，避免串行等待）
     const mode = getProvinceMode(province, currentYear);
-    const classify = mode.defaultSubject;
+    // 3+1+2 省份用考生首选科目（物理/历史），避免历史考生错用物理线
+    const classify = mode.mode === '3+1+2' ? firstChoice : mode.defaultSubject;
     const years = [String(currentYear), String(currentYear - 1)];
     const batchResults = await Promise.all(
       years.map(yr =>
@@ -540,7 +542,7 @@ export async function generatePlan(input) {
       const rd = await queryScoreToRank({
         place: province,
         year: String(currentYear),
-        classify: mode.defaultSubject,
+        classify: mode.mode === '3+1+2' ? firstChoice : mode.defaultSubject,
         score: candidate.score
       });
       if (rd.rank) {
@@ -562,6 +564,32 @@ export async function generatePlan(input) {
 
   // 预取数据注入 allSources
   preflightSources.forEach(s => allSources.push(s));
+
+  // ===== 本地投档线候选池（输入侧：把官方投档线按等效分初筛成冲稳保候选，不进 LLM 输出）=====
+  let localAdmissionSummary = '';
+  if (hasLocalAdmission(province) && candidate.score) {
+    const bk = preflightData.batchLines.filter(b => /本科/.test(b.batch));
+    const y26 = bk.find(b => String(b.year) === String(currentYear));
+    const y25 = bk.find(b => String(b.year) === String(currentYear - 1));
+    let equiv = candidate.score;
+    let equivNote = '（未取到两年本科线，直接用原始分近似）';
+    if (y26 && y25) {
+      equiv = Math.round(candidate.score - (y26.score - y25.score));
+      equivNote = `（按本科线差 ${y26.score}→${y25.score} 平移到 ${currentYear - 1} 年口径）`;
+    }
+    const localCand = queryLocalCandidates({ province, subjectType: candidate.subjectType, equivScore: equiv });
+    if (localCand) {
+      localAdmissionSummary = formatLocalCandidates(localCand, equivNote);
+      allSources.push({
+        item: `${localCand.dataYear}年${province}本科批平行志愿投档线（院校专业组）`,
+        source: '湖南省教育考试院（官方公布，本地库）',
+        url: 'https://jyt.hunan.gov.cn/',
+        year: String(localCand.dataYear),
+        collectedAt: new Date().toISOString().slice(0, 10)
+      });
+      console.log(`[agent] 湖南本地投档线候选：冲${localCand.tiers['冲'].length}/稳${localCand.tiers['稳'].length}/保${localCand.tiers['保'].length}（等效分${equiv}）`);
+    }
+  }
 
   // 构造预取数据摘要，注入 user message
   const batchLineSummary = preflightData.batchLines.length
@@ -589,8 +617,10 @@ ${batchLineSummary}
 
 ### 一分一段
 ${rankSummary}
-
-请根据以上信息，**直接进入院校录取分搜索阶段**（用 search_admission_score 查近2-3年录取分数线），生成冲稳保分层的志愿填报参考方案（6-9 所院校）。
+${localAdmissionSummary ? '\n' + localAdmissionSummary + '\n' : ''}
+${localAdmissionSummary
+  ? '请**优先从上面的真实投档线候选池**中挑选院校专业组，生成冲稳保分层方案。候选池是官方投档线、精确到院校专业组，**无需再联网搜索湖南院校录取分**；volunteerTable（志愿表）请直接引用候选池里的真实院校专业组与投档线（dataBasis.schoolRefs 同理）。search_college_info / search_subject_requirement 仅用于补充院校简介、优势学科、选科要求。'
+  : '请根据以上信息，**直接进入院校录取分搜索阶段**（用 search_admission_score 查近2-3年录取分数线），生成冲稳保分层的志愿填报参考方案（6-9 所院校）。'}
 
 输出必须填全七板块（finish schema 已定义）：
 1. executiveSummary - 执行摘要（考生信息键值表 + 核心结论）
@@ -808,7 +838,8 @@ ${rankSummary}
     volunteerTable: finalData.volunteerTable || [],
     riskChecklist: finalData.riskChecklist || {},
     sources: finalSources,
-    provinceAuthority: PROVINCE_AUTHORITY[candidate.province] || null
+    provinceAuthority: PROVINCE_AUTHORITY[candidate.province] || null,
+    usedLocalAdmission: !!localAdmissionSummary
   });
 
   // 同步生成 docx（用于下载）
