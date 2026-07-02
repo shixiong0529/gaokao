@@ -110,3 +110,17 @@ test('rejects invalid advisor session stage transitions', () => {
     /未知的志愿流程阶段/
   );
 });
+
+test('accepts report settings before final report completion', () => {
+  const db = createLocalDb(tempDbPath());
+  const session = db.createAdvisorSession();
+
+  const updated = db.updateAdvisorSession(session.id, {
+    currentStage: 'report_settings',
+    data: { reportLength: '详细', reportFocus: '就业优先' }
+  });
+
+  assert.equal(updated.currentStage, 'report_settings');
+  assert.equal(updated.data.reportLength, '详细');
+  assert.equal(updated.data.reportFocus, '就业优先');
+});

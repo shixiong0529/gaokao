@@ -50,10 +50,15 @@ test('index places optional advisor stages after invite code as collapsed panels
   assert.match(html, /专业兴趣初筛/);
   assert.match(html, /name="majorInterest" value="计算机类"/);
   assert.match(html, /name="majorInterest" value="师范教育类"/);
+  assert.match(html, /id="majorInterestPanel"[^>]*data-advisor-stage="interest_profile"/);
   for (const panelId of ['personalProfilePanel', 'explorationPanel', 'draftPlanPanel', 'finalReportPanel']) {
     assert.match(html, new RegExp(`<details id="${panelId}"[^>]*>`));
     assert.doesNotMatch(html, new RegExp(`<details id="${panelId}"[^>]*open`));
   }
+  assert.match(html, /id="personalProfilePanel"[^>]*data-advisor-stage="personal_profile"/);
+  assert.match(html, /id="explorationPanel"[^>]*data-advisor-stage="exploration"/);
+  assert.match(html, /id="draftPlanPanel"[^>]*data-advisor-stage="draft_plan"/);
+  assert.match(html, /id="finalReportPanel"[^>]*data-advisor-stage="report_settings"/);
 });
 
 test('index moves freeform preference text into the optional final stage', () => {

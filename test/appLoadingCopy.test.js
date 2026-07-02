@@ -22,7 +22,7 @@ test('app records major interest selections before report generation', () => {
   const js = readFileSync(new URL('../web/app.js', import.meta.url), 'utf8');
 
   assert.match(js, /getAll\('majorInterest'\)/);
-  assert.match(js, /currentStage: 'interest_profile'/);
+  assert.match(js, /stage === 'interest_profile'/);
   assert.match(js, /majorInterests/);
   assert.match(js, /buildPreferences\(formData, advisorPreferences\)/);
 });
@@ -48,4 +48,14 @@ test('app folds structured optional advisor controls into preferences', () => {
     assert.match(js, new RegExp(`['"]${fieldName}['"]`));
   }
   assert.match(js, /结构化选项与其他补充说明如有冲突/);
+});
+
+test('app updates progress when optional advisor stage panels change', () => {
+  const js = readFileSync(new URL('../web/app.js', import.meta.url), 'utf8');
+
+  assert.match(js, /bindAdvisorStagePanels\(\)/);
+  assert.match(js, /querySelectorAll\('\[data-advisor-stage\]'\)/);
+  assert.match(js, /dataset\.advisorStage/);
+  assert.match(js, /currentStage: stage/);
+  assert.match(js, /report_settings/);
 });

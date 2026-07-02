@@ -13,7 +13,7 @@ const loadingElapsed = document.getElementById('loadingElapsed');
 const progressBar = document.getElementById('progressBar');
 const advisorStageText = document.getElementById('advisorStageText');
 const advisorStageBar = document.getElementById('advisorStageBar');
-const majorInterestInputs = Array.from(document.querySelectorAll('input[name="majorInterest"]'));
+const advisorStagePanels = Array.from(document.querySelectorAll('[data-advisor-stage]'));
 
 let currentHtml = '';
 let currentDocxBase64 = null;
@@ -22,13 +22,15 @@ let loadingTimer = null;
 let elapsedTimer = null;
 let startTime = 0;
 let advisorSessionId = null;
+let advisorStageUpdateTimer = null;
 
 const ADVISOR_STAGE_META = {
   basic_info: { label: '阶段一：基础信息收集中', pct: 16 },
-  interest_profile: { label: '阶段二：专业兴趣待补充', pct: 32 },
-  personal_profile: { label: '阶段三：个人画像待补充', pct: 48 },
-  exploration: { label: '阶段四：偏好探索待开始', pct: 64 },
-  draft_plan: { label: '阶段五：正在生成候选方案', pct: 82 },
+  interest_profile: { label: '阶段二：专业兴趣已补充', pct: 32 },
+  personal_profile: { label: '阶段三：个人情况已补充', pct: 48 },
+  exploration: { label: '阶段四：深度偏好已补充', pct: 64 },
+  draft_plan: { label: '阶段五：候选方案偏好已补充', pct: 82 },
+  report_settings: { label: '阶段六：报告设置已补充', pct: 92 },
   final_report: { label: '阶段六：最终报告已生成', pct: 100 }
 };
 
@@ -103,6 +105,7 @@ form.addEventListener('submit', async (e) => {
         preferences: payload.preferences
       }
     });
+    renderAdvisorStage('draft_plan', '阶段五：正在生成候选方案');
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 230000); // 230 秒超时
@@ -148,7 +151,7 @@ form.addEventListener('submit', async (e) => {
 });
 
 initAdvisorSession();
-bindMajorInterestStage();
+bindAdvisorStagePanels();
 
 function setLoading(loading) {
   submitBtn.disabled = loading;
@@ -232,26 +235,46 @@ function buildPreferences(formData, advisorPreferences = collectAdvisorPreferenc
   return lines.join('\n');
 }
 
-function bindMajorInterestStage() {
-  majorInterestInputs.forEach(input => {
-    input.addEventListener('change', async () => {
-      const formData = new FormData(form);
-      const majorInterests = formData.getAll('majorInterest');
-      if (majorInterests.length === 0) {
-        renderAdvisorStage('basic_info');
-        return;
-      }
-      try {
-        await ensureAdvisorSession();
-        await updateAdvisorSessionStage({
-          currentStage: 'interest_profile',
-          data: { majorInterests }
-        });
-      } catch (err) {
-        renderAdvisorStage('interest_profile');
+function bindAdvisorStagePanels() {
+  advisorStagePanels.forEach(panel => {
+    const stage = panel.dataset.advisorStage;
+    panel.querySelectorAll('input, select, textarea').forEach(control => {
+      control.addEventListener('change', () => scheduleAdvisorStageUpdate(stage));
+      if (control.tagName === 'TEXTAREA') {
+        control.addEventListener('input', () => scheduleAdvisorStageUpdate(stage));
       }
     });
   });
+}
+
+function scheduleAdvisorStageUpdate(stage) {
+  const formData = new FormData(form);
+  const majorInterests = formData.getAll('majorInterest');
+  if (stage === 'interest_profile' && majorInterests.length === 0) {
+    renderAdvisorStage('basic_info');
+    return;
+  }
+
+  renderAdvisorStage(stage);
+  if (advisorStageUpdateTimer) clearTimeout(advisorStageUpdateTimer);
+  advisorStageUpdateTimer = setTimeout(() => persistAdvisorStage(stage), 350);
+}
+
+async function persistAdvisorStage(stage) {
+  const formData = new FormData(form);
+  const advisorPreferences = collectAdvisorPreferences(formData);
+  try {
+    await ensureAdvisorSession();
+    await updateAdvisorSessionStage({
+      currentStage: stage,
+      data: {
+        advisorPreferences,
+        preferences: buildPreferences(formData, advisorPreferences)
+      }
+    });
+  } catch (err) {
+    renderAdvisorStage(stage);
+  }
 }
 
 async function initAdvisorSession() {

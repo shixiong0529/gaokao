@@ -43,6 +43,7 @@ const ADVISOR_STAGES = new Set([
   'personal_profile',
   'exploration',
   'draft_plan',
+  'report_settings',
   'final_report'
 ]);
 
