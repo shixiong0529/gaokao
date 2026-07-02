@@ -2,12 +2,31 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-test('index footer links unchanged advisory text to admin invite page', () => {
+test('index footer does not expose admin entry and links compliance pages', () => {
   const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
 
-  assert.match(html, /© 2026 澄明志愿 · <a href="admin-invites\.html"[^>]*target="_blank"[^>]*rel="noopener"[^>]*>CHENGMING ADVISORY<\/a>/);
-  assert.match(html, /data-admin-link/);
-  assert.doesNotMatch(html, />管理<\/a>/);
+  // 管理后台不能从公开页面可达（管理员直接访问 /admin-invites.html）
+  assert.doesNotMatch(html, /admin-invites\.html/);
+  assert.doesNotMatch(html, /admin-messages\.html/);
+  assert.match(html, /© 2026 澄明志愿 · CHENGMING ADVISORY/);
+  assert.match(html, /href="privacy\.html"/);
+  assert.match(html, /href="terms\.html"/);
+});
+
+test('all public pages have mobile nav burger menu', () => {
+  for (const page of ['index.html', 'reference.html', 'college-data.html', 'methodology.html', 'about.html', 'privacy.html', 'terms.html']) {
+    const html = readFileSync(new URL(`../web/${page}`, import.meta.url), 'utf8');
+    assert.match(html, /id="mjNavToggle"/, `${page} 缺少移动端导航开关`);
+    assert.match(html, /class="mj-nav-burger"/, `${page} 缺少汉堡按钮`);
+    assert.match(html, /\.mj-nav-toggle:checked ~ \.mj-nav/, `${page} 缺少展开态样式`);
+  }
+});
+
+test('public pages do not load Google Fonts (unreachable in mainland China)', () => {
+  for (const page of ['index.html', 'reference.html', 'college-data.html', 'methodology.html', 'about.html', 'privacy.html', 'terms.html']) {
+    const html = readFileSync(new URL(`../web/${page}`, import.meta.url), 'utf8');
+    assert.doesNotMatch(html, /fonts\.googleapis\.com|fonts\.gstatic\.com/, `${page} 仍在引用 Google Fonts`);
+  }
 });
 
 test('index uses updated wait copy for report generation', () => {

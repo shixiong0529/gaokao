@@ -31,7 +31,7 @@ const ADVISOR_STAGE_META = {
   exploration: { label: '阶段四：深度偏好已补充', pct: 64 },
   draft_plan: { label: '阶段五：候选方案偏好已补充', pct: 82 },
   report_settings: { label: '阶段六：报告设置已补充', pct: 92 },
-  final_report: { label: '阶段六：最终报告已生成', pct: 100 }
+  final_report: { label: '阶段七：最终报告已生成', pct: 100 }
 };
 
 // 进度提示文案（按时间推进，给用户感知）
@@ -42,7 +42,7 @@ const PROGRESS_TIPS = [
   { t: 50,  msg: '搜索结果较多，正在综合分析近三年录取数据...' },
   { t: 75,  msg: '正在生成冲稳保分层志愿方案...' },
   { t: 100, msg: '即将完成，正在整理 HTML 报告...' },
-  { t: 150, msg: '⏳ 耗时较长，但仍在正常工作。如急需可刷新页面重试（建议先等待）...' }
+  { t: 150, msg: '⏳ 耗时较长，但仍在正常工作，请不要刷新或关闭页面，以免报告丢失...' }
 ];
 
 form.addEventListener('submit', async (e) => {
@@ -89,6 +89,7 @@ form.addEventListener('submit', async (e) => {
   resultEl.hidden = true;
   showLoading();
 
+  // 流程会话是可选的锦上添花，失败不能阻断报告生成
   try {
     await ensureAdvisorSession();
     payload.sessionId = advisorSessionId;
@@ -105,10 +106,16 @@ form.addEventListener('submit', async (e) => {
         preferences: payload.preferences
       }
     });
-    renderAdvisorStage('draft_plan', '阶段五：正在生成候选方案');
+  } catch (err) {
+    console.warn('[advisor-session] 会话记录失败，继续生成报告:', err);
+  }
+  renderAdvisorStage('draft_plan', '阶段五：正在生成候选方案');
 
+  try {
+    // 前端超时必须比服务端（250 秒）长，让服务端做唯一裁判；
+    // 否则前端先放弃，服务端稍后成功 → 邀请码被消耗但用户看不到报告
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 230000); // 230 秒超时
+    const timeoutId = setTimeout(() => controller.abort(), 260000);
 
     const resp = await fetch('/api/generate', {
       method: 'POST',
@@ -127,6 +134,7 @@ form.addEventListener('submit', async (e) => {
 
     currentHtml = data.html;
     currentDocxBase64 = data.docxBase64;
+    saveReportToSession(data.html, data.docxBase64);
     await updateAdvisorSessionStage({
       currentStage: 'final_report',
       data: {
@@ -140,7 +148,7 @@ form.addEventListener('submit', async (e) => {
     scrollToReportResult();
   } catch (err) {
     if (err.name === 'AbortError') {
-      showError('⏱ 请求超时（230秒）。AI 正在联网搜索院校数据，请稍后重试。建议不填"院校偏好"让 AI 自主筛选，可加快速度。');
+      showError('⏱ 请求超时。服务器可能仍在处理，请勿立即重复提交；稍等片刻后刷新页面，若报告未出现再重试。');
     } else {
       showError(err.message || '生成失败，请检查网络或稍后重试');
     }
@@ -149,6 +157,39 @@ form.addEventListener('submit', async (e) => {
     setLoading(false);
   }
 });
+
+// ===== 报告结果持久化（防手滑刷新丢报告） =====
+const REPORT_STORAGE_KEY = 'gaokaoReport';
+
+function saveReportToSession(html, docxBase64) {
+  try {
+    sessionStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify({
+      html,
+      docxBase64: docxBase64 || null,
+      savedAt: Date.now()
+    }));
+  } catch (e) {
+    // 配额不够就只存 HTML（docx 的 base64 体积大）
+    try {
+      sessionStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify({ html, docxBase64: null, savedAt: Date.now() }));
+    } catch (e2) { /* 存不下就算了，不影响当次展示 */ }
+  }
+}
+
+function restoreReportFromSession() {
+  try {
+    const raw = sessionStorage.getItem(REPORT_STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved || !saved.html) return;
+    currentHtml = saved.html;
+    currentDocxBase64 = saved.docxBase64 || null;
+    resultEl.hidden = false;
+    renderReportPreview(saved.html);
+  } catch (e) { /* 恢复失败不影响正常流程 */ }
+}
+
+restoreReportFromSession();
 
 initAdvisorSession();
 bindAdvisorStagePanels();
@@ -277,12 +318,10 @@ async function persistAdvisorStage(stage) {
   }
 }
 
-async function initAdvisorSession() {
-  try {
-    await ensureAdvisorSession();
-  } catch (err) {
-    renderAdvisorStage(null, '流程会话暂不可用，不影响一键生成');
-  }
+function initAdvisorSession() {
+  // 不在页面加载时就建会话——爬虫和一次性访客会白写一行库；
+  // 首次表单交互（persistAdvisorStage）或提交时才真正创建
+  renderAdvisorStage('basic_info');
 }
 
 async function ensureAdvisorSession() {
@@ -448,21 +487,19 @@ function buildFilename(ext) {
   return `高考志愿方案_${dateStr}.${ext}`;
 }
 
-// 下载 Word（docx）
-window.downloadDocx = async function() {
+// 下载 Word（docx）：base64 已在本地，直接转 Blob 下载，无需经过后端
+window.downloadDocx = function() {
   if (!currentDocxBase64) {
     showError('Word 文件未生成，请重新提交生成方案');
     return;
   }
   try {
-    // 通过后端端点转 blob 下载
-    const resp = await fetch('/api/download-docx', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ docxBase64: currentDocxBase64, filename: buildFilename('docx') })
+    const binary = atob(currentDocxBase64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob = new Blob([bytes], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     });
-    if (!resp.ok) throw new Error('下载失败');
-    const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

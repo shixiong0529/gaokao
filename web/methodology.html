@@ -4,18 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>方案说明 · 澄明志愿</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap" rel="stylesheet">
 <style>
   * { -webkit-font-smoothing: antialiased; }
   body { margin: 0; background: #F3EEE2; }
   @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
   ::selection { background: rgba(168,130,60,0.22); }
   .mj-nav a:hover { color: var(--gold); }
+  .mj-nav-burger { display: none; }
 
   @media (max-width: 768px) {
     .mj-nav { display: none !important; }
+    .mj-nav-burger { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--ink); font-size: 18px; cursor: pointer; user-select: none; flex: 0 0 auto; }
+    .mj-nav-toggle:checked ~ .mj-nav { display: flex !important; flex-direction: column; align-items: stretch; gap: 0; position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: var(--paper2); border: 1px solid var(--line-strong); border-top: none; box-shadow: 0 24px 40px -24px rgba(22,35,63,0.45); }
+    .mj-nav-toggle:checked ~ .mj-nav a { padding: 15px 20px; border-bottom: 1px solid var(--line); }
+    .mj-nav-toggle:checked ~ .mj-nav span { margin: 14px 20px; text-align: center; }
     .mj-header { padding: 20px !important; }
     .mj-wrap { padding: 0 16px 60px !important; }
     .mj-hero h1 { font-size: 32px !important; }
@@ -28,26 +30,28 @@
 </style>
 </head>
 <body>
-<div style="--paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C; --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC',system-ui,sans-serif; color:var(--ink); position:relative;">
+<div style="--paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C; --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif; color:var(--ink); position:relative;">
 
   <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
     <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
       <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
         <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
         <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
-        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
       </div>
       <div style="line-height:1.15;">
-        <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
-        <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
+        <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
+        <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
       </div>
     </a>
+    <input type="checkbox" id="mjNavToggle" class="mj-nav-toggle" style="display:none;" aria-hidden="true">
+    <label for="mjNavToggle" class="mj-nav-burger" aria-label="打开导航菜单">☰</label>
     <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
       <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案样本</a>
       <a href="college-data.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">院校数据</a>
       <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">方案说明</a>
       <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">关于我们</a>
-      <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
+      <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
     </nav>
   </header>
 
@@ -55,8 +59,8 @@
 
     <!-- HERO -->
     <section class="mj-hero" style="position:relative; margin-top:56px; text-align:center; animation:mj-rise .8s ease both;">
-      <div style="font-family:'Cormorant Garamond',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px;">Methodology · 方案说明</div>
-      <h1 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:44px; line-height:1.4; letter-spacing:3px; color:var(--ink); margin:0 0 20px;">方案是如何生成的</h1>
+      <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px;">Methodology · 方案说明</div>
+      <h1 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:44px; line-height:1.4; letter-spacing:3px; color:var(--ink); margin:0 0 20px;">方案是如何生成的</h1>
       <p style="max-width:560px; margin:0 auto; font-size:16px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px;">从分数与位次，到「冲 · 稳 · 保」三档，<br>一套以官方数据为基准、可复核的参考逻辑。</p>
       <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin:34px auto 0; max-width:300px;">
         <span style="flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--line-strong));"></span>
@@ -68,38 +72,38 @@
     <!-- I 核心原理 -->
     <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:44px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
-        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">I.</span>
-        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">核心原理 · 以位次为准绳</h2>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">I.</span>
+        <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">核心原理 · 以位次为准绳</h2>
       </div>
       <p style="font-size:15px; line-height:2; color:var(--ink-soft); margin:0 0 12px;">新高考按<span style="color:var(--ink); font-weight:500;">位次</span>而非绝对分数投档。每年试题难度不同，分数会浮动，但你在全省的排名相对稳定。因此我们以「省内位次」作为定位基准，把你今年的分数换算为往年的<span style="color:var(--ink); font-weight:500;">等效分</span>，再与历年院校录取位次比对，判断录取的可能区间。</p>
-      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:16px 20px; margin-top:16px; font-size:14px; line-height:1.95; color:var(--ink-soft);"><span style="font-family:'Noto Serif SC',serif; font-weight:600; color:var(--ink);">为什么看位次 ——</span> 同样是 600 分，在不同年份对应的排名可能相差上万名。只有把分数还原成位次，跨年度的院校录取数据才具备可比性。</div>
+      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:16px 20px; margin-top:16px; font-size:14px; line-height:1.95; color:var(--ink-soft);"><span style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; color:var(--ink);">为什么看位次 ——</span> 同样是 600 分，在不同年份对应的排名可能相差上万名。只有把分数还原成位次，跨年度的院校录取数据才具备可比性。</div>
     </section>
 
     <!-- II 生成流程 -->
     <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:28px;">
-        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">II.</span>
-        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">生成流程 · 四步成案</h2>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">II.</span>
+        <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">生成流程 · 四步成案</h2>
       </div>
       <div class="mj-flow" style="display:grid; grid-template-columns:repeat(4,1fr); gap:0;">
         <div style="padding:0 20px 0 0; border-right:1px solid var(--line);">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">01</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">录入信息</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">01</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">录入信息</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">省份、分数、位次、选科组合与院校专业偏好。</div>
         </div>
         <div style="padding:0 20px; border-right:1px solid var(--line);">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">02</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">精准定位</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">02</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">精准定位</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">换算等效分与省内位次，明确所处分数段。</div>
         </div>
         <div style="padding:0 20px; border-right:1px solid var(--line);">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">03</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">匹配院校</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">03</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">匹配院校</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">检索近年录取数据，筛选位次相近的院校专业。</div>
         </div>
         <div style="padding:0 0 0 20px;">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">04</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">分层生成</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:38px; font-weight:600; color:var(--gold); line-height:1;">04</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:12px 0 8px;">分层生成</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">按录取概率排序，输出冲、稳、保三档方案。</div>
         </div>
       </div>
@@ -108,28 +112,28 @@
     <!-- III 数据来源 -->
     <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
-        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">III.</span>
-        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">数据来源</h2>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">III.</span>
+        <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">数据来源</h2>
       </div>
       <div class="mj-sources" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
         <div style="border:1px solid var(--line); background:#fff; padding:18px 22px;">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 01</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">各省教育考试院批次线</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 01</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">各省教育考试院批次线</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">当年本科批、特控线等官方分数线与对应位次。</div>
         </div>
         <div style="border:1px solid var(--line); background:#fff; padding:18px 22px;">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 02</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">一分一段表</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 02</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">一分一段表</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">将分数精确换算为全省位次的官方分段统计。</div>
         </div>
         <div style="border:1px solid var(--line); background:#fff; padding:18px 22px;">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 03</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">近年院校投档数据</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 03</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">近年院校投档数据</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">各院校专业组历年最低录取分与位次记录。</div>
         </div>
         <div style="border:1px solid var(--line); background:#fff; padding:18px 22px;">
-          <div style="font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 04</div>
-          <div style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">联网检索补充</div>
+          <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Source 04</div>
+          <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; color:var(--ink); margin-bottom:6px;">联网检索补充</div>
           <div style="font-size:13px; line-height:1.8; color:var(--muted);">高考信息平台整理数据，用于交叉核对与补全。</div>
         </div>
       </div>
@@ -138,20 +142,20 @@
     <!-- IV 冲稳保逻辑 -->
     <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:24px;">
-        <span style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--gold);">IV.</span>
-        <h2 style="font-family:'Noto Serif SC',serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">冲稳保分层逻辑</h2>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">IV.</span>
+        <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">冲稳保分层逻辑</h2>
       </div>
       <div class="mj-tiers" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
         <div style="border:1px solid var(--line); border-top:3px solid #A8442E; background:#fff; padding:22px 24px;">
-          <div style="display:flex; align-items:center; gap:9px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:17px; color:#A8442E; margin-bottom:12px;"><span style="width:9px; height:9px; background:#A8442E; transform:rotate(45deg);"></span>冲一冲</div>
+          <div style="display:flex; align-items:center; gap:9px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; color:#A8442E; margin-bottom:12px;"><span style="width:9px; height:9px; background:#A8442E; transform:rotate(45deg);"></span>冲一冲</div>
           <div style="font-size:13.5px; line-height:1.9; color:var(--ink-soft);">录取分略高于你的位次，存在大小年波动的机会。建议放在志愿表前列，并<span style="color:var(--ink); font-weight:500;">服从调剂</span>以降低退档风险。</div>
         </div>
         <div style="border:1px solid var(--line); border-top:3px solid #946111; background:#fff; padding:22px 24px;">
-          <div style="display:flex; align-items:center; gap:9px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:17px; color:#946111; margin-bottom:12px;"><span style="width:9px; height:9px; background:#946111; transform:rotate(45deg);"></span>稳一稳</div>
+          <div style="display:flex; align-items:center; gap:9px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; color:#946111; margin-bottom:12px;"><span style="width:9px; height:9px; background:#946111; transform:rotate(45deg);"></span>稳一稳</div>
           <div style="font-size:13.5px; line-height:1.9; color:var(--ink-soft);">录取位次与你相当或略低，把握较大。是志愿表的<span style="color:var(--ink); font-weight:500;">主体</span>，兼顾理想院校与心仪专业。</div>
         </div>
         <div style="border:1px solid var(--line); border-top:3px solid #2E6B4F; background:#fff; padding:22px 24px;">
-          <div style="display:flex; align-items:center; gap:9px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:17px; color:#2E6B4F; margin-bottom:12px;"><span style="width:9px; height:9px; background:#2E6B4F; transform:rotate(45deg);"></span>保一保</div>
+          <div style="display:flex; align-items:center; gap:9px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; color:#2E6B4F; margin-bottom:12px;"><span style="width:9px; height:9px; background:#2E6B4F; transform:rotate(45deg);"></span>保一保</div>
           <div style="font-size:13.5px; line-height:1.9; color:var(--ink-soft);">录取分明显低于你的位次，作为<span style="color:var(--ink); font-weight:500;">兜底</span>。放在志愿表末端，确保不滑档。</div>
         </div>
       </div>
@@ -161,14 +165,14 @@
     <section style="margin-top:40px; text-align:center;">
       <div style="display:inline-flex; align-items:center; gap:14px; margin-bottom:16px;">
         <span style="width:40px; height:1px; background:var(--line-strong);"></span>
-        <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:3px; color:var(--gold); text-transform:uppercase;">Nota Bene · 重要说明</span>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:3px; color:var(--gold); text-transform:uppercase;">Nota Bene · 重要说明</span>
         <span style="width:40px; height:1px; background:var(--line-strong);"></span>
       </div>
       <p style="max-width:660px; margin:0 auto; font-size:13.5px; line-height:2; color:var(--muted); font-weight:300; letter-spacing:0.5px;">本工具生成的均为参考方案，不构成最终志愿填报建议。招生政策、招生计划、投档线与录取结果，请以各省级招生考试机构及高校官方发布为准，最终决定请结合官方信息与家庭意愿综合判断。</p>
     </section>
 
     <div style="text-align:center; margin-top:34px;">
-      <a href="index.html" style="display:inline-block; padding:14px 40px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC',serif; font-weight:600; font-size:15px; letter-spacing:4px; text-indent:4px; text-decoration:none;">生成我的志愿方案</a>
+      <a href="index.html" style="display:inline-block; padding:14px 40px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; letter-spacing:4px; text-indent:4px; text-decoration:none;">生成我的志愿方案</a>
     </div>
 
   </div>
@@ -178,13 +182,13 @@
       <div style="display:flex; align-items:center; gap:12px;">
         <div style="position:relative; width:30px; height:30px;">
           <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
-          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC',serif; font-weight:700; font-size:14px; color:var(--gold);">澄</div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:14px; color:var(--gold);">澄</div>
         </div>
-        <span style="font-family:'Cormorant Garamond',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 澄明志愿 · CHENGMING ADVISORY</span>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 澄明志愿 · CHENGMING ADVISORY</span>
       </div>
       <div style="display:flex; gap:26px;">
-        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">数据来源</a>
-        <a href="#" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">隐私政策</a>
+        <a href="privacy.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">隐私政策</a>
+        <a href="terms.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">服务条款</a>
         <a href="about.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">联系我们</a>
       </div>
     </div>
