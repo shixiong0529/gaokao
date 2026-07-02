@@ -13,6 +13,20 @@ test('index footer does not expose admin entry and links compliance pages', () =
   assert.match(html, /href="terms\.html"/);
 });
 
+test('footer link row is byte-identical across all public pages', () => {
+  const FOOTER_LINKS_BLOCK = `<div style="display:flex; gap:26px;">
+        <a href="methodology.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">数据来源</a>
+        <a href="privacy.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">隐私政策</a>
+        <a href="terms.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">服务条款</a>
+        <a href="about.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">联系我们</a>
+      </div>`;
+
+  for (const page of ['index.html', 'reference.html', 'college-data.html', 'methodology.html', 'about.html', 'privacy.html', 'terms.html']) {
+    const html = readFileSync(new URL(`../web/${page}`, import.meta.url), 'utf8');
+    assert.ok(html.includes(FOOTER_LINKS_BLOCK), `${page} 的底部链接行文案/顺序/目标必须与首页完全一致`);
+  }
+});
+
 test('style.css must not contain global element rules that leak into the marketing page', () => {
   const css = readFileSync(new URL('../web/style.css', import.meta.url), 'utf8');
 
