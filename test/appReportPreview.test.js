@@ -10,8 +10,12 @@ test('report preview provides direct mobile fallback instead of relying on ifram
   assert.match(html, /<div id="reportPreview" class="report-preview"><\/div>/);
   assert.match(js, /const reportPreview = document\.getElementById\('reportPreview'\)/);
   assert.match(js, /function buildInlinePreviewHtml\(html\)/);
-  assert.match(js, /reportPreview\.innerHTML = buildInlinePreviewHtml\(html\)/);
+  // 报告自带的 <style> 若直接 innerHTML 到主文档会作为全局样式表污染整站
+  // （曾导致首页顶栏出现空隙、背景变白），必须用 Shadow DOM 隔离
+  assert.match(js, /reportPreview\.attachShadow\(\{ mode: 'open' \}\)/);
+  assert.match(js, /shadow\.innerHTML = buildInlinePreviewHtml\(html\)/);
   assert.match(js, /reportPreview\.innerHTML = ''/);
+  assert.match(js, /reportPreview\.shadowRoot\.innerHTML = ''/);
   assert.match(js, /let currentReportUrl = null/);
   assert.match(js, /URL\.revokeObjectURL\(currentReportUrl\)/);
   assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.report-frame \{[\s\S]*display: none/);

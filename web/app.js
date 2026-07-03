@@ -454,11 +454,18 @@ function resetReportPreview() {
   reportFrame.removeAttribute('srcdoc');
   reportFrame.style.height = '';
   reportPreview.innerHTML = '';
+  if (reportPreview.shadowRoot) {
+    reportPreview.shadowRoot.innerHTML = '';
+  }
 }
 
+// 报告自带的 <style>（body/* 等全局选择器）如果直接 innerHTML 注入到主页面 DOM，
+// 会作为真实样式表污染整个网站（曾导致首页顶栏出现空隙、背景变白）。
+// 用 Shadow DOM 隔离，报告样式只在影子树内生效。
 function renderReportPreview(html) {
   resetReportPreview();
-  reportPreview.innerHTML = buildInlinePreviewHtml(html);
+  const shadow = reportPreview.shadowRoot || reportPreview.attachShadow({ mode: 'open' });
+  shadow.innerHTML = buildInlinePreviewHtml(html);
   reportFrame.addEventListener('load', fitReportFrameToContent, { once: true });
 
   if (window.Blob && window.URL && URL.createObjectURL) {
