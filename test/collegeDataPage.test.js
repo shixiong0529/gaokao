@@ -20,3 +20,22 @@ test('public navigation links to college data page', () => {
     assert.match(html, /href="college-data\.html"[^>]*>院校数据/);
   }
 });
+
+test('each college row links to the plan form pre-filled with its name instead of showing an unreliable static score', () => {
+  const html = readFileSync(pageUrl, 'utf8');
+
+  // 本地没有覆盖全国 31 省 × 专业组的可靠录取分数据，不能在表格里编个数字；
+  // 改为跳转到志愿参考表单，由 AI 按用户真实省份/选科实时查询
+  assert.match(html, /index\.html\?college=' \+ encodeURIComponent\(s\.name\) \+ '#planForm/);
+  assert.match(html, /查看录取分/);
+});
+
+test('index page reads ?college= to pre-fill the preferences field and expand the final stage panel', () => {
+  const js = readFileSync(new URL('../web/app.js', import.meta.url), 'utf8');
+
+  assert.match(js, /function applyCollegeQueryParam\(\)/);
+  assert.match(js, /new URLSearchParams\(window\.location\.search\)/);
+  assert.match(js, /params\.get\('college'\)/);
+  assert.match(js, /document\.getElementById\('finalReportPanel'\)/);
+  assert.match(js, /applyCollegeQueryParam\(\);\s*$/);
+});

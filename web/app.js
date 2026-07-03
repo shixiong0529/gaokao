@@ -689,3 +689,24 @@ window.openReport = function() {
 
 // 恢复上次生成的报告（刷新不丢）。必须放在文件末尾：见 restoreReportFromSession 的注释
 restoreReportFromSession();
+
+// 从「院校数据」页跳转过来时（index.html?college=北京大学），预填院校名并展开对应可选面板，
+// 引导用户填分数/位次，由 AI 实时联网给出该校在其省份/选科下的真实录取分——
+// 院校数据页本身不存这个数（各省/专业组分数差异极大，本地没有可靠的全国性数据）。
+function applyCollegeQueryParam() {
+  const params = new URLSearchParams(window.location.search);
+  const college = (params.get('college') || '').trim().slice(0, 60);
+  if (!college) return;
+
+  const preferencesField = form.querySelector('textarea[name="preferences"]');
+  if (preferencesField && !preferencesField.value) {
+    preferencesField.value = `重点关注院校：${college}，请结合我的分数/位次说明能否报考，以及该校在我省的专业组与往年投档情况。`;
+  }
+
+  const panel = document.getElementById('finalReportPanel');
+  if (panel) panel.open = true;
+
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+applyCollegeQueryParam();

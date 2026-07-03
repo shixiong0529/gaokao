@@ -132,12 +132,13 @@
     <section id="tableSection" style="background:var(--paper2); border:1px solid var(--line-strong); box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
       <div class="mj-table-scroll">
         <div>
-          <div style="display:grid; grid-template-columns:2fr 1fr 1.7fr 0.9fr 0.9fr; background:rgba(22,35,63,0.05); border-bottom:1.5px solid var(--ink);">
+          <div style="display:grid; grid-template-columns:2fr 1fr 1.7fr 0.9fr 0.9fr 1.1fr; background:rgba(22,35,63,0.05); border-bottom:1.5px solid var(--ink);">
             <div style="padding:13px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
             <div style="padding:13px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">所在地</div>
             <div style="padding:13px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">层次</div>
             <div style="padding:13px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">类型</div>
             <div style="padding:13px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">办学</div>
+            <div style="padding:13px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">录取分</div>
           </div>
           <div id="collegeRows"></div>
           <div id="loadingState" style="padding:56px 20px; text-align:center; color:var(--muted); font-weight:300;">正在加载院校数据……</div>
@@ -218,7 +219,7 @@
   }
   var uniq = function (arr) { var seen = {}, out = []; arr.forEach(function (x) { if (x && !seen[x]) { seen[x] = 1; out.push(x); } }); return out; };
 
-  var rowStyle = 'display:grid; grid-template-columns:2fr 1fr 1.7fr 0.9fr 0.9fr; border-bottom:1px solid var(--line);';
+  var rowStyle = 'display:grid; grid-template-columns:2fr 1fr 1.7fr 0.9fr 0.9fr 1.1fr; border-bottom:1px solid var(--line);';
   function levelTags(s) {
     if (s.tags && s.tags.length) return s.tags.map(function (t) { return '<span style="' + tierStyle(t) + '">' + t + '</span>'; }).join('');
     return '<span style="' + tierStyle(s.level === '专科' ? '专科' : '') + '">' + (s.level === '专科' ? '专科' : '普通本科') + '</span>';
@@ -231,6 +232,13 @@
       'onmouseout="this.style.color=\'\'; this.style.borderColor=\'var(--line-strong)\';" ' +
       'title="访问' + s.name + '官网">' + s.name + ' <span style="font-size:11px; color:var(--gold);">↗</span></a>';
   }
+  function scoreCell(s) {
+    return '<div style="padding:14px 16px; display:flex; align-items:center;">' +
+      '<a href="index.html?college=' + encodeURIComponent(s.name) + '#planForm" ' +
+      'style="font-size:12.5px; letter-spacing:0.5px; color:var(--gold); text-decoration:none; border-bottom:1px dashed var(--gold);" ' +
+      'title="按你的省份与选科，AI 实时查该校真实录取分">查看录取分 →</a>' +
+      '</div>';
+  }
   function rowHtml(s) {
     return '<div style="' + rowStyle + '">' +
       '<div style="padding:14px 16px; font-family:\'Noto Serif SC\',\'Source Han Serif SC\',\'Songti SC\',STSong,SimSun,serif; font-size:15px; font-weight:500; color:var(--ink); display:flex; align-items:center;">' + nameCell(s) + '</div>' +
@@ -238,6 +246,7 @@
       '<div style="padding:14px 16px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">' + levelTags(s) + '</div>' +
       '<div style="padding:14px 16px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">' + s.category + '</div>' +
       '<div style="padding:14px 16px; font-size:13.5px; color:' + natureColor(s.nature) + '; display:flex; align-items:center;">' + s.nature + '</div>' +
+      scoreCell(s) +
       '</div>';
   }
 
