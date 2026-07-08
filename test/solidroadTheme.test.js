@@ -6,6 +6,7 @@ const publicPages = [
   'index.html',
   'reference.html',
   'college-data.html',
+  'admission-score.html',
   'methodology.html',
   'about.html',
   'privacy.html',

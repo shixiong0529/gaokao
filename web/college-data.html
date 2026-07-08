@@ -106,7 +106,7 @@
     <section class="mj-hero" style="position:relative; margin-top:52px; text-align:center; animation:mj-rise .8s ease both;">
       <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px;">Database · 院校数据</div>
       <h1 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:42px; line-height:1.4; letter-spacing:3px; color:var(--ink); margin:0 0 18px;">院校数据库</h1>
-      <p style="max-width:600px; margin:0 auto; font-size:15.5px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px;">收录教育部《全国普通高等学校名单》全部院校，按地区、类型与层次检索。<br>各校录取分数可在「志愿参考」中按你的省份与选科实时生成。</p>
+      <p style="max-width:600px; margin:0 auto; font-size:15.5px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px;">收录教育部《全国普通高等学校名单》全部院校，按地区、类型与层次检索。<br>各校录取分数可按省份查看本地整理的 2025 年本科投档线。</p>
     </section>
 
     <!-- TOOLBAR -->
@@ -184,7 +184,7 @@
     <!-- PAGER -->
     <div id="pager" style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:26px; flex-wrap:wrap;"></div>
 
-    <div class="mj-bg-text" style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:22px; font-weight:300; text-align:center; max-width:780px; margin-left:auto; margin-right:auto;">数据来源：教育部《全国普通高等学校名单》（2025 年 6 月）。院校类型由校名归类推断，985 / 211 / 双一流依据公开名单标注，可能存在个别偏差。军事类等未纳入该名单的院校不在其中。院校名称可点击跳转官网（部分中小院校链接可能已过期，遇到打不开请自行搜索校名核实）。录取分数请在「志愿参考」中按你的省份与选科实时生成。</div>
+    <div class="mj-bg-text" style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:22px; font-weight:300; text-align:center; max-width:780px; margin-left:auto; margin-right:auto;">数据来源：教育部《全国普通高等学校名单》（2025 年 6 月）。院校类型由校名归类推断，985 / 211 / 双一流依据公开名单标注，可能存在个别偏差。军事类等未纳入该名单的院校不在其中。院校名称可点击跳转官网（部分中小院校链接可能已过期，遇到打不开请自行搜索校名核实）。录取分数来自项目本地整理的各省 2025 年本科投档线，点击「查看录取分」后可切换省份查看。</div>
 
   </div>
 
@@ -265,9 +265,9 @@
   }
   function scoreCell(s) {
     return '<div style="padding:14px 16px; display:flex; align-items:center;">' +
-      '<a href="index.html?college=' + encodeURIComponent(s.name) + '#planForm" ' +
+      '<a href="admission-score.html?college=' + encodeURIComponent(s.name) + '" ' +
       'style="font-size:12.5px; letter-spacing:0.5px; color:var(--gold); text-decoration:none; border-bottom:1px dashed var(--gold);" ' +
-      'title="按你的省份与选科，AI 实时查该校真实录取分">查看录取分 →</a>' +
+      'title="按省份查看该校 2025 年本科投档线">查看录取分 →</a>' +
       '</div>';
   }
   function rowHtml(s) {

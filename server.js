@@ -11,6 +11,30 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ADMISSION_FILES = {
+  anhui: 'anhui-2025-benke.json',
+  beijing: 'beijing-2025-benke.json',
+  chongqing: 'chongqing-2025-benke.json',
+  fujian: 'fujian-2025-benke.json',
+  guangdong: 'guangdong-2025-benke.json',
+  guangxi: 'guangxi-2025-benke.json',
+  guizhou: 'guizhou-2025-benke.json',
+  hainan: 'hainan-2025-benke.json',
+  hebei: 'hebei-2025-benke.json',
+  heilongjiang: 'heilongjiang-2025-benke.json',
+  hubei: 'hubei-2025-benke.json',
+  hunan: 'hunan-2025-benke.json',
+  jiangsu: 'jiangsu-2025-benke.json',
+  jiangxi: 'jiangxi-2025-benke.json',
+  liaoning: 'liaoning-2025-benke.json',
+  neimenggu: 'neimenggu-2025-benke.json',
+  shandong: 'shandong-2025-benke.json',
+  shanghai: 'shanghai-2025-benke.json',
+  shanxi: 'shanxi-2025-benke.json',
+  tianjin: 'tianjin-2025-benke.json',
+  xinjiang: 'xinjiang-2025-benke.json',
+  zhejiang: 'zhejiang-2025-benke.json'
+};
 
 // 只信任 Nginx 这一层代理；true 会信任任意 X-Forwarded-For，导致 IP 可伪造、限流失效
 app.set('trust proxy', 1);
@@ -140,6 +164,15 @@ app.patch('/api/advisor-sessions/:id', advisorLimiter, (req, res) => {
   } catch (err) {
     res.status(err.status || 500).json({ error: err.message || '志愿流程会话更新失败' });
   }
+});
+
+app.get('/api/admission/:province', (req, res) => {
+  const fileName = ADMISSION_FILES[req.params.province];
+  if (!fileName) {
+    return res.status(404).json({ error: '未找到该省份投档线数据' });
+  }
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.sendFile(path.join(__dirname, 'data/admission', fileName));
 });
 
 app.post('/api/admin/invite-codes', adminLimiter, requireAdmin, (req, res) => {

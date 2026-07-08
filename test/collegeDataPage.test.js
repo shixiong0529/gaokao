@@ -14,20 +14,29 @@ test('college data page exists with filters and data table', () => {
   assert.match(html, /fetch\('colleges\.json'\)/);
 });
 
+test('admission score page exists with province selector and admission API loading', () => {
+  const html = readFileSync(new URL('../web/admission-score.html', import.meta.url), 'utf8');
+
+  assert.match(html, /院校录取分/);
+  assert.match(html, /id="provinceSelect"/);
+  assert.match(html, /var FIELDS = \['科类', '院校代号', '院校名称', '专业组编号', '专业组名称', '投档线', '备注'\]/);
+  assert.match(html, /fetch\('\/api\/admission\/' \+ province\.slug\)/);
+  assert.match(html, /normalizeCollegeName\(row\['院校名称'\]\) === normalizedCollege/);
+});
+
 test('public navigation links to college data page', () => {
-  for (const file of ['index.html', 'reference.html', 'methodology.html', 'about.html']) {
+  for (const file of ['index.html', 'reference.html', 'methodology.html', 'about.html', 'admission-score.html']) {
     const html = readFileSync(new URL(`../web/${file}`, import.meta.url), 'utf8');
     assert.match(html, /href="college-data\.html"[^>]*>院校数据/);
   }
 });
 
-test('each college row links to the plan form pre-filled with its name instead of showing an unreliable static score', () => {
+test('each college row links to the admission score page instead of returning to the home form', () => {
   const html = readFileSync(pageUrl, 'utf8');
 
-  // 本地没有覆盖全国 31 省 × 专业组的可靠录取分数据，不能在表格里编个数字；
-  // 改为跳转到志愿参考表单，由 AI 按用户真实省份/选科实时查询
-  assert.match(html, /index\.html\?college=' \+ encodeURIComponent\(s\.name\) \+ '#planForm/);
+  assert.match(html, /admission-score\.html\?college=' \+ encodeURIComponent\(s\.name\)/);
   assert.match(html, /查看录取分/);
+  assert.doesNotMatch(html, /index\.html\?college=' \+ encodeURIComponent\(s\.name\) \+ '#planForm/);
 });
 
 test('index page reads ?college= to pre-fill the preferences field and expand the final stage panel', () => {
@@ -38,4 +47,13 @@ test('index page reads ?college= to pre-fill the preferences field and expand th
   assert.match(js, /params\.get\('college'\)/);
   assert.match(js, /document\.getElementById\('finalReportPanel'\)/);
   assert.match(js, /applyCollegeQueryParam\(\);\s*$/);
+});
+
+test('server exposes a read-only admission data endpoint for page loading', () => {
+  const server = readFileSync(new URL('../server.js', import.meta.url), 'utf8');
+
+  assert.match(server, /const ADMISSION_FILES = \{/);
+  assert.match(server, /hunan: 'hunan-2025-benke\.json'/);
+  assert.match(server, /app\.get\('\/api\/admission\/:province'/);
+  assert.match(server, /res\.sendFile\(path\.join\(__dirname, 'data\/admission', fileName\)\)/);
 });

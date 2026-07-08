@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>院校录取分 · 鲤鱼门</title>
+<meta name="description" content="按省份查看指定院校的 2025 年本科投档线，展示科类、院校代号、专业组编号、专业组名称、投档线与备注。">
+<link rel="canonical" href="https://liyumen.com/admission-score.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="院校录取分 · 鲤鱼门">
+<meta property="og:description" content="按省份查看指定院校的 2025 年本科投档线。">
+<meta property="og:url" content="https://liyumen.com/admission-score.html">
+<meta property="og:site_name" content="鲤鱼门">
+<style>
+  * { -webkit-font-smoothing: antialiased; box-sizing: border-box; }
+  body { margin: 0; background: #EEF2EC; }
+  @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  ::selection { background: rgba(95,116,103,0.22); }
+  select option { color: #16201C; }
+  .mj-nav a:hover { color: var(--gold); }
+  .mj-nav-burger { display: none; }
+  .mj-page-bg { isolation:isolate; overflow:hidden; }
+  .mj-page-bg::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(180deg, rgba(8,18,26,0.78) 0%, rgba(8,18,26,0.46) 38%, rgba(8,18,26,0.12) 72%, rgba(8,18,26,0) 100%),
+      url("https://framerusercontent.com/images/UG7DO77CykOXq0OIDltEMrQUh4.png?scale-down-to=2048&width=3840&height=2160");
+    background-size:cover;
+    background-position:center top;
+    background-repeat:no-repeat;
+    filter:saturate(.96) contrast(1.02);
+  }
+  .mj-page-bg > * { position:relative; z-index:1; }
+  .mj-page-bg .mj-header { border-bottom-color: rgba(246,244,236,0.28) !important; }
+  .mj-page-bg .mj-header,
+  .mj-page-bg .mj-header * { color: #F6F4EC !important; border-color: rgba(246,244,236,0.28) !important; }
+  .mj-page-bg .mj-hero,
+  .mj-page-bg .mj-hero *,
+  .mj-page-bg .mj-bg-text,
+  .mj-page-bg .mj-bg-text *,
+  .mj-page-bg footer,
+  .mj-page-bg footer * { color: #F6F4EC !important; border-color: rgba(246,244,236,0.34) !important; }
+  .mj-field:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(95,116,103,0.14); }
+  .mj-table-scroll { overflow-x: auto; }
+  .mj-admission-table { min-width: 980px; }
+  .mj-admission-head,
+  .mj-admission-row {
+    display: grid;
+    grid-template-columns: .8fr .9fr 1.35fr 1fr 1.7fr .8fr 1.7fr;
+  }
+  .mj-admission-row { border-bottom: 1px solid var(--line); }
+  .mj-cell {
+    padding: 13px 14px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    word-break: break-word;
+  }
+  .mj-head-cell {
+    padding: 13px 14px;
+    font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--ink);
+  }
+  @media (max-width: 768px) {
+    .mj-nav { display: none !important; }
+    .mj-nav-burger { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--ink); font-size: 18px; cursor: pointer; user-select: none; flex: 0 0 auto; }
+    .mj-nav-toggle:checked ~ .mj-nav { display: flex !important; flex-direction: column; align-items: stretch; gap: 0; position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: var(--paper2); border: 1px solid var(--line-strong); border-top: none; box-shadow: 0 24px 40px -24px rgba(22,32,28,0.45); }
+    .mj-nav-toggle:checked ~ .mj-nav a { padding: 15px 20px; border-bottom: 1px solid var(--line); }
+    .mj-nav-toggle:checked ~ .mj-nav span { margin: 14px 20px; text-align: center; }
+    .mj-header { padding: 20px !important; }
+    .mj-wrap { padding: 0 16px 60px !important; }
+    .mj-hero h1 { font-size: 32px !important; }
+    .mj-panel { padding: 20px !important; }
+    .mj-controls { grid-template-columns: 1fr !important; }
+  }
+</style>
+</head>
+<body>
+<div class="mj-page-bg" style="--paper:#EEF2EC; --paper2:#FAFBF7; --ink:#16201C; --ink-soft:#34423C; --muted:#6C766E; --gold:#5F7467; --line:rgba(22,32,28,0.14); --line-strong:rgba(22,32,28,0.24); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,32,28,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,32,28,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif; color:var(--ink); position:relative;">
+
+  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
+    <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
+      <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
+        <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(95,116,103,0.4); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:20px; color:var(--gold);">鲤</div>
+      </div>
+      <div style="line-height:1.15;">
+        <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">鲤鱼门</div>
+        <div style="margin-top:4px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
+      </div>
+    </a>
+    <input type="checkbox" id="mjNavToggle" class="mj-nav-toggle" style="display:none;" aria-hidden="true">
+    <label for="mjNavToggle" class="mj-nav-burger" aria-label="打开导航菜单">☰</label>
+    <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
+      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案样本</a>
+      <a href="college-data.html" style="font-size:14px; letter-spacing:1px; color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold); padding-bottom:2px;">院校数据</a>
+      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案说明</a>
+      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">关于我们</a>
+      <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
+    </nav>
+  </header>
+
+  <main class="mj-wrap" style="max-width:1120px; margin:0 auto; padding:0 40px 80px;">
+    <section class="mj-hero" style="position:relative; margin-top:52px; text-align:center; animation:mj-rise .8s ease both;">
+      <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:18px;">Admission Score · 录取分</div>
+      <h1 id="collegeTitle" style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:42px; line-height:1.4; letter-spacing:3px; color:var(--ink); margin:0 0 18px;">院校录取分</h1>
+      <p id="collegeSubtitle" style="max-width:680px; margin:0 auto; font-size:15.5px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px;">按省份查看该校 2025 年本科投档线。页面只展示所有省份共同具备的 7 个基础字段。</p>
+    </section>
+
+    <section class="mj-panel" style="background:var(--paper2); border:1px solid var(--line-strong); padding:26px 30px; margin-top:40px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
+      <div class="mj-controls" style="display:grid; grid-template-columns:1fr 260px 160px; align-items:end; gap:18px;">
+        <div>
+          <label style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">当前院校</label>
+          <div id="collegeNameBox" style="min-height:48px; display:flex; align-items:center; padding:12px 16px; background:#fff; border:1px solid var(--line-strong); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:18px; color:var(--ink);">—</div>
+        </div>
+        <div>
+          <label for="provinceSelect" style="display:block; font-size:13px; letter-spacing:0.5px; color:var(--muted); margin-bottom:9px;">省份</label>
+          <div style="position:relative;">
+            <select id="provinceSelect" class="mj-field" style="width:100%; appearance:none; -webkit-appearance:none; padding:13px 40px 13px 16px; font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif; font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--line-strong); border-radius:2px; outline:none; cursor:pointer;"></select>
+            <span style="position:absolute; right:16px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--gold); font-size:11px;">▾</span>
+          </div>
+        </div>
+        <a href="college-data.html" style="height:48px; display:flex; align-items:center; justify-content:center; padding:0 18px; color:var(--gold); background:#fff; border:1px solid var(--line-strong); text-decoration:none; font-size:14px;">返回数据库</a>
+      </div>
+    </section>
+
+    <div class="mj-bg-text" style="display:flex; align-items:baseline; justify-content:space-between; margin:28px 4px 14px; gap:16px; flex-wrap:wrap;">
+      <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:15px; color:var(--ink); letter-spacing:1px;">共 <span id="resultCount" style="color:var(--gold); font-weight:600;">—</span> 条投档线</div>
+      <div id="sourceInfo" style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:2px; color:var(--muted); text-transform:uppercase;">2025 Benke</div>
+    </div>
+
+    <section style="background:var(--paper2); border:1px solid var(--line-strong); box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
+      <div class="mj-table-scroll">
+        <div class="mj-admission-table">
+          <div class="mj-admission-head" style="background:rgba(22,32,28,0.05); border-bottom:1.5px solid var(--ink);">
+            <div class="mj-head-cell">科类</div>
+            <div class="mj-head-cell">院校代号</div>
+            <div class="mj-head-cell">院校名称</div>
+            <div class="mj-head-cell">专业组编号</div>
+            <div class="mj-head-cell">专业组名称</div>
+            <div class="mj-head-cell">投档线</div>
+            <div class="mj-head-cell">备注</div>
+          </div>
+          <div id="admissionRows"></div>
+          <div id="loadingState" style="padding:56px 20px; text-align:center; color:var(--muted); font-weight:300;">正在加载投档线数据……</div>
+          <div id="emptyState" hidden style="padding:56px 20px; text-align:center;">
+            <div id="emptyTitle" style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:17px; color:var(--ink); margin-bottom:8px;">暂无该校数据</div>
+            <div id="emptyHint" style="font-size:13.5px; color:var(--muted); font-weight:300;">请切换其他省份查看。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="mj-bg-text" style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:22px; font-weight:300; text-align:center; max-width:820px; margin-left:auto; margin-right:auto;">数据来自项目本地整理的各省 2025 年本科投档线文件。不同省份公布口径不同，本页统一展示所有省份共同具备的 7 个基础字段；部分省份的位次、计划数等附加字段暂不在本页展示。</div>
+  </main>
+
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,32,28,0.02);">
+    <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="position:relative; width:30px; height:30px;">
+          <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:14px; color:var(--gold);">鲤</div>
+        </div>
+        <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:1.5px; color:var(--muted);">© 2026 鲤鱼门 · LIYUMEN ADVISORY</span>
+      </div>
+      <div style="display:flex; gap:26px;">
+        <a href="methodology.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">数据来源</a>
+        <a href="privacy.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">隐私政策</a>
+        <a href="terms.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">服务条款</a>
+        <a href="about.html" style="font-size:13px; letter-spacing:0.5px; color:var(--muted); text-decoration:none;">联系我们</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var FIELDS = ['科类', '院校代号', '院校名称', '专业组编号', '专业组名称', '投档线', '备注'];
+  var PROVINCES = [
+    { name: '湖南', slug: 'hunan' },
+    { name: '浙江', slug: 'zhejiang' },
+    { name: '山东', slug: 'shandong' },
+    { name: '广东', slug: 'guangdong' },
+    { name: '江苏', slug: 'jiangsu' },
+    { name: '湖北', slug: 'hubei' },
+    { name: '福建', slug: 'fujian' },
+    { name: '河北', slug: 'hebei' },
+    { name: '辽宁', slug: 'liaoning' },
+    { name: '重庆', slug: 'chongqing' },
+    { name: '安徽', slug: 'anhui' },
+    { name: '江西', slug: 'jiangxi' },
+    { name: '广西', slug: 'guangxi' },
+    { name: '贵州', slug: 'guizhou' },
+    { name: '黑龙江', slug: 'heilongjiang' },
+    { name: '北京', slug: 'beijing' },
+    { name: '天津', slug: 'tianjin' },
+    { name: '上海', slug: 'shanghai' },
+    { name: '海南', slug: 'hainan' },
+    { name: '山西', slug: 'shanxi' },
+    { name: '内蒙古', slug: 'neimenggu' },
+    { name: '新疆', slug: 'xinjiang' }
+  ];
+  var params = new URLSearchParams(window.location.search);
+  var college = (params.get('college') || '').trim().slice(0, 80);
+  var provinceParam = (params.get('province') || '').trim();
+  var provinceSelect = document.getElementById('provinceSelect');
+  var collegeTitle = document.getElementById('collegeTitle');
+  var collegeSubtitle = document.getElementById('collegeSubtitle');
+  var collegeNameBox = document.getElementById('collegeNameBox');
+  var rowsBox = document.getElementById('admissionRows');
+  var loadingState = document.getElementById('loadingState');
+  var emptyState = document.getElementById('emptyState');
+  var emptyTitle = document.getElementById('emptyTitle');
+  var emptyHint = document.getElementById('emptyHint');
+  var resultCount = document.getElementById('resultCount');
+  var sourceInfo = document.getElementById('sourceInfo');
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (s) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s];
+    });
+  }
+
+  function displayScore(value) {
+    if (value === null || value === undefined || value === '') return '—';
+    return escapeHtml(value);
+  }
+
+  function findProvince(value) {
+    return PROVINCES.find(function (p) { return p.name === value || p.slug === value; }) || PROVINCES[0];
+  }
+
+  function normalizeCollegeName(value) {
+    return String(value || '').replace(/（[^）]*）|\([^)]*\)/g, '').trim();
+  }
+
+  function setUrlProvince(province) {
+    var next = new URLSearchParams(window.location.search);
+    if (college) next.set('college', college);
+    next.set('province', province.name);
+    history.replaceState(null, '', 'admission-score.html?' + next.toString());
+  }
+
+  function rowHtml(row) {
+    return '<div class="mj-admission-row">' + FIELDS.map(function (field) {
+      var value = field === '投档线' ? displayScore(row[field]) : escapeHtml(row[field]);
+      return '<div class="mj-cell">' + value + '</div>';
+    }).join('') + '</div>';
+  }
+
+  function renderEmpty(title, hint) {
+    rowsBox.innerHTML = '';
+    resultCount.textContent = '0';
+    loadingState.hidden = true;
+    emptyState.hidden = false;
+    emptyTitle.textContent = title;
+    emptyHint.textContent = hint;
+  }
+
+  function renderRows(rows, province) {
+    loadingState.hidden = true;
+    resultCount.textContent = rows.length.toLocaleString();
+    sourceInfo.textContent = province.name + ' · 2025 Benke';
+    if (!rows.length) {
+      renderEmpty('该省份暂无该校投档线', '当前省份暂未查询到“' + college + '”的本科投档线数据，请切换其他省份。');
+      return;
+    }
+    emptyState.hidden = true;
+    rowsBox.innerHTML = rows.map(rowHtml).join('');
+  }
+
+  function loadProvince(province) {
+    loadingState.hidden = false;
+    emptyState.hidden = true;
+    rowsBox.innerHTML = '';
+    resultCount.textContent = '—';
+    sourceInfo.textContent = province.name + ' · Loading';
+    setUrlProvince(province);
+    fetch('/api/admission/' + province.slug).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }).then(function (data) {
+      var normalizedCollege = normalizeCollegeName(college);
+      var rows = data.filter(function (row) {
+        return row['院校名称'] === college || normalizeCollegeName(row['院校名称']) === normalizedCollege;
+      });
+      renderRows(rows, province);
+    }).catch(function (err) {
+      renderEmpty('投档线数据加载失败', err.message);
+      sourceInfo.textContent = province.name + ' · Error';
+    });
+  }
+
+  provinceSelect.innerHTML = PROVINCES.map(function (p) {
+    return '<option value="' + p.slug + '">' + p.name + '</option>';
+  }).join('');
+
+  if (!college) {
+    collegeTitle.textContent = '院校录取分';
+    collegeNameBox.textContent = '未指定院校';
+    collegeSubtitle.textContent = '请从院校数据库点击“查看录取分”进入本页。';
+    renderEmpty('未指定院校', '请返回院校数据库，选择一所院校后查看录取分。');
+    return;
+  }
+
+  var currentProvince = findProvince(provinceParam || '湖南');
+  provinceSelect.value = currentProvince.slug;
+  collegeTitle.textContent = college + ' · 2025本科投档线';
+  collegeNameBox.textContent = college;
+  document.title = college + ' · 院校录取分 · 鲤鱼门';
+
+  provinceSelect.addEventListener('change', function () {
+    currentProvince = findProvince(provinceSelect.value);
+    loadProvince(currentProvince);
+  });
+
+  loadProvince(currentProvince);
+})();
+</script>
+</body>
+</html>
