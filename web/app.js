@@ -2,7 +2,6 @@ const form = document.getElementById('planForm');
 const submitBtn = document.getElementById('submitBtn');
 const btnText = submitBtn.querySelector('.btn-text');
 const btnLoading = submitBtn.querySelector('.btn-loading');
-const statusEl = document.getElementById('status');
 const resultEl = document.getElementById('result');
 const errorEl = document.getElementById('error');
 const reportFrame = document.getElementById('reportFrame');
@@ -153,6 +152,8 @@ form.addEventListener('submit', async (e) => {
     } else {
       showError(err.message || '生成失败，请检查网络或稍后重试');
     }
+    // 失败后不能让进度提示停留在「正在生成候选方案」，否则用户误以为还在生成
+    renderAdvisorStage('draft_plan', '阶段五：生成未成功，修正后可重试');
     hideLoading();
   } finally {
     setLoading(false);
@@ -414,17 +415,7 @@ function hideLoading() {
   progressBar.style.width = '0%';
 }
 
-// ===== 状态/错误（保留） =====
-function showStatus(msg, active) {
-  statusEl.textContent = msg;
-  statusEl.hidden = false;
-  statusEl.classList.toggle('active', !!active);
-}
-
-function hideStatus() {
-  statusEl.hidden = true;
-}
-
+// ===== 错误提示 =====
 function showError(msg) {
   errorEl.textContent = '❌ ' + msg;
   errorEl.hidden = false;

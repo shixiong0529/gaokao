@@ -21,7 +21,7 @@
 }
 
 /* box-sizing 只作用于本文件的组件，不污染页面其他部分 */
-.status, .error-card,
+.error-card,
 .result, .result *,
 .loading-overlay, .loading-overlay * {
   box-sizing: border-box;
@@ -155,20 +155,6 @@
 .loading-elapsed.timeout {
   color: #d97706;
   font-weight: 500;
-}
-
-.status {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 16px 24px;
-  margin-bottom: 20px;
-  font-size: 13px;
-  color: var(--text);
-  border-left: 4px solid var(--warning);
-}
-
-.status.active {
-  border-left-color: var(--primary);
 }
 
 .result {

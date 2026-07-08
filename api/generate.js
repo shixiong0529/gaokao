@@ -576,17 +576,18 @@ export async function generatePlan(input) {
   if (candidate.score) {
     try {
       const mode = getProvinceMode(province, currentYear);
+      const rankClassify = mode.mode === '3+1+2' ? firstChoice : mode.defaultSubject;
       const rd = await queryScoreToRank({
         place: province,
         year: String(currentYear),
-        classify: mode.mode === '3+1+2' ? firstChoice : mode.defaultSubject,
+        classify: rankClassify,
         score: candidate.score
       });
       if (rd.rank) {
         preflightData.rankInfo = rd;
         if (!candidate.rank) candidate.rank = rd.rank; // 自动补位次
         preflightSources.push({
-          item: `${currentYear}年${province}${mode.defaultSubject}${candidate.score}分一分一段`,
+          item: `${currentYear}年${province}${rankClassify}${candidate.score}分一分一段`,
           source: '结构化数据接口（gaokao.search.qq.com）',
           url: '',
           year: String(currentYear),

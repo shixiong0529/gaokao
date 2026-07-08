@@ -124,6 +124,13 @@
   function token() { return tokenInput.value.trim(); }
   function headers() { return { 'Content-Type': 'application/json', 'X-Admin-Token': token() }; }
   function fmt(s) { return s ? new Date(s).toLocaleString('zh-CN') : '-'; }
+  function isExpired(r) { return !!(r.expiresAt && new Date(r.expiresAt).getTime() < Date.now()); }
+  // 过期/停用的码不能再使用，但仍按用量分组展示；在过期列里红字标注状态
+  function expiryCell(r) {
+    if (r.disabledAt) return '<span style="color:#a8442e;">已停用</span>';
+    if (isExpired(r)) return '<span style="color:#a8442e;">已过期 · ' + escapeHtml(fmt(r.expiresAt)) + '</span>';
+    return escapeHtml(fmt(r.expiresAt));
+  }
   function pad(n) { return String(n).padStart(2, '0'); }
   function formatDatetimeLocal(date) {
     return date.getFullYear() + '-' +
@@ -211,7 +218,7 @@
       return '<tr>' +
         '<td><code>' + escapeHtml(r.code) + '</code></td>' +
         '<td>' + r.usedCount + ' / ' + r.maxUses + '</td>' +
-        '<td>' + escapeHtml(fmt(r.expiresAt)) + '</td>' +
+        '<td>' + expiryCell(r) + '</td>' +
         '<td>' + escapeHtml(r.note || '-') + '</td>' +
         '<td>' + escapeHtml(fmt(r.createdAt)) + '</td>' +
       '</tr>';

@@ -29,3 +29,13 @@ test('admin invite list separates unused and used codes', () => {
   assert.match(html, /rows\.filter\(function \(r\) \{ return r\.usedCount < r\.maxUses; \}\)/);
   assert.match(html, /rows\.filter\(function \(r\) \{ return r\.usedCount >= r\.maxUses; \}\)/);
 });
+
+test('admin invite list marks expired and disabled codes in the expiry column', () => {
+  const html = readFileSync(new URL('../web/admin-invites.html', import.meta.url), 'utf8');
+
+  assert.match(html, /function isExpired\(r\)/);
+  assert.match(html, /已过期 · /);
+  assert.match(html, /已停用/);
+  // 渲染行必须走 expiryCell，而不是直接输出原始过期时间
+  assert.match(html, /'<td>' \+ expiryCell\(r\) \+ '<\/td>'/);
+});
