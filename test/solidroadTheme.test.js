@@ -98,6 +98,7 @@ test('text over the mountain background uses readable light colors', () => {
     assert.match(html, /#F6F4EC|var\(--hero-ink\)/, `${page} must define a clear light text color over the landscape`);
     assert.match(html, /#F6F4EC|var\(--hero-soft\)/, `${page} must define a readable secondary text color over the landscape`);
     assert.doesNotMatch(html, /section:not\(\.mj-sec\):not\(\.mj-report-head\)/, `${page} must not broadly force every non-card section to light text`);
+    assert.doesNotMatch(html, /div:not\(\[class\]\)/, `${page} must not broadly force unclassified divs to light text`);
   }
 
   for (const page of adminPages) {
@@ -105,4 +106,13 @@ test('text over the mountain background uses readable light colors', () => {
 
     assert.match(html, /header, header \* \{ color: #F6F4EC !important; \}/, `${page} must use light header text over the landscape`);
   }
+});
+
+test('college data pager keeps readable dark text on white page buttons', () => {
+  const html = readFileSync(new URL('../web/college-data.html', import.meta.url), 'utf8');
+
+  assert.match(html, /id="pager"/);
+  assert.match(html, /class="mj-bg-text" style="display:flex; align-items:baseline; justify-content:space-between; margin:28px 4px 14px;"/);
+  assert.match(html, /color:var\(--ink-soft\); border:1px solid var\(--line-strong\);/);
+  assert.doesNotMatch(html, /#pager[\\s\\S]*color: #F6F4EC !important/);
 });
