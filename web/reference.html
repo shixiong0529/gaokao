@@ -13,17 +13,51 @@
 <meta property="og:site_name" content="澄明志愿">
 <style>
   * { -webkit-font-smoothing: antialiased; }
-  body { margin: 0; background: #F3EEE2; }
+  body { margin: 0; background: #EEF2EC; }
   @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes mj-fade { from { opacity: 0; } to { opacity: 1; } }
-  ::selection { background: rgba(168,130,60,0.22); }
+  ::selection { background: rgba(95,116,103,0.22); }
   .mj-nav a:hover { color: var(--gold); }
   .mj-nav-burger { display: none; }
+  .mj-page-bg {
+    isolation:isolate;
+    overflow:hidden;
+  }
+  .mj-page-bg::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(180deg, rgba(8,18,26,0.78) 0%, rgba(8,18,26,0.46) 38%, rgba(8,18,26,0.12) 72%, rgba(8,18,26,0) 100%),
+      url("https://framerusercontent.com/images/UG7DO77CykOXq0OIDltEMrQUh4.png?scale-down-to=2048&width=3840&height=2160");
+    background-size:cover;
+    background-position:center top;
+    background-repeat:no-repeat;
+    filter:saturate(.96) contrast(1.02);
+  }
+  .mj-page-bg > * {
+    position:relative;
+    z-index:1;
+  }
+  .mj-page-bg .mj-header { border-bottom-color: rgba(246,244,236,0.28) !important; }
+  .mj-page-bg .mj-header,
+  .mj-page-bg .mj-header * { color: #F6F4EC !important; border-color: rgba(246,244,236,0.28) !important; }
+  .mj-page-bg .mj-hero,
+  .mj-page-bg .mj-hero *,
+  .mj-page-bg .mj-wrap > section:not(.mj-sec):not(.mj-report-head),
+  .mj-page-bg .mj-wrap > section:not(.mj-sec):not(.mj-report-head) *,
+  .mj-page-bg .mj-wrap > div:not([class]),
+  .mj-page-bg .mj-wrap > div:not([class]) *,
+  .mj-page-bg footer,
+  .mj-page-bg footer * { color: #F6F4EC !important; border-color: rgba(246,244,236,0.34) !important; }
+  .mj-page-bg .mj-hero p,
+  .mj-page-bg .mj-wrap > section:not(.mj-sec):not(.mj-report-head) p,
+  .mj-page-bg .mj-wrap > div:not([class]),
+  .mj-page-bg footer span,
+  .mj-page-bg footer a { color: #F6F4EC !important; }
 
   @media (max-width: 768px) {
     .mj-nav { display: none !important; }
     .mj-nav-burger { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--ink); font-size: 18px; cursor: pointer; user-select: none; flex: 0 0 auto; }
-    .mj-nav-toggle:checked ~ .mj-nav { display: flex !important; flex-direction: column; align-items: stretch; gap: 0; position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: var(--paper2); border: 1px solid var(--line-strong); border-top: none; box-shadow: 0 24px 40px -24px rgba(22,35,63,0.45); }
+    .mj-nav-toggle:checked ~ .mj-nav { display: flex !important; flex-direction: column; align-items: stretch; gap: 0; position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: var(--paper2); border: 1px solid var(--line-strong); border-top: none; box-shadow: 0 24px 40px -24px rgba(22,32,28,0.45); }
     .mj-nav-toggle:checked ~ .mj-nav a { padding: 15px 20px; border-bottom: 1px solid var(--line); }
     .mj-nav-toggle:checked ~ .mj-nav span { margin: 14px 20px; text-align: center; }
     .mj-header { padding: 20px !important; }
@@ -37,14 +71,14 @@
 </style>
 </head>
 <body>
-<div style="--paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C; --muted:#6E6754; --gold:#A8823C; --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif; color:var(--ink); position:relative;">
+<div class="mj-page-bg" style="--paper:#EEF2EC; --paper2:#FAFBF7; --ink:#16201C; --ink-soft:#34423C; --muted:#6C766E; --gold:#5F7467; --line:rgba(22,32,28,0.14); --line-strong:rgba(22,32,28,0.24); min-height:100vh; background-color:var(--paper); background-image:linear-gradient(rgba(22,32,28,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,32,28,0.028) 1px, transparent 1px); background-size:46px 46px; font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif; color:var(--ink); position:relative;">
 
   <!-- ============ TOP BAR ============ -->
   <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
     <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
       <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
         <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
-        <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(95,116,103,0.4); border-radius:50%;"></div>
         <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
       </div>
       <div style="line-height:1.15;">
@@ -66,7 +100,7 @@
   <div class="mj-wrap" style="max-width:920px; margin:0 auto; padding:0 40px 80px;">
 
     <!-- ============ REPORT HEADER ============ -->
-    <section class="mj-report-head" style="position:relative; margin-top:40px; background:var(--paper2); border:1px solid var(--line-strong); border-top:3px solid var(--gold); padding:40px 46px; box-shadow:0 30px 70px -45px rgba(22,35,63,0.3); animation:mj-rise .8s ease both;">
+    <section class="mj-report-head" style="position:relative; margin-top:40px; background:var(--paper2); border:1px solid var(--line-strong); border-top:3px solid var(--gold); padding:40px 46px; box-shadow:0 30px 70px -45px rgba(22,32,28,0.3); animation:mj-rise .8s ease both;">
       <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:14px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; margin-bottom:14px;">Case Study · 案例样本</div>
       <h1 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:34px; line-height:1.4; letter-spacing:2px; color:var(--ink); margin:0 0 12px;">李俊庭 · 湖南物理类志愿填报参考方案</h1>
       <div style="font-size:13.5px; color:var(--muted); font-weight:300; letter-spacing:0.5px;">生成时间：2026 年 6 月 27 日 · 数据年份：2026 年批次线 + 2025 年院校录取参考</div>
@@ -74,13 +108,13 @@
         <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">湖南省</span>
         <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">物理类</span>
         <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">物化生</span>
-        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--gold); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--gold); background:rgba(168,130,60,0.08);">总分 432 分</span>
+        <span style="display:inline-block; padding:5px 14px; border:1px solid var(--gold); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--gold); background:rgba(95,116,103,0.08);">总分 432 分</span>
         <span style="display:inline-block; padding:5px 14px; border:1px solid var(--line-strong); border-radius:2px; font-size:13px; letter-spacing:0.5px; color:var(--ink-soft); background:#fff;">位次约 187,140</span>
       </div>
     </section>
 
     <!-- ============ I 执行摘要 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">I.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">执行摘要</h2>
@@ -88,46 +122,46 @@
 
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">考生姓名</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">考生姓名</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">李俊庭</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">选科组合</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">选科组合</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">物理 + 化学 + 生物</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">高考总分</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">高考总分</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">432 分</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">省排名位次</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">省排名位次</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">约 187,140 名（接口返回 188,022 名，同分 1144 人）</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">2026 本科批分数线</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">2026 本科批分数线</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">400 分（对应位次 221,240）</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">超本科线</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">超本科线</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">+32 分</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">位次优势</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">位次优势</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">高于本科线位次约 34,000 名</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 2.2fr; border-bottom:1px solid var(--line);">
-          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,35,63,0.045); display:flex; align-items:center;">报考方向</div>
+          <div style="padding:11px 16px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:14px; color:var(--ink); background:rgba(22,32,28,0.045); display:flex; align-items:center;">报考方向</div>
           <div style="padding:11px 16px; font-size:14px; line-height:1.7; color:var(--ink-soft); display:flex; align-items:center;">湖南省内公办二本院校（冲一冲）</div>
         </div>
       </div>
 
-      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:16px 20px; margin-top:20px; font-size:14px; line-height:1.95; color:var(--ink-soft);">
+      <div style="background:rgba(95,116,103,0.06); border-left:2px solid var(--gold); padding:16px 20px; margin-top:20px; font-size:14px; line-height:1.95; color:var(--ink-soft);">
         <span style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; color:var(--ink);">核心结论 ——</span> 432 分在 2026 年湖南物理类中处于本科线以上、特控线以下的区间，具备冲击部分湖南省内公办二本院校的条件。但多数公办二本院校 2025 年物理类录取最低分在 430–470 分区间，432 分处于<span style="color:var(--ink); font-weight:500;">公办二本门槛附近</span>，可冲范围有限，建议以「冲 + 稳 + 保」三层策略组合填报。
       </div>
     </section>
 
     <!-- ============ II 数据基础 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">II.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">数据基础</h2>
@@ -135,7 +169,7 @@
 
       <h3 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:6px 0 12px; letter-spacing:0.5px;">2.1　2026 年湖南物理类批次线</h3>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">年份</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">地区</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">选科</div>
@@ -155,7 +189,7 @@
 
       <h3 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:24px 0 12px; letter-spacing:0.5px;">2.2　2025 年湖南物理类批次线（参考）</h3>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:0.9fr 0.9fr 0.9fr 1fr 1fr 1.2fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">年份</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">地区</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">选科</div>
@@ -174,9 +208,9 @@
       </div>
 
       <h3 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:24px 0 12px; letter-spacing:0.5px;">2.3　2025 年湖南公办二本院校物理类录取参考</h3>
-      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:12px 18px; margin-bottom:14px; font-size:13.5px; line-height:1.85; color:var(--ink-soft);">新高考省份不区分一本二本，以下为本科批特控线以下的非双一流大学。2025 年湖南物理类特控线为 476 分。</div>
+      <div style="background:rgba(95,116,103,0.06); border-left:2px solid var(--gold); padding:12px 18px; margin-bottom:14px; font-size:13.5px; line-height:1.85; color:var(--ink-soft);">新高考省份不区分一本二本，以下为本科批特控线以下的非双一流大学。2025 年湖南物理类特控线为 476 分。</div>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">对应位次</div>
@@ -199,11 +233,11 @@
         <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南第一师范学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">475 分+</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 125,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">师范类</div></div>
         <div style="display:grid; grid-template-columns:2fr 1fr 1.2fr 0.9fr 1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">衡阳师范学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">475 分+</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">约 125,000</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">公办</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">师范类</div></div>
       </div>
-      <div style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:14px; font-weight:300;">以上 2025 年数据来源于湖南省教育考试院公开数据及高考信息平台（<a href="https://www.gk100.com/read_28025192.htm" target="_blank" style="color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(168,130,60,0.4);">gk100.com</a>）整理，部分院校分数为专业组最低分区间估算值。实际填报务必以湖南省教育考试院官方发布的 2026 年招生计划手册和近年投档数据为准。</div>
+      <div style="font-size:12.5px; line-height:1.85; color:var(--muted); margin-top:14px; font-weight:300;">以上 2025 年数据来源于湖南省教育考试院公开数据及高考信息平台（<a href="https://www.gk100.com/read_28025192.htm" target="_blank" style="color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(95,116,103,0.4);">gk100.com</a>）整理，部分院校分数为专业组最低分区间估算值。实际填报务必以湖南省教育考试院官方发布的 2026 年招生计划手册和近年投档数据为准。</div>
     </section>
 
     <!-- ============ III 志愿填报策略 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">III.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">志愿填报策略</h2>
@@ -223,7 +257,7 @@
         <span style="width:9px; height:9px; background:#A8442E; transform:rotate(45deg);"></span>冲一冲 · 录取概率较低，但有希望
       </div>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">冲的理由</div>
@@ -233,11 +267,11 @@
         <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">425 分</div><div style="padding:11px 14px; font-size:13.5px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 年分数略低于考生分数，可冲刺较好专业组</div></div>
       </div>
 
-      <div style="display:flex; align-items:center; gap:10px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; color:#946111; margin:22px 0 10px;">
-        <span style="width:9px; height:9px; background:#946111; transform:rotate(45deg);"></span>稳一稳 · 录取概率中等偏上
+      <div style="display:flex; align-items:center; gap:10px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; color:#566C5F; margin:22px 0 10px;">
+        <span style="width:9px; height:9px; background:#566C5F; transform:rotate(45deg);"></span>稳一稳 · 录取概率中等偏上
       </div>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">稳的理由</div>
@@ -252,7 +286,7 @@
         <span style="width:9px; height:9px; background:#2E6B4F; transform:rotate(45deg);"></span>保一保 · 录取概率高，兜底院校
       </div>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:1.5fr 0.9fr 3fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">2025 最低分</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">保的理由</div>
@@ -263,7 +297,7 @@
     </section>
 
     <!-- ============ IV 推荐院校详细分析 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">IV.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">推荐院校详细分析</h2>
@@ -297,10 +331,10 @@
         <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：城乡规划、土木工程、信息与计算科学。分数差约 13 分，冲刺难度较大，但部分冷门专业组可能存在降分机会。</div>
       </div>
 
-      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #946111;">
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #566C5F;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
           <h4 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">邵阳学院</h4>
-          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#566C5F; background:rgba(95,116,103,0.16);">稳</span>
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
           <div><span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南邵阳</div>
@@ -311,10 +345,10 @@
         <div style="font-size:13px; line-height:1.85; color:var(--muted); margin-top:14px; padding-top:12px; border-top:1px dashed var(--line-strong);">优势学科：机械工程、食品工程、临床医学。考生分数高出约 12 分，录取概率较高，专业选择有一定空间。</div>
       </div>
 
-      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #946111;">
+      <div style="background:#fff; border:1px solid var(--line); padding:20px 24px; margin-bottom:14px; border-left:3px solid #566C5F;">
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
           <h4 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:16px; color:var(--ink); margin:0;">湖南科技学院</h4>
-          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳 / 保</span>
+          <span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#566C5F; background:rgba(95,116,103,0.16);">稳 / 保</span>
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px 24px; font-size:13.5px; color:var(--ink-soft);">
           <div><span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:1px; color:var(--gold); text-transform:uppercase; margin-right:10px;">所在地</span>湖南永州</div>
@@ -355,14 +389,14 @@
     </section>
 
     <!-- ============ V 建议志愿表 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">V.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">建议志愿表</h2>
       </div>
-      <div style="background:rgba(168,130,60,0.06); border-left:2px solid var(--gold); padding:12px 18px; margin-bottom:16px; font-size:13.5px; line-height:1.85; color:var(--ink-soft);">以下为参考排序，具体专业组代码、专业代码须以湖南省教育考试院 2026 年官方招生计划手册为准。</div>
+      <div style="background:rgba(95,116,103,0.06); border-left:2px solid var(--gold); padding:12px 18px; margin-bottom:16px; font-size:13.5px; line-height:1.85; color:var(--ink-soft);">以下为参考排序，具体专业组代码、专业代码须以湖南省教育考试院 2026 年官方招生计划手册为准。</div>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">序号</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">层级</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">院校名称</div>
@@ -373,17 +407,17 @@
         <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">1</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南理工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">岳阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">438 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
         <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">2</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南城市学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">益阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">445 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
         <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">3</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#A8442E; background:rgba(168,68,46,0.10);">冲</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南工学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">衡阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">425 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
-        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">4</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">邵阳学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">邵阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">420 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
-        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">5</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南人文科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">娄底</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">415 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
-        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">6</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">怀化学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">怀化</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">410 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">视专业组</div></div>
-        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">7</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#946111; background:rgba(168,130,60,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">永州</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">399 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">可不服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">4</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#566C5F; background:rgba(95,116,103,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">邵阳学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">邵阳</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">420 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">5</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#566C5F; background:rgba(95,116,103,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南人文科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">娄底</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">415 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">6</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#566C5F; background:rgba(95,116,103,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">怀化学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">怀化</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">410 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">视专业组</div></div>
+        <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">7</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#566C5F; background:rgba(95,116,103,0.16);">稳</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南科技学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">永州</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">399 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">可不服从</div></div>
         <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">8</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#2E6B4F; background:rgba(46,107,79,0.12);">保</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湖南文理学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">常德</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">401 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
         <div style="display:grid; grid-template-columns:0.5fr 0.7fr 1.8fr 0.9fr 1fr 1.1fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:16px; color:var(--gold); display:flex; align-items:center;">9</div><div style="padding:11px 14px; display:flex; align-items:center;"><span style="display:inline-block; padding:2px 11px; border-radius:2px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:12px; font-weight:600; letter-spacing:1px; color:#2E6B4F; background:rgba(46,107,79,0.12);">保</span></div><div style="padding:11px 14px; font-size:14px; color:var(--ink); font-weight:500; display:flex; align-items:center;">湘南学院</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">郴州</div><div style="padding:11px 14px; font-size:14px; color:var(--ink-soft); display:flex; align-items:center;">390 分</div><div style="padding:11px 14px; font-size:13.5px; color:var(--ink-soft); display:flex; align-items:center;">服从</div></div>
       </div>
     </section>
 
     <!-- ============ VI 风险提醒 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">VI.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">风险提醒与注意事项</h2>
@@ -424,13 +458,13 @@
     </section>
 
     <!-- ============ VII 来源声明 ============ -->
-    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,35,63,0.25);">
+    <section class="mj-sec" style="background:var(--paper2); border:1px solid var(--line-strong); padding:34px 40px; margin-top:22px; box-shadow:0 20px 50px -38px rgba(22,32,28,0.25);">
       <div style="display:flex; align-items:baseline; gap:14px; border-bottom:1.5px solid var(--ink); padding-bottom:12px; margin-bottom:22px;">
         <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:22px; font-weight:600; color:var(--gold);">VII.</span>
         <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:22px; letter-spacing:2px; color:var(--ink); margin:0;">来源与时效声明</h2>
       </div>
       <div class="mj-table" style="border-top:1.5px solid var(--ink);">
-        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; background:rgba(22,35,63,0.045); border-bottom:1.5px solid var(--ink);">
+        <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; background:rgba(22,32,28,0.045); border-bottom:1.5px solid var(--ink);">
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">数据项</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">来源</div>
           <div style="padding:10px 14px; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:13px; color:var(--ink);">采集年份</div>
@@ -443,20 +477,20 @@
         <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">湖南公办二本院校名单及属性</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">高考知识库检索（gaokao-search）</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2025</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
         <div style="display:grid; grid-template-columns:2.4fr 2.2fr 0.9fr 1.2fr; border-bottom:1px solid var(--line);"><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">2025 湖南物理类特控线（476 分）</div><div style="padding:11px 14px; font-size:13px; line-height:1.6; color:var(--ink-soft); display:flex; align-items:center;">高考 100（gk100.com）</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2025</div><div style="padding:11px 14px; font-size:13px; color:var(--ink-soft); display:flex; align-items:center;">2026-06-27</div></div>
       </div>
-      <div style="border:1px solid var(--line-strong); background:rgba(22,35,63,0.02); padding:18px 22px; margin-top:18px;">
+      <div style="border:1px solid var(--line-strong); background:rgba(22,32,28,0.02); padding:18px 22px; margin-top:18px;">
         <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:2.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px;">Nota Bene · 免责声明</div>
         <div style="font-size:13px; line-height:1.9; color:var(--muted);">以上信息基于当前可检索数据整理，仅供参考，不构成最终志愿填报建议。高考招生政策、招生计划、投档线和录取结果以各省级招生考试机构及高校官方发布为准。最终决定请你和家人结合官方信息综合判断。</div>
       </div>
     </section>
 
     <div style="text-align:center; margin-top:34px;">
-      <a href="index.html" style="display:inline-block; padding:14px 40px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; letter-spacing:4px; text-indent:4px; text-decoration:none;">生成我的志愿方案</a>
+      <a href="index.html" style="display:inline-block; padding:14px 40px; background:var(--ink); color:#EEF2EC; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(238,242,236,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:15px; letter-spacing:4px; text-indent:4px; text-decoration:none;">生成我的志愿方案</a>
     </div>
 
   </div>
 
   <!-- ============ FOOTER ============ -->
-  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,35,63,0.02);">
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,32,28,0.02);">
     <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
       <div style="display:flex; align-items:center; gap:12px;">
         <div style="position:relative; width:30px; height:30px;">

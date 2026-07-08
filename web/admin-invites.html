@@ -7,25 +7,36 @@
 <title>邀请码管理 · 澄明志愿</title>
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #f6f1e7; color: #17223b; }
-  main { max-width: 920px; margin: 0 auto; padding: 32px 18px 60px; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: #EEF2EC; color: #16201C; }
+  body::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(180deg, rgba(8,18,26,0.78) 0%, rgba(8,18,26,0.46) 38%, rgba(8,18,26,0.12) 72%, rgba(8,18,26,0) 100%),
+      url("https://framerusercontent.com/images/UG7DO77CykOXq0OIDltEMrQUh4.png?scale-down-to=2048&width=3840&height=2160");
+    background-size:cover;
+    background-position:center top;
+    background-repeat:no-repeat;
+    filter:saturate(.96) contrast(1.02);
+  }
+  main { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 32px 18px 60px; }
   header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+  header, header * { color: #F6F4EC !important; }
   h1 { font-size: 24px; margin: 0; font-family: Georgia, "Noto Serif SC", serif; letter-spacing: 2px; }
-  a { color: #a8823c; text-decoration: none; }
-  section { background: #fffdf7; border: 1px solid rgba(23,34,59,.18); padding: 22px; margin-bottom: 18px; }
+  a { color: #5F7467; text-decoration: none; }
+  section { background: #FAFBF7; border: 1px solid rgba(22,32,28,.18); padding: 22px; margin-bottom: 18px; }
   h2 { font-size: 17px; margin: 0 0 16px; }
-  label { display: block; font-size: 13px; color: #5f6472; margin-bottom: 7px; }
-  input, textarea { width: 100%; padding: 11px 12px; border: 1px solid rgba(23,34,59,.25); border-radius: 2px; background: #fff; color: #17223b; font: inherit; }
+  label { display: block; font-size: 13px; color: #64716A; margin-bottom: 7px; }
+  input, textarea { width: 100%; padding: 11px 12px; border: 1px solid rgba(22,32,28,.25); border-radius: 2px; background: #fff; color: #16201C; font: inherit; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .full { grid-column: 1 / -1; }
-  button { border: 1px solid #17223b; background: #17223b; color: #f6f1e7; padding: 11px 18px; cursor: pointer; font: inherit; }
-  button.secondary { background: transparent; color: #17223b; }
+  button { border: 1px solid #16201C; background: #16201C; color: #EEF2EC; padding: 11px 18px; cursor: pointer; font: inherit; }
+  button.secondary { background: transparent; color: #16201C; }
   .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
-  .msg { min-height: 20px; margin-top: 12px; font-size: 13px; color: #7a5b19; }
+  .msg { min-height: 20px; margin-top: 12px; font-size: 13px; color: #526B5D; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 10px 8px; border-bottom: 1px solid rgba(23,34,59,.12); text-align: left; vertical-align: top; }
-  th { color: #5f6472; font-weight: 600; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #a8823c; font-weight: 700; }
+  th, td { padding: 10px 8px; border-bottom: 1px solid rgba(22,32,28,.12); text-align: left; vertical-align: top; }
+  th { color: #64716A; font-weight: 600; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #5F7467; font-weight: 700; }
   @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } header { align-items: flex-start; flex-direction: column; } }
 </style>
 </head>
@@ -34,7 +45,7 @@
   <header>
     <div>
       <h1>邀请码管理</h1>
-      <div style="font-size:13px;color:#6e6754;margin-top:6px;">生成报告前置邀请码；管理员口令来自服务器环境变量 ADMIN_TOKEN。</div>
+      <div style="font-size:13px;color:#6C766E;margin-top:6px;">生成报告前置邀请码；管理员口令来自服务器环境变量 ADMIN_TOKEN。</div>
     </div>
     <nav style="display:flex; gap:16px; flex-wrap:wrap;">
       <a href="admin-messages.html">留言管理</a>
@@ -87,7 +98,7 @@
 
   <section>
     <h2>最近邀请码</h2>
-    <h3 style="font-size:14px;margin:8px 0 10px;color:#5f6472;">未使用</h3>
+    <h3 style="font-size:14px;margin:8px 0 10px;color:#64716A;">未使用</h3>
     <div style="overflow-x:auto;">
       <table>
         <thead>
@@ -98,7 +109,7 @@
         </tbody>
       </table>
     </div>
-    <h3 style="font-size:14px;margin:22px 0 10px;color:#5f6472;">已使用</h3>
+    <h3 style="font-size:14px;margin:22px 0 10px;color:#64716A;">已使用</h3>
     <div style="overflow-x:auto;">
       <table>
         <thead>

@@ -14,27 +14,39 @@
 <link rel="stylesheet" href="style.css">
 <style>
   * { -webkit-font-smoothing: antialiased; }
-  body { margin: 0; background: #F3EEE2; }
+  body { margin: 0; background: #EEF2EC; }
   @keyframes mj-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes mj-fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes mj-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-  ::selection { background: rgba(168,130,60,0.22); }
-  ::placeholder { color: #A79E88; }
-  select option { color: #16233F; }
+  ::selection { background: rgba(95,116,103,0.22); }
+  ::placeholder { color: #8A918B; }
+  select option { color: #16201C; }
 
   .mj-root {
-    --paper:#F3EEE2; --paper2:#FCFAF3; --ink:#16233F; --ink-soft:#33405C;
-    --muted:#6E6754; --gold:#A8823C; --gold-soft:#C6A96A;
-    --line:rgba(22,35,63,0.14); --line-strong:rgba(22,35,63,0.26);
+    --paper:#EEF2EC; --paper2:#FAFBF7; --ink:#16201C; --ink-soft:#34423C;
+    --muted:#6C766E; --gold:#5F7467; --gold-soft:#96AA9C;
+    --hero-ink:#F6F4EC; --hero-soft:rgba(246,244,236,0.92); --hero-line:rgba(246,244,236,0.34);
+    --line:rgba(22,32,28,0.14); --line-strong:rgba(22,32,28,0.24);
     min-height:100vh; background-color:var(--paper);
-    background-image:linear-gradient(rgba(22,35,63,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,35,63,0.028) 1px, transparent 1px);
+    background-image:linear-gradient(rgba(22,32,28,0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(22,32,28,0.028) 1px, transparent 1px);
     background-size:46px 46px;
     font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Microsoft YaHei',system-ui,sans-serif; color:var(--ink);
     position:relative; overflow:hidden;
   }
+  .mj-root::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(180deg, rgba(8,18,26,0.78) 0%, rgba(8,18,26,0.46) 38%, rgba(8,18,26,0.12) 72%, rgba(8,18,26,0) 100%),
+      url("https://framerusercontent.com/images/UG7DO77CykOXq0OIDltEMrQUh4.png?scale-down-to=2048&width=3840&height=2160");
+    background-size:cover;
+    background-position:center top;
+    background-repeat:no-repeat;
+    opacity:1;
+    filter:saturate(.96) contrast(1.02);
+  }
 
   /* 输入控件聚焦（对应设计稿 style-focus） */
-  .mj-field:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(168,130,60,0.14); }
+  .mj-field:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(95,116,103,0.14); }
 
   /* 再选科目 chip（原生 checkbox，保留 name="reselect" 供 FormData 读取） */
   .mj-chip {
@@ -48,35 +60,50 @@
     display:flex; align-items:center; justify-content:center; width:18px; height:18px; font-size:12px;
     border-radius:2px; background:transparent; color:transparent; border:1px solid var(--line-strong); transition:all .2s;
   }
-  .mj-chip:has(input:checked) { border:1.5px solid var(--gold); color:var(--ink); box-shadow:0 0 0 3px rgba(168,130,60,0.12); }
+  .mj-chip:has(input:checked) { border:1.5px solid var(--gold); color:var(--ink); box-shadow:0 0 0 3px rgba(95,116,103,0.12); }
   .mj-chip:has(input:checked) .mj-box { background:var(--gold); color:#fff; border:1px solid var(--gold); }
   .mj-chip:has(input:disabled) { opacity:0.4; cursor:not-allowed; }
 
   .mj-stage-panel {
-    border-color:rgba(168,130,60,0.44) !important;
-    background:#FFFEF8 !important;
+    border-color:rgba(95,116,103,0.44) !important;
+    background:#F8FAF5 !important;
     transition:box-shadow .2s;
   }
   .mj-stage-panel > .mj-stage-summary {
-    background:rgba(168,130,60,0.12);
+    background:rgba(95,116,103,0.12);
   }
   .mj-stage-panel[open] {
-    box-shadow:inset 4px 0 0 var(--gold), 0 14px 28px -24px rgba(22,35,63,0.34);
+    box-shadow:inset 4px 0 0 var(--gold), 0 14px 28px -24px rgba(22,32,28,0.34);
   }
   .mj-stage-panel[open] > .mj-stage-summary {
-    border-bottom:1px solid rgba(168,130,60,0.26);
+    border-bottom:1px solid rgba(95,116,103,0.26);
   }
   .mj-stage-panel[open] .mj-stage-body {
-    background:rgba(22,35,63,0.025);
+    background:rgba(22,32,28,0.025);
   }
 
   /* 提交按钮 */
   .mj-submit { transition:background .28s, color .28s, border-color .28s; }
-  .mj-submit:hover:not(:disabled) { background:var(--gold); border-color:var(--gold); color:#1c1305; }
+  .mj-submit:hover:not(:disabled) { background:var(--gold); border-color:var(--gold); color:#101714; }
   .mj-submit:disabled { opacity:0.55; cursor:not-allowed; }
 
   .mj-nav a:hover { color:var(--gold); }
   .mj-nav-burger { display: none; }
+  .mj-notasec,
+  .mj-notasec *,
+  .mj-root > footer,
+  .mj-root > footer * {
+    color:var(--hero-ink) !important;
+    border-color:var(--hero-line) !important;
+  }
+  .mj-notasec p,
+  .mj-root > footer span,
+  .mj-root > footer a {
+    color:var(--hero-soft) !important;
+  }
+  .mj-formsec {
+    box-sizing:border-box;
+  }
 
   /* 生成结果区脱离 .mj-resultsec 的 920px 限宽，铺满视口方便阅读长表格 */
   #result {
@@ -91,17 +118,21 @@
   @media (max-width:768px) {
     .mj-nav { display: none !important; }
     .mj-nav-burger { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 1px solid var(--line-strong); border-radius: 2px; color: var(--ink); font-size: 18px; cursor: pointer; user-select: none; flex: 0 0 auto; }
-    .mj-nav-toggle:checked ~ .mj-nav { display: flex !important; flex-direction: column; align-items: stretch; gap: 0; position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: var(--paper2); border: 1px solid var(--line-strong); border-top: none; box-shadow: 0 24px 40px -24px rgba(22,35,63,0.45); }
+    .mj-nav-toggle:checked ~ .mj-nav { display: flex !important; flex-direction: column; align-items: stretch; gap: 0; position: absolute; top: 100%; left: 0; right: 0; z-index: 30; background: var(--paper2); border: 1px solid var(--line-strong); border-top: none; box-shadow: 0 24px 40px -24px rgba(22,32,28,0.45); }
     .mj-nav-toggle:checked ~ .mj-nav a { padding: 15px 20px; border-bottom: 1px solid var(--line); }
     .mj-nav-toggle:checked ~ .mj-nav span { margin: 14px 20px; text-align: center; }
     .mj-header { padding:20px !important; }
     .mj-hero { padding:44px 20px 20px !important; }
-    .mj-hero-watermark { font-size:180px !important; }
-    .mj-h1 { font-size:34px !important; }
+    .mj-h1 { font-size:28px !important; letter-spacing:0 !important; }
+    .mj-hero p { font-size:14px !important; line-height:1.9 !important; }
+    .mj-formsec { width:100% !important; }
     .mj-badges { flex-direction:column !important; gap:8px !important; }
     .mj-badges .mj-badge-sep { display:none !important; }
     .mj-formsec { padding:16px 16px 50px !important; }
-    .mj-card-inner { padding:28px 20px 32px !important; }
+    .mj-card-inner { box-sizing:border-box !important; width:calc(100% - 22px) !important; padding:28px 20px 32px !important; }
+    .mj-card-inner h2 { font-size:22px !important; letter-spacing:1px !important; }
+    #advisorStageText { font-size:12px !important; }
+    .mj-progress-head, .mj-card-head { align-items:flex-start !important; flex-direction:column !important; gap:10px !important; }
     .mj-grid { grid-template-columns:1fr !important; }
     .mj-second-grid { grid-template-columns:repeat(2,1fr) !important; }
     .mj-stage-grid { grid-template-columns:1fr !important; }
@@ -113,59 +144,58 @@
 <body>
 <div class="mj-root">
 
-  <div style="position:absolute; inset:0; background:radial-gradient(120% 80% at 50% -10%, transparent 40%, rgba(22,35,63,0.05) 100%); pointer-events:none;"></div>
+  <div style="position:absolute; inset:0; background:radial-gradient(120% 80% at 50% -10%, transparent 40%, rgba(22,32,28,0.05) 100%); pointer-events:none;"></div>
 
   <!-- ============ TOP BAR ============ -->
-  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line);">
+  <header class="mj-header" style="position:relative; z-index:3; max-width:1180px; margin:0 auto; padding:26px 40px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--hero-line);">
     <a href="index.html" style="display:flex; align-items:center; gap:14px; text-decoration:none;">
       <div style="position:relative; width:46px; height:46px; flex:0 0 auto;">
-        <div style="position:absolute; inset:0; border:1px solid var(--gold); border-radius:50%;"></div>
-        <div style="position:absolute; inset:4px; border:1px solid rgba(168,130,60,0.4); border-radius:50%;"></div>
-        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:20px; color:var(--gold);">澄</div>
+        <div style="position:absolute; inset:0; border:1px solid var(--hero-soft); border-radius:50%;"></div>
+        <div style="position:absolute; inset:4px; border:1px solid rgba(246,244,236,0.32); border-radius:50%;"></div>
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:20px; color:var(--hero-ink);">澄</div>
       </div>
       <div style="line-height:1.15;">
-        <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--ink);">澄明志愿</div>
-        <div style="margin-top:4px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:2.5px; color:var(--muted); text-transform:uppercase;">College Application Advisory</div>
+        <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:19px; letter-spacing:2px; color:var(--hero-ink);">澄明志愿</div>
+        <div style="margin-top:4px; font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:2.5px; color:var(--hero-soft); text-transform:uppercase;">College Application Advisory</div>
       </div>
     </a>
     <input type="checkbox" id="mjNavToggle" class="mj-nav-toggle" style="display:none;" aria-hidden="true">
     <label for="mjNavToggle" class="mj-nav-burger" aria-label="打开导航菜单">☰</label>
     <nav class="mj-nav" style="display:flex; align-items:center; gap:34px;">
-      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案样本</a>
-      <a href="college-data.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">院校数据</a>
-      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">方案说明</a>
-      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--ink-soft); text-decoration:none;">关于我们</a>
-      <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:1.5px; color:var(--gold); border:1px solid var(--line-strong); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
+      <a href="reference.html" style="font-size:14px; letter-spacing:1px; color:var(--hero-soft); text-decoration:none;">方案样本</a>
+      <a href="college-data.html" style="font-size:14px; letter-spacing:1px; color:var(--hero-soft); text-decoration:none;">院校数据</a>
+      <a href="methodology.html" style="font-size:14px; letter-spacing:1px; color:var(--hero-soft); text-decoration:none;">方案说明</a>
+      <a href="about.html" style="font-size:14px; letter-spacing:1px; color:var(--hero-soft); text-decoration:none;">关于我们</a>
+      <span style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:1.5px; color:var(--hero-ink); border:1px solid var(--hero-line); padding:5px 12px; border-radius:2px;">2026 届 · 新高考</span>
     </nav>
   </header>
 
   <!-- ============ HERO ============ -->
   <section class="mj-hero" style="position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:64px 40px 30px; text-align:center;">
-    <div class="mj-hero-watermark" style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:700; font-size:300px; line-height:1; color:rgba(22,35,63,0.035); pointer-events:none; user-select:none;">志</div>
     <div style="position:relative;">
-      <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:15px; letter-spacing:5px; color:var(--gold); text-transform:uppercase; margin-bottom:20px; animation:mj-rise .8s ease both;">Consilium · 循分识途</div>
-      <h1 class="mj-h1" style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:52px; line-height:1.35; letter-spacing:3px; color:var(--ink); margin:0 0 22px; animation:mj-rise .8s ease .08s both;">为每一分，<br>找到最合适的去处</h1>
-      <p style="max-width:600px; margin:0 auto; font-size:16px; font-weight:300; line-height:2; color:var(--muted); letter-spacing:0.5px; animation:mj-rise .8s ease .16s both;">输入分数与位次，依据各省实时录取数据，<br>为你生成「冲 · 稳 · 保」三档志愿参考方案。</p>
+      <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:15px; letter-spacing:5px; color:var(--hero-soft); text-transform:uppercase; margin-bottom:20px; animation:mj-rise .8s ease both;">Consilium · 循分识途</div>
+      <h1 class="mj-h1" style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:52px; line-height:1.35; letter-spacing:3px; color:var(--hero-ink); margin:0 0 22px; animation:mj-rise .8s ease .08s both;">为每一分，<br>找到最合适的去处</h1>
+      <p style="max-width:600px; margin:0 auto; font-size:16px; font-weight:300; line-height:2; color:var(--hero-soft); letter-spacing:0.5px; animation:mj-rise .8s ease .16s both;">输入分数与位次，依据各省实时录取数据，<br>为你生成「冲 · 稳 · 保」三档志愿参考方案。</p>
 
       <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin:38px auto 0; max-width:340px; animation:mj-fade 1s ease .3s both;">
-        <span style="flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--line-strong)); transform-origin:right; animation:mj-line .9s ease .3s both;"></span>
-        <span style="width:7px; height:7px; background:var(--gold); transform:rotate(45deg); flex:0 0 auto;"></span>
-        <span style="flex:1; height:1px; background:linear-gradient(90deg, var(--line-strong), transparent); transform-origin:left; animation:mj-line .9s ease .3s both;"></span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, transparent, var(--hero-line)); transform-origin:right; animation:mj-line .9s ease .3s both;"></span>
+        <span style="width:7px; height:7px; background:var(--hero-ink); transform:rotate(45deg); flex:0 0 auto;"></span>
+        <span style="flex:1; height:1px; background:linear-gradient(90deg, var(--hero-line), transparent); transform-origin:left; animation:mj-line .9s ease .3s both;"></span>
       </div>
 
       <div class="mj-badges" style="display:flex; align-items:center; justify-content:center; gap:0; margin-top:26px; animation:mj-fade 1s ease .42s both;">
-        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">17 省新高考数据</span>
-        <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--line-strong);"></span>
-        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">冲 · 稳 · 保 三档分层</span>
-        <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--line-strong);"></span>
-        <span style="font-size:13px; letter-spacing:1px; color:var(--ink-soft); padding:0 22px;">以官方发布为准</span>
+        <span style="font-size:13px; letter-spacing:1px; color:var(--hero-soft); padding:0 22px;">17 省新高考数据</span>
+        <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--hero-line);"></span>
+        <span style="font-size:13px; letter-spacing:1px; color:var(--hero-soft); padding:0 22px;">冲 · 稳 · 保 三档分层</span>
+        <span class="mj-badge-sep" style="width:1px; height:13px; background:var(--hero-line);"></span>
+        <span style="font-size:13px; letter-spacing:1px; color:var(--hero-soft); padding:0 22px;">以官方发布为准</span>
       </div>
     </div>
   </section>
 
   <!-- ============ FORM CARD ============ -->
   <section class="mj-formsec" style="position:relative; z-index:2; max-width:920px; margin:0 auto; padding:24px 40px 40px; animation:mj-rise .9s ease .5s both;">
-    <div style="position:relative; background:var(--paper2); border:1px solid var(--line-strong); box-shadow:0 40px 80px -40px rgba(22,35,63,0.3);">
+    <div style="position:relative; background:var(--paper2); border:1px solid var(--line-strong); box-shadow:0 40px 80px -40px rgba(22,32,28,0.3);">
 
       <div style="position:absolute; top:6px; left:6px; width:16px; height:16px; border-top:1.5px solid var(--gold); border-left:1.5px solid var(--gold);"></div>
       <div style="position:absolute; top:6px; right:6px; width:16px; height:16px; border-top:1.5px solid var(--gold); border-right:1.5px solid var(--gold);"></div>
@@ -173,21 +203,21 @@
       <div style="position:absolute; bottom:6px; right:6px; width:16px; height:16px; border-bottom:1.5px solid var(--gold); border-right:1.5px solid var(--gold);"></div>
 
       <form id="planForm" class="mj-card-inner" style="margin:11px; border:1px solid var(--line); padding:44px 50px 48px;">
-        <div id="advisorProgress" style="display:flex; flex-direction:column; gap:12px; background:rgba(168,130,60,0.08); border:1px solid rgba(168,130,60,0.24); padding:16px 18px; margin-bottom:28px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div id="advisorProgress" style="display:flex; flex-direction:column; gap:12px; background:rgba(95,116,103,0.08); border:1px solid rgba(95,116,103,0.24); padding:16px 18px; margin-bottom:28px;">
+          <div class="mj-progress-head" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
             <div>
               <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:12px; letter-spacing:2.6px; color:var(--gold); text-transform:uppercase;">Guided Session</div>
               <div style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-size:18px; letter-spacing:1.5px; color:var(--ink); margin-top:2px;">深度模式进度</div>
             </div>
             <div id="advisorStageText" style="font-size:13px; color:var(--ink-soft); letter-spacing:0.5px;">阶段一：基础信息收集中</div>
           </div>
-          <div style="height:6px; background:rgba(22,35,63,0.10); overflow:hidden;">
+          <div style="height:6px; background:rgba(22,32,28,0.10); overflow:hidden;">
             <div id="advisorStageBar" style="width:16%; height:100%; background:var(--gold); transition:width .25s ease;"></div>
           </div>
         </div>
 
         <!-- card header -->
-        <div style="display:flex; align-items:flex-end; justify-content:space-between; border-bottom:1.5px solid var(--ink); padding-bottom:16px; margin-bottom:34px;">
+        <div class="mj-card-head" style="display:flex; align-items:flex-end; justify-content:space-between; border-bottom:1.5px solid var(--ink); padding-bottom:16px; margin-bottom:34px;">
           <div>
             <div style="font-family:'Cormorant Garamond',Georgia,'Times New Roman',serif; font-size:13px; letter-spacing:3px; color:var(--gold); text-transform:uppercase; margin-bottom:6px;">Registration Form</div>
             <h2 style="font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:26px; letter-spacing:3px; color:var(--ink); margin:0;">志愿信息登记表</h2>
@@ -489,7 +519,7 @@
         </div>
 
         <!-- submit -->
-        <button type="submit" id="submitBtn" class="mj-submit" style="width:100%; box-sizing:border-box; margin-top:38px; padding:19px; background:var(--ink); color:#F3EEE2; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(243,238,226,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; letter-spacing:8px; text-indent:8px; cursor:pointer;">
+        <button type="submit" id="submitBtn" class="mj-submit" style="width:100%; box-sizing:border-box; margin-top:38px; padding:19px; background:var(--ink); color:#EEF2EC; border:1px solid var(--ink); border-radius:2px; box-shadow:inset 0 0 0 1px rgba(238,242,236,0.22); font-family:'Noto Serif SC','Source Han Serif SC','Songti SC',STSong,SimSun,serif; font-weight:600; font-size:17px; letter-spacing:8px; text-indent:8px; cursor:pointer;">
           <span class="btn-text">生成志愿参考方案</span>
           <span class="btn-loading" hidden>生成中，请耐心等待2分钟...</span>
         </button>
@@ -529,7 +559,7 @@
   </section>
 
   <!-- ============ FOOTER ============ -->
-  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,35,63,0.02);">
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--line); background:rgba(22,32,28,0.02);">
     <div style="max-width:1180px; margin:0 auto; padding:30px 40px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
       <div style="display:flex; align-items:center; gap:12px;">
         <div style="position:relative; width:30px; height:30px;">

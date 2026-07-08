@@ -82,6 +82,21 @@ test('index exposes advisor session progress without replacing the quick form', 
   assert.match(html, /志愿信息登记表/);
 });
 
+test('index uses the Solidroad-inspired landscape as a page background layer', () => {
+  const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
+
+  assert.match(html, /\.mj-root::before/);
+  assert.match(html, /framerusercontent\.com\/images\/UG7DO77CykOXq0OIDltEMrQUh4\.png/);
+  assert.match(html, /rgba\(8,18,26,0\.78\)/);
+  assert.match(html, /rgba\(8,18,26,0\) 100%/);
+  assert.doesNotMatch(html, /rgba\(238,242,236,0\.62\).*rgba\(238,242,236,0\.94\)/);
+  assert.match(html, /--hero-ink:#F6F4EC/);
+  assert.match(html, /color:var\(--hero-ink\)/);
+  assert.doesNotMatch(html, /mj-hero-watermark/);
+  assert.doesNotMatch(html, /class="mj-landscape"/);
+  assert.doesNotMatch(html, /alt="山脉风景"/);
+});
+
 test('index places optional advisor stages after invite code as collapsed panels', () => {
   const html = readFileSync(new URL('../web/index.html', import.meta.url), 'utf8');
 
@@ -146,8 +161,8 @@ test('index visually separates expanded optional advisor stages', () => {
   assert.match(html, /\.mj-stage-panel\[open\] > \.mj-stage-summary/);
   assert.match(html, /\.mj-stage-panel\[open\] \.mj-stage-body/);
   assert.match(html, /box-shadow:inset 4px 0 0 var\(--gold\)/);
-  assert.match(html, /background:#FFFEF8 !important/);
-  assert.match(html, /background:rgba\(168,130,60,0\.12\)/);
+  assert.match(html, /background:#F8FAF5 !important/);
+  assert.match(html, /background:rgba\(95,116,103,0\.12\)/);
   assert.match(html, /class="mj-stage-summary"/);
   assert.match(html, /class="mj-stage-body/);
 });
