@@ -97,6 +97,7 @@ test('text over the mountain background uses readable light colors', () => {
 
     assert.match(html, /#F6F4EC|var\(--hero-ink\)/, `${page} must define a clear light text color over the landscape`);
     assert.match(html, /#F6F4EC|var\(--hero-soft\)/, `${page} must define a readable secondary text color over the landscape`);
+    assert.doesNotMatch(html, /section:not\(\.mj-sec\):not\(\.mj-report-head\)/, `${page} must not broadly force every non-card section to light text`);
   }
 
   for (const page of adminPages) {
