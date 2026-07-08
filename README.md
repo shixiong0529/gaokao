@@ -13,7 +13,7 @@
 - **邀请码门禁**：生成报告前必须输入有效邀请码，生成失败不消耗邀请码
 - **超时保护**：前端 260 秒 + 服务端 250 秒 + Agent 195 秒内部预算 + 单次搜索/接口 8-10 秒超时，多层协同防卡死（前端超时晚于服务端，让服务端做唯一裁判）
 - **并发提速**：同一轮内多个搜索并行执行、预取结构化数据并行，大幅缩短总耗时
-- **多页站点**：统一「澄明志愿」中式设计风格，含首页表单、志愿参考样例、院校数据库、方案说明、关于我们，导航互通
+- **多页站点**：统一「鲤鱼门」中式设计风格，含首页表单、志愿参考样例、院校数据库、方案说明、关于我们，导航互通
 - **支持省份**：17 个「3+1+2」新高考省份（湘鄂粤苏川冀皖闽赣渝辽豫吉黑桂黔陇）；3+3 模式省份（京津沪浙鲁琼）选科口径不同，前后端均明确拒绝
 
 ## 快速开始
@@ -75,7 +75,7 @@ npm start
 
 ```
 gaokao/
-├── web/                      # 前端（澄明志愿 · 站点多页）
+├── web/                      # 前端（鲤鱼门 · 站点多页）
 │   ├── index.html            # 首页：志愿信息登记表单
 │   ├── app.js                # 前端逻辑（fetch + 超时控制 + 报告渲染）
 │   ├── reference.html        # 志愿参考：冲稳保案例样本报告页
@@ -137,7 +137,7 @@ gaokao/
 
 ## 部署到阿里云 ECS
 
-以下是当前线上部署方式，适用于 `gaokao.moyu.in` 指向同一台阿里云 ECS 的场景。项目目录建议放在 `/opt/gaokao`，服务本身监听内网端口 `3001`，由 Nginx 负责 HTTPS 反向代理。
+以下是当前线上部署方式，适用于 `liyumen.com` 指向同一台阿里云 ECS 的场景。项目目录建议放在 `/opt/gaokao`，服务本身监听内网端口 `3001`，由 Nginx 负责 HTTPS 反向代理。
 
 ### 环境准备
 
@@ -165,7 +165,7 @@ sudo apt update && sudo apt install -y nginx
 解析完成后可在服务器上检查：
 
 ```bash
-dig +short gaokao.moyu.in
+dig +short liyumen.com
 ```
 
 ### 部署代码
@@ -210,14 +210,14 @@ curl http://127.0.0.1:3001/api/health
 
 ### Nginx 反代
 
-首次部署时请先完成下一节的 HTTPS 证书申请，再启用下面这份配置。因为配置里引用了 `/etc/letsencrypt/live/gaokao.moyu.in/` 下的证书文件；证书不存在时，`nginx -t` 会失败。
+首次部署时请先完成下一节的 HTTPS 证书申请，再启用下面这份配置。因为配置里引用了 `/etc/letsencrypt/live/liyumen.com/` 下的证书文件；证书不存在时，`nginx -t` 会失败。
 
 创建 `/etc/nginx/sites-available/gaokao`：
 
 ```nginx
 server {
     listen 80;
-    server_name gaokao.moyu.in;
+    server_name liyumen.com;
 
     location / {
         return 301 https://$host$request_uri;
@@ -226,10 +226,10 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name gaokao.moyu.in;
+    server_name liyumen.com;
 
-    ssl_certificate /etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/gaokao.moyu.in/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/liyumen.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/liyumen.com/privkey.pem;
 
     client_max_body_size 10m;
 
@@ -258,9 +258,9 @@ systemctl reload nginx
 
 ### HTTPS 证书
 
-**现状（已验证生效）**：`gaokao.moyu.in` 用 `acme.sh` + DNS-01（阿里云 DNS API）自动续期，装完不用再管。
+**现状（已验证生效）**：`liyumen.com` 用 `acme.sh` + DNS-01（阿里云 DNS API）自动续期，装完不用再管。
 
-**根因排查记录**：这台 ECS 装了阿里云云安全中心（Aegis/云盾），会拦截被判定为"可疑"的境外流量。Let's Encrypt 的验证节点大多在境外，请求命中拦截规则——**nginx access log 里能看到请求已经被正确处理并返回了 200**，但 Aegis 在更前面把响应换成了 403 发给 Let's Encrypt，导致 HTTP-01（`certbot --webroot`/`--standalone`/`--nginx`）在本机 curl 完全正常的情况下始终验证失败。这个坑不止 gaokao.moyu.in 一个域名会踩，同服务器上其他域名只要用 HTTP-01 都会一样被拦。
+**根因排查记录**：这台 ECS 装了阿里云云安全中心（Aegis/云盾），会拦截被判定为"可疑"的境外流量。Let's Encrypt 的验证节点大多在境外，请求命中拦截规则——**nginx access log 里能看到请求已经被正确处理并返回了 200**，但 Aegis 在更前面把响应换成了 403 发给 Let's Encrypt，导致 HTTP-01（`certbot --webroot`/`--standalone`/`--nginx`）在本机 curl 完全正常的情况下始终验证失败。这个坑不止 liyumen.com 一个域名会踩，同服务器上其他域名只要用 HTTP-01 都会一样被拦。
 
 **解法**：改用 DNS-01 验证，完全不需要公网 80 端口被外部访问到，绕开 Aegis 这一层：
 
@@ -274,11 +274,11 @@ export Ali_Secret="你的AccessKeySecret"
 
 # 国内网络访问境外公共 DNS 做传播检查经常超时/失败（curl error 35/28），
 # 加 --dnssleep 30 跳过这个不可靠的自检，改成固定等 30 秒再直接问 Let's Encrypt
-~/.acme.sh/acme.sh --issue --dns dns_ali -d gaokao.moyu.in --server letsencrypt --dnssleep 30
+~/.acme.sh/acme.sh --issue --dns dns_ali -d liyumen.com --server letsencrypt --dnssleep 30
 
-~/.acme.sh/acme.sh --install-cert -d gaokao.moyu.in \
-  --key-file       /etc/letsencrypt/live/gaokao.moyu.in/privkey.pem \
-  --fullchain-file /etc/letsencrypt/live/gaokao.moyu.in/fullchain.pem \
+~/.acme.sh/acme.sh --install-cert -d liyumen.com \
+  --key-file       /etc/letsencrypt/live/liyumen.com/privkey.pem \
+  --fullchain-file /etc/letsencrypt/live/liyumen.com/fullchain.pem \
   --reloadcmd      "nginx -t && systemctl reload nginx"
 ```
 
@@ -301,12 +301,12 @@ export Ali_Secret="你的AccessKeySecret"
 certbot certonly \
   --manual \
   --preferred-challenges dns \
-  --cert-name gaokao.moyu.in \
+  --cert-name liyumen.com \
   --key-type rsa \
-  -d gaokao.moyu.in
+  -d liyumen.com
 ```
 
-这种方式生成的证书不会自动续期（`certbot renew` 非交互执行，manual 插件无法弹出提示要求你粘贴新的 TXT 值，会静默失败）。已切换到上面的 `acme.sh` 方案，`/etc/letsencrypt/renewal/gaokao.moyu.in.conf` 等四个域名的旧续期配置已挪到 `/etc/letsencrypt/renewal-disabled/`，certbot 不会再尝试续期它们。
+这种方式生成的证书不会自动续期（`certbot renew` 非交互执行，manual 插件无法弹出提示要求你粘贴新的 TXT 值，会静默失败）。已切换到上面的 `acme.sh` 方案，`/etc/letsencrypt/renewal/liyumen.com.conf` 等四个域名的旧续期配置已挪到 `/etc/letsencrypt/renewal-disabled/`，certbot 不会再尝试续期它们。
 
 </details>
 

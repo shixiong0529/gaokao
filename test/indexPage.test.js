@@ -8,7 +8,7 @@ test('index footer does not expose admin entry and links compliance pages', () =
   // 管理后台不能从公开页面可达（管理员直接访问 /admin-invites.html）
   assert.doesNotMatch(html, /admin-invites\.html/);
   assert.doesNotMatch(html, /admin-messages\.html/);
-  assert.match(html, /© 2026 澄明志愿 · CHENGMING ADVISORY/);
+  assert.match(html, /© 2026 鲤鱼门 · LIYUMEN ADVISORY/);
   assert.match(html, /href="privacy\.html"/);
   assert.match(html, /href="terms\.html"/);
 });
